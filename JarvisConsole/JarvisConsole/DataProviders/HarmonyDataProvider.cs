@@ -8,7 +8,7 @@ using System.IO;
 using System.Diagnostics;
 
 
-namespace HarmonyControl
+namespace DataProviders.HarmonyDataProvider
 {
     public class HarmonyDataProvider
     {
@@ -46,13 +46,13 @@ namespace HarmonyControl
             _hub = new Client(ipAddress);
             try
             {
-                await HarmonyOpenAsync(ipAddress);
+                HarmonyOpenAsync(ipAddress);
                 while (!_hub.IsReady)
                 {
                     //Wait for hub to be ready
                 }
 
-                await HarmonyGetConfigAsync();
+                HarmonyGetConfigAsync();
                 while (_harmonyConfig == null)
                 {
                     //wait
@@ -179,6 +179,15 @@ namespace HarmonyControl
         {
             throw new NotImplementedException();
         }
+        #endregion
+
+        #region Constructor
+        public HarmonyDataProvider()
+        {
+            _activityList = new List<Activity>();
+            _deviceList = new List<Device>();
+        }
+
         #endregion
 
     }

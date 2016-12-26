@@ -77,6 +77,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataProviders\Wit\Actions.cs" />
     <Compile Include="DataProviders\Wit\ThreadContent.cs" />
     <Compile Include="DataProviders\HarmonyDataProvider.cs" />
     <Compile Include="DataProviders\NestDataProvider.cs" />

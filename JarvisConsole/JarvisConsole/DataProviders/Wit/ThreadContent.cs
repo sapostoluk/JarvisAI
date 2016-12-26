@@ -23,7 +23,7 @@ namespace DataProviders.Wit
 
         private ObservableCollection<WitContext> _contextList;
 
-        private ObservableCollection<Entity> _entities;
+        private ObservableCollection<KeyValuePair<string, List<Entity>>> _entities;
 
         #endregion
 
@@ -100,12 +100,12 @@ namespace DataProviders.Wit
             }
         }
 
-        public ObservableCollection<Entity> Entities
+        public ObservableCollection<KeyValuePair<string, List<Entity>>> Entities
         {
             get { return _entities; }
             set
             {
-                if(value != _entities)
+                if(!_entities.Equals(value))
                 {
                     _entities = value;
                 }
@@ -117,12 +117,20 @@ namespace DataProviders.Wit
         #region Constructor
         public ThreadContent()
         {
-            Entities = new ObservableCollection<Entity>();
+            _entities = new ObservableCollection<KeyValuePair<string, List<Entity>>>();
+            Entities = new ObservableCollection<KeyValuePair<string, List<Entity>>>();
             ContextList = new ObservableCollection<WitContext>();
             WitAction = new Wit.WitAction();
         } 
 
 
         #endregion
+
+        public void ClearAll()
+        {
+            Entities.Clear();
+            ContextList.Clear();
+            
+        }
     }
 }

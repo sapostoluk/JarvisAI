@@ -16,7 +16,7 @@ namespace DataProviders.Wit
         #region Fields
         private WitClient _witClient;
         private string _conversationId;
-        private WitConversation<WitContext> _witConversationClient;
+        private WitConversation<object> _witConversationClient;
         private string _witToken = ConfigurationManager.AppSettings["wit_token"];
         private bool didMerge = false;
         private bool didStop = false;
@@ -55,7 +55,7 @@ namespace DataProviders.Wit
 
             //New wit client
             _witClient = new WitClient(_witToken);
-            _witConversationClient = new WitConversation<WitContext>(_witToken, _conversationId, null,
+            _witConversationClient = new WitConversation<object>(_witToken, _conversationId, null,
                 doMerge, doSay, doAction, doStop);
             
         }
@@ -68,6 +68,7 @@ namespace DataProviders.Wit
             if(_newConv)
             {
                 _ThreadContentCollection.Clear();
+                _currentThreadContent.ClearAll();
                 _newConv = false;
             }
             //Only keep 100 messages of in app data. Log the rest
@@ -76,16 +77,13 @@ namespace DataProviders.Wit
                 _ThreadContentCollection.Clear();
             }
             _currentThreadContent.UserMessage = message;
-            //ConverseResponse resp = _witClient.Converse(_conversationId, message);
-            //foreach (var value in resp.entities.Values)
-            //{
-            //    foreach (Entity entity in value)
-            //    {
-            //        _currentThreadContent.Entities.Add(entity);                    
-            //        _currentThreadContent.WitAction.EntityCollection.Add(entity);
-            //    }
+            Message msg = _witClient.GetMessage(message, _conversationId);
+            foreach (KeyValuePair<string, List<Entity>> entity in msg.entities)
+            {
+                    _currentThreadContent.Entities.Add(entity);                    
+            }
 
-            //}
+
 
             //Send async message           
             Task<bool> t = _witConversationClient.SendMessageAsync(message);
@@ -103,36 +101,32 @@ namespace DataProviders.Wit
         }
 
         #region Private Methods
-        private WitContext doMerge(string conversationId, WitContext context, object entities, double confidence)
+        private object doMerge(string conversationId, object context, object entities, double confidence)
         {
             didMerge = true;
             return context;
         }
 
-        private void doSay(string conversationId, WitContext context, string msg, double confidence)
+        private void doSay(string conversationId, object context, string msg, double confidence)
         {
             _currentThreadContent.AiMessage = msg;
             _currentThreadContent.SentByAi = true;
             //Console.WriteLine(msg);
         }
 
-        private WitContext doAction(string conversationId, WitContext context, string action, double confidence)
+        private object doAction(string conversationId, object context, string action, double confidence)
         {
             _currentThreadContent.WitAction.Action = action;
-            if(context == null)
+            object updateContext = context;
+            if(Actions.ActionDictionary.ContainsKey(action))
             {
-                context = new WitContext();
+                updateContext = Actions.ActionDictionary[action].Invoke(_currentThreadContent.Entities);
             }
-            if(action == "SelectTelevisionActivity")
-            {
-                context.Item = "Television, missingTelevision";
-            }
-
-            _currentThreadContent.ContextList.Add(context);
-            return context;
+            
+            return updateContext;
         }
 
-        private WitContext doStop(string conversationId, WitContext context)
+        private object doStop(string conversationId, object context)
         {
             didStop = true;
             //_currentThreadContent.Context = context;

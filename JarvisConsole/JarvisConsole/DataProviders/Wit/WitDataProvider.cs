@@ -64,13 +64,11 @@ namespace DataProviders.Wit
 
         public string SendMessage(string message)
         {
-            //New conversation
-            if(_newConv)
-            {
+         
                 _ThreadContentCollection.Clear();
                 _currentThreadContent.ClearAll();
-                _newConv = false;
-            }
+                //_newConv = false;
+            
             //Only keep 100 messages of in app data. Log the rest
             if(_ThreadContentCollection.Count >= 100)
             {
@@ -91,11 +89,7 @@ namespace DataProviders.Wit
 
             _ThreadContentCollection.Add(_currentThreadContent);
 
-            if (_currentThreadContent.WitAction.Action == "EndConv")
-            {
-                
-                _newConv = true;
-            }
+            
 
             return _currentThreadContent.AiMessage;
         }

@@ -8,7 +8,7 @@ using System.IO;
 using System.Diagnostics;
 
 
-namespace DataProviders.HarmonyDataProvider
+namespace DataProviders.Harmony
 {
     public class HarmonyDataProvider
     {
@@ -39,56 +39,7 @@ namespace DataProviders.HarmonyDataProvider
 
         #endregion
 
-        #region Public Methods
-        public async void InitializeHubConnection(string ipAddress)
-        {
-            _ipAddress = ipAddress;
-            _hub = new Client(ipAddress);
-            try
-            {
-                HarmonyOpenAsync(ipAddress);
-                while (!_hub.IsReady)
-                {
-                    //Wait for hub to be ready
-                }
-
-                HarmonyGetConfigAsync();
-                while (_harmonyConfig == null)
-                {
-                    //wait
-                }
-            }
-            catch(Exception e)
-            {
-                throw new Exception("Connection error");
-            }
-            
-
-            GetActivities();
-            GetDevices();           
-        }
-
-        public async Task HarmonyOpenAsync(string ipAddress)
-        {
-            if (_hub == null || !_hub.Host.Equals(ipAddress))
-            {
-                _hub.OnTaskChanged += _hub_OnTaskChanged;
-                _hub.OnConnectionClosed += _hub_OnConnectionClosed;
-            }
-            //First create our client and login
-            if (File.Exists("SessionToken"))
-            {
-                var sessionToken = File.ReadAllText("SessionToken");
-                Trace.WriteLine("Reusing token: {0}", sessionToken);
-                await _hub.TryOpenAsync(sessionToken);
-            }
-            else
-            {
-                await _hub.TryOpenAsync();
-                File.WriteAllText("SessionToken", _hub.Token);
-            }
-        }
-     
+        #region Public Methods    
         public async Task StartActivity(string activityId)
         {
             await _hub.StartActivityAsync(activityId);
@@ -110,9 +61,57 @@ namespace DataProviders.HarmonyDataProvider
         #endregion
 
         #region Private Methods
+        private async void InitializeHubConnection()
+        {
+            _hub = new Client(_ipAddress);
+            try
+            {
+                HarmonyOpenAsync();
+                while (!_hub.IsReady)
+                {
+                    //Wait for hub to be ready
+                }
+
+                HarmonyGetConfigAsync();
+                while (_harmonyConfig == null)
+                {
+                    //wait
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Connection error");
+            }
+
+
+            GetActivities();
+            GetDevices();
+        }
+
+        private async Task HarmonyOpenAsync()
+        {
+            if (_hub == null || !_hub.Host.Equals(_ipAddress))
+            {
+                _hub.OnTaskChanged += _hub_OnTaskChanged;
+                _hub.OnConnectionClosed += _hub_OnConnectionClosed;
+            }
+            //First create our client and login
+            if (File.Exists("SessionToken"))
+            {
+                var sessionToken = File.ReadAllText("SessionToken");
+                Trace.WriteLine("Reusing token: {0}", sessionToken);
+                await _hub.TryOpenAsync(sessionToken);
+            }
+            else
+            {
+                await _hub.TryOpenAsync();
+                File.WriteAllText("SessionToken", _hub.Token);
+            }
+        }
+
         private async Task HarmonyConnectAsync()
         {
-            await HarmonyOpenAsync(_ipAddress);
+            await HarmonyOpenAsync();
 
             if (_hub.IsReady)
             {
@@ -182,10 +181,13 @@ namespace DataProviders.HarmonyDataProvider
         #endregion
 
         #region Constructor
-        public HarmonyDataProvider()
+        public HarmonyDataProvider(string ipAddress)
         {
             _activityList = new List<Activity>();
             _deviceList = new List<Device>();
+            _ipAddress = ipAddress;
+
+            InitializeHubConnection();
         }
 
         #endregion

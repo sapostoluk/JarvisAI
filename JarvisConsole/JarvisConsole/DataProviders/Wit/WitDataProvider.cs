@@ -22,7 +22,7 @@ namespace DataProviders.Wit
         private bool didStop = false;
         private ObservableCollection<ThreadContent> _ThreadContentCollection;
         private ThreadContent _currentThreadContent;
-        private bool _newConv;
+
         
 
         #endregion
@@ -51,7 +51,6 @@ namespace DataProviders.Wit
             _ThreadContentCollection = new ObservableCollection<ThreadContent>();
             _currentThreadContent = new ThreadContent();
             _conversationId = conversationId;
-            _newConv = false;
 
             //New wit client
             _witClient = new WitClient(_witToken);
@@ -62,26 +61,21 @@ namespace DataProviders.Wit
 
         #endregion
 
+        #region Methods
         public string SendMessage(string message)
         {
-         
-                _ThreadContentCollection.Clear();
-                _currentThreadContent.ClearAll();
-                //_newConv = false;
-            
-            //Only keep 100 messages of in app data. Log the rest
-            if(_ThreadContentCollection.Count >= 100)
-            {
-                _ThreadContentCollection.Clear();
-            }
+            //Clear threading            
+            _currentThreadContent.ClearAll();            
+
+            //Save Message
             _currentThreadContent.UserMessage = message;
+
+            //Get Entities
             Message msg = _witClient.GetMessage(message, _conversationId);
             foreach (KeyValuePair<string, List<Entity>> entity in msg.entities)
             {
-                    _currentThreadContent.Entities.Add(entity);                    
+                _currentThreadContent.Entities.Add(entity);
             }
-
-
 
             //Send async message           
             Task<bool> t = _witConversationClient.SendMessageAsync(message);
@@ -89,12 +83,10 @@ namespace DataProviders.Wit
 
             _ThreadContentCollection.Add(_currentThreadContent);
 
-            
-
             return _currentThreadContent.AiMessage;
         }
 
-        #region Private Methods
+        #region Callbacks
         private object doMerge(string conversationId, object context, object entities, double confidence)
         {
             didMerge = true;
@@ -104,13 +96,11 @@ namespace DataProviders.Wit
         private void doSay(string conversationId, object context, string msg, double confidence)
         {
             _currentThreadContent.AiMessage = msg;
-            _currentThreadContent.SentByAi = true;
-            //Console.WriteLine(msg);
         }
 
         private object doAction(string conversationId, object context, string action, double confidence)
         {
-            _currentThreadContent.WitAction.Action = action;
+            _currentThreadContent.Action = action;
             object updateContext = context;
             if(Actions.ActionDictionary.ContainsKey(action))
             {
@@ -123,9 +113,11 @@ namespace DataProviders.Wit
         private object doStop(string conversationId, object context)
         {
             didStop = true;
-            //_currentThreadContent.Context = context;
+            _ThreadContentCollection.Clear();
             return context;
         }
+
+        #endregion
 
         #endregion
     }

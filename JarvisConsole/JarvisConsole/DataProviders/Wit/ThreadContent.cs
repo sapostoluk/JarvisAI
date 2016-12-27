@@ -19,9 +19,7 @@ namespace DataProviders.Wit
 
         private string _userMessage;
 
-        private WitAction _witAction;
-
-        private ObservableCollection<WitContext> _contextList;
+        private string _action;
 
         private ObservableCollection<KeyValuePair<string, List<Entity>>> _entities;
 
@@ -52,30 +50,6 @@ namespace DataProviders.Wit
             }
         }
 
-        public WitAction WitAction
-        {
-            get { return _witAction; }
-            set
-            {
-                if(value != _witAction)
-                {
-                    _witAction = value;
-                }
-            }
-        }
-
-        public ObservableCollection<WitContext> ContextList
-        {
-            get { return _contextList; }
-            set
-            {
-                if(value != _contextList)
-                {
-                    _contextList = value;
-                }
-            }
-        }
-
         public string ConversationId
         {
             get { return _conversationId; }
@@ -100,6 +74,18 @@ namespace DataProviders.Wit
             }
         }
 
+        public string Action
+        {
+            get { return _action; }
+            set
+            {
+                if(value != _action)
+                {
+                    _action = value;
+                }
+            }
+        }
+
         public ObservableCollection<KeyValuePair<string, List<Entity>>> Entities
         {
             get { return _entities; }
@@ -119,18 +105,17 @@ namespace DataProviders.Wit
         {
             _entities = new ObservableCollection<KeyValuePair<string, List<Entity>>>();
             Entities = new ObservableCollection<KeyValuePair<string, List<Entity>>>();
-            ContextList = new ObservableCollection<WitContext>();
-            WitAction = new Wit.WitAction();
-        } 
+        }
 
 
         #endregion
 
+        #region Methods
         public void ClearAll()
         {
-            Entities.Clear();
-            ContextList.Clear();
-            
+            Entities.Clear();           
         }
+
+        #endregion
     }
 }

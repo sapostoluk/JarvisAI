@@ -81,8 +81,6 @@
     <Compile Include="DataProviders\Wit\ThreadContent.cs" />
     <Compile Include="DataProviders\HarmonyDataProvider.cs" />
     <Compile Include="DataProviders\NestDataProvider.cs" />
-    <Compile Include="DataProviders\Wit\WitAction.cs" />
-    <Compile Include="DataProviders\Wit\WitContext.cs" />
     <Compile Include="DataProviders\Wit\WitDataProvider.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

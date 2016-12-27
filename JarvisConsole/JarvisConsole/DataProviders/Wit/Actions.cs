@@ -5,8 +5,9 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DataProviders.HarmonyDataProvider;
+using DataProviders.Harmony;
 using HarmonyHub;
+using System.Configuration;
 
 namespace DataProviders.Wit
 {
@@ -16,14 +17,7 @@ namespace DataProviders.Wit
         public static Dictionary<string, Func<ObservableCollection<KeyValuePair<string, List<Entity>>>, object>> ActionDictionary => new Dictionary<string, Func<ObservableCollection<KeyValuePair<string, List<Entity>>>, object>>
         {
             //Harmony activites
-            {"HarmonyStartActivity", HarmonyStartActivity },
-            {"SelectTelevisionActivity", SelectTelevisionActivity },
-            {"StartTelevisionActivity", StartTelevisionActivity },
-            {"SelectAudioActivity", SelectAudioActivity },
-            {"StartAudioActivity", StartAudioActivity },
-            {"StartMixedActivity", StartMixedActivity },
-            {"VolumeDown", VolumeDown },
-            {"VolumeUp", VolumeUp },
+            {"HarmonyStartActivity", HarmonyStartActivity },            
 
             //Nest activities
             {"NestTempDown", NestTempDown },
@@ -32,7 +26,7 @@ namespace DataProviders.Wit
             {"NestRunFan", NestRunFan }
         };
 
-        #region Harmony Activites
+        #region Harmony Strings
         private static string PlayXboxOne = "Play Xbox One";
         private static string XboxOne_Music = "Xbox One/Music";
         private static string PlayPS4 = "Play PS4";
@@ -48,15 +42,7 @@ namespace DataProviders.Wit
 
         #endregion
 
-        #region General Activities
-        public static object EndConv()
-        {
-            return null;
-        }
-
-        #endregion
-
-        #region Harmony Activities
+        #region Harmony Activities Methods
         public static object HarmonyStartActivity(ObservableCollection<KeyValuePair<string, List<Entity>>> entities)
         {
             string StereoActivity = "";
@@ -67,6 +53,7 @@ namespace DataProviders.Wit
             int televisionCount = 0;
 
             object returnContext = null;
+            //Check entities for Stereo or Television entities
             foreach(KeyValuePair<string, List<Entity>> pair in entities)
             {
                 if(pair.Key == "Stereo")
@@ -93,123 +80,45 @@ namespace DataProviders.Wit
             }
 
             //Set return
-            HarmonyDataProvider.HarmonyDataProvider harmonyClient = new HarmonyDataProvider.HarmonyDataProvider();
-            harmonyClient.InitializeHubConnection("192.168.1.4");
-            List<Activity> activityList = null;
+            //ActuateActivity
             if (stereoPresent && televisionPresent)
             {
                 returnContext = new { Stereo = StereoActivity, Television = TelevisionActivity };
                 switch (TelevisionActivity)
                 {
-                    case "Play Wii":
-                        {
-                            activityList = harmonyClient.ActivityLookup(PlayWii_Music);
-                            harmonyClient.StartActivity(activityList.First().Id); break;
-                        }
+                    case "Play Wii": ActuateHarmonyActivity(PlayWii_Music); break;
 
-                    case "Play Xbox One": activityList = harmonyClient.ActivityLookup(XboxOne_Music);
-                         harmonyClient.StartActivity(activityList.First().Id); break;
+                    case "Play Xbox One": ActuateHarmonyActivity(XboxOne_Music); break;
 
-                    case "Play PS4": activityList = harmonyClient.ActivityLookup(PS4_Music);
-                        harmonyClient.StartActivity(activityList.First().Id); break;
+                    case "Play PS4": ActuateHarmonyActivity(PS4_Music); break;
 
-                    case "Watch TV": activityList = harmonyClient.ActivityLookup(WatchTv_Music);
-                        harmonyClient.StartActivity(activityList.First().Id); break;
+                    case "Watch TV": ActuateHarmonyActivity(WatchTv_Music); break;
                 }
             }
             else if(stereoPresent && !televisionPresent)
             {
                 returnContext = new { Stereo = StereoActivity, missingTelevision = "" };
-                List<Activity> activity = harmonyClient.ActivityLookup(StereoActivity);
-                harmonyClient.StartActivity(activity.First().Id);
+                //Actuate stereo activity
+                ActuateHarmonyActivity(StereoActivity);
             }
             else if(!stereoPresent && televisionPresent)
             {
+                //Actuate television activity
                 returnContext = new { missingStereo = "", Television = TelevisionActivity };
-                List<Activity> activity = harmonyClient.ActivityLookup(TelevisionActivity);
-                harmonyClient.StartActivity(activity.First().Id);
+                ActuateHarmonyActivity(TelevisionActivity);
             }
             else if(!stereoPresent && !televisionPresent)
             {
+                //There is no activity to actuate
                 returnContext = new { missingStereo = "", missingTelevision = "" };
             }
                
             return returnContext;
         }
-
-        public static object SelectTelevisionActivity(ObservableCollection<KeyValuePair<string, List<Entity>>> entities)
-        {
-            object returnObj = null;
-            int Contains = 0;
-            //Begin looking for the "Television" entity
-            foreach(KeyValuePair<string, List<Entity>> pair in entities)
-            {
-                if(pair.Key.Contains("Television"))
-                {
-                    Contains++;
-                } 
-                                            
-            }
-
-            //Television entitiy was found. DOn't return context
-            if(Contains > 0)
-            {
-                returnObj = null;
-            }
-            //Return missingTelevision context
-            else
-            {
-                returnObj = new { missingTelevision = "" };
-            }
-            return returnObj;
-        }
-
-        public static object StartTelevisionActivity(ObservableCollection<KeyValuePair<string, List<Entity>>> entities)
-        {
-            string HarmonyActivity = "";
-            object returnObj = null;
-            foreach (KeyValuePair<string, List<Entity>> entity in entities)
-            {
-                if(entity.Key == "Television")
-                {
-                    HarmonyActivity = entity.Value.First().value.ToString();
-                    //Update context
-                    returnObj = new { missingTelevision = HarmonyActivity };
-                }
-            }
-
-            Console.WriteLine("----The Start Activity started the {0} activity.", HarmonyActivity);
-            return returnObj;
-        }
-
-        public static object SelectAudioActivity(ObservableCollection<KeyValuePair<string, List<Entity>>> entities)
-        {
-            return null;
-        }
-
-        public static object StartAudioActivity(ObservableCollection<KeyValuePair<string, List<Entity>>> entities)
-        {
-            return null;
-        }
-
-        public static object StartMixedActivity(ObservableCollection<KeyValuePair<string, List<Entity>>> entities)
-        {
-            return null;
-        }
-
-        public static object VolumeDown(ObservableCollection<KeyValuePair<string, List<Entity>>> entities)
-        {
-            return null;
-        }
-
-        public static object VolumeUp(ObservableCollection<KeyValuePair<string, List<Entity>>> entities)
-        {
-            return null;
-        }
-
+        
         #endregion
 
-        #region Nest Activities
+        #region Nest Activities Methods
         public static object NestTempUp(ObservableCollection<KeyValuePair<string, List<Entity>>> entities)
         {
             return null;
@@ -228,6 +137,28 @@ namespace DataProviders.Wit
         public static object NestRunFan(ObservableCollection<KeyValuePair<string, List<Entity>>> entities)
         {
             return null;
+        }
+
+        #endregion
+
+        #region Private Methods
+        private static bool ActuateHarmonyActivity(string harmonyActivity)
+        {
+            HarmonyDataProvider harmonyClient = new HarmonyDataProvider(ConfigurationManager.AppSettings["harmony_ip"]);
+            List<Activity> activity = harmonyClient.ActivityLookup(harmonyActivity);
+            //Task t = harmonyClient.StartActivity(activity.First().Id);
+            //t.Wait();
+            //if (t.IsCompleted)
+            //{
+            //    Console.WriteLine("-- System actuated '{0}' activity", activity.First().Label);
+            //    return true;
+            //}
+            //else
+            //{
+            //    Console.WriteLine("-- Failed to actuate activity --");
+            //    return false;
+            //}
+            return false;
         }
 
         #endregion

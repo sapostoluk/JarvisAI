@@ -21,7 +21,6 @@ namespace JarvisConsole
             {
                 string sndMsg = Console.ReadLine();                
                 Console.WriteLine("Jarvis says: " + wit.SendMessage(sndMsg));
-
                 
             }
         }

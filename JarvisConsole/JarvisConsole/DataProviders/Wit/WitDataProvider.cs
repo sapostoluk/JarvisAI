@@ -105,6 +105,7 @@ namespace DataProviders.Wit
             if(Actions.ActionDictionary.ContainsKey(action))
             {
                 updateContext = Actions.ActionDictionary[action].Invoke(_currentThreadContent.Entities);
+                _currentThreadContent.Context = updateContext;
             }
             
             return updateContext;

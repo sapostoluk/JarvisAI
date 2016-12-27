@@ -13,13 +13,13 @@ namespace DataProviders.Wit
         #region Fields
         private string _conversationId;
 
-        private bool _sentByAi;
-
         private string _aiMessage;
 
         private string _userMessage;
 
         private string _action;
+
+        private object _context;
 
         private ObservableCollection<KeyValuePair<string, List<Entity>>> _entities;
 
@@ -62,18 +62,6 @@ namespace DataProviders.Wit
             }
         }
 
-        public bool SentByAi
-        {
-            get { return _sentByAi; }
-            set
-            {
-                if(_sentByAi != value)
-                {
-                    _sentByAi = value;
-                }
-            }
-        }
-
         public string Action
         {
             get { return _action; }
@@ -82,6 +70,18 @@ namespace DataProviders.Wit
                 if(value != _action)
                 {
                     _action = value;
+                }
+            }
+        }
+
+        public object Context
+        {
+            get { return _context; }
+            set
+            {
+                if(value != _context)
+                {
+                    _context = value;
                 }
             }
         }
@@ -104,7 +104,7 @@ namespace DataProviders.Wit
         public ThreadContent()
         {
             _entities = new ObservableCollection<KeyValuePair<string, List<Entity>>>();
-            Entities = new ObservableCollection<KeyValuePair<string, List<Entity>>>();
+            //Entities = new ObservableCollection<KeyValuePair<string, List<Entity>>>();
         }
 
 

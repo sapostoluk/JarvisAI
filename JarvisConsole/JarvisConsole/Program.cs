@@ -20,7 +20,7 @@ namespace JarvisConsole
             while (continueConvo)
             {
                 string sndMsg = Console.ReadLine();                
-                Console.WriteLine("Jarvis says: " + wit.SendMessage(sndMsg));
+                Console.WriteLine("Jarvis: " + wit.SendMessage(sndMsg));
                 
             }
         }

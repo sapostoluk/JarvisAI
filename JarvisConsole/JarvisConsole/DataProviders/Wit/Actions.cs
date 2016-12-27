@@ -17,7 +17,9 @@ namespace DataProviders.Wit
         public static Dictionary<string, Func<ObservableCollection<KeyValuePair<string, List<Entity>>>, object>> ActionDictionary => new Dictionary<string, Func<ObservableCollection<KeyValuePair<string, List<Entity>>>, object>>
         {
             //Harmony activites
-            {"HarmonyStartActivity", HarmonyStartActivity },            
+            {"HarmonyStartActivity", HarmonyStartActivity },
+            {"HarmonyVolume", HarmonyVolume },
+            {"HarmonyPowerOff", HarmonyPowerOff },           
 
             //Nest activities
             {"NestTempDown", NestTempDown },
@@ -115,6 +117,83 @@ namespace DataProviders.Wit
                
             return returnContext;
         }
+
+        public static object HarmonyVolume(ObservableCollection<KeyValuePair<string, List<Entity>>> entities)
+        {
+            int directionCount = 0;
+            string directionValue = "";
+            object returnContext = null;
+            foreach (KeyValuePair<string, List<Entity>> pair in entities)
+            {
+                switch (pair.Key)
+                {
+                    case "Direction": directionCount++; directionValue = pair.Value.First().value.ToString(); break;
+                }                
+            }
+
+            if(directionCount > 0)
+            {
+                returnContext = new { Direction = directionValue };
+            }
+
+            HarmonyDataProvider harmonyClient = new HarmonyDataProvider(ConfigurationManager.AppSettings["harmony_ip"]);
+            Function function = null;
+            
+            switch(directionValue)
+            {
+                case "up":
+                    {
+                        IEnumerable<ControlGroup> controlGroups = harmonyClient.CurrentActivity.ControlGroups.Where(e => e.Name == "Volume");
+                        ControlGroup control = controlGroups.FirstOrDefault();
+                        foreach(Function func in control.Functions)
+                        {
+                            if (func.Name == "VolumeUp")
+                            {
+                                function = func;
+                                break;
+                            }
+                        }                       
+                    }
+                    break;
+
+                case "down":
+                    {
+                        IEnumerable<ControlGroup> controlGroups = harmonyClient.CurrentActivity.ControlGroups.Where(e => e.Name == "Volume");
+                        ControlGroup control = controlGroups.FirstOrDefault();
+                        foreach (Function func in control.Functions)
+                        {
+                            if (func.Name == "VolumeDown")
+                            {
+                                function = func;
+                                break;
+                            }
+                        }
+                    }
+                    break;
+            }
+            //Change volume correct number of times
+            for (int i = 0; i < Convert.ToInt32(ConfigurationManager.AppSettings["volume_interval"]); i++)
+            {
+                ActuateHarmonyCommand(function);
+            }
+            
+
+            return returnContext;
+        }
+
+        public static object HarmonyPowerOff(ObservableCollection<KeyValuePair<string, List<Entity>>> entities)
+        {
+            object returnContext = null;
+            string on_offValue = "";
+            on_offValue = entities.Where(e => e.Key == "on_off").FirstOrDefault().Value.ToString();
+            returnContext = new { wit_on_offValue = on_offValue };
+
+            HarmonyDataProvider harmonyClient = new HarmonyDataProvider(ConfigurationManager.AppSettings["harmony_ip"]);
+            Activity powerOffActivity = harmonyClient.PowerOffActivity;
+            ActuateHarmonyActivity(powerOffActivity.Label);
+
+            return returnContext;
+        }
         
         #endregion
 
@@ -146,19 +225,46 @@ namespace DataProviders.Wit
         {
             HarmonyDataProvider harmonyClient = new HarmonyDataProvider(ConfigurationManager.AppSettings["harmony_ip"]);
             List<Activity> activity = harmonyClient.ActivityLookup(harmonyActivity);
-            //Task t = harmonyClient.StartActivity(activity.First().Id);
-            //t.Wait();
-            //if (t.IsCompleted)
-            //{
-            //    Console.WriteLine("-- System actuated '{0}' activity", activity.First().Label);
-            //    return true;
-            //}
-            //else
-            //{
-            //    Console.WriteLine("-- Failed to actuate activity --");
-            //    return false;
-            //}
+            Console.WriteLine("-- System is attempting to actuate the '{0}' activity --", activity.First().Label);
+            Task t = harmonyClient.StartActivity(activity.First().Id);
+            t.Wait();
+            if (t.IsCompleted)
+            {
+                Console.WriteLine("-- System actuated the '{0}' activity", activity.First().Label);
+                return true;
+            }
+            else
+            {
+                Console.WriteLine("-- Failed to actuate activity --");
+                return false;
+            }
+
+            harmonyClient.CloseConnection();
+
             return false;
+        }
+
+        private static bool ActuateHarmonyCommand(Function func)
+        {
+            HarmonyDataProvider harmonyClient = new HarmonyDataProvider(ConfigurationManager.AppSettings["harmony_ip"]);
+            Console.WriteLine("-- System is attempting to actuate the '{0}' command --", func.Name);
+            Task t = harmonyClient.SendCommand(func.Name, func.Action.DeviceId );
+            t.Wait();
+            bool ret = false;
+            if (t.IsCompleted)
+            {
+                Console.WriteLine("-- System actuated the '{0}' command", func.Name);
+                ret = true;
+            }
+            else
+            {
+                Console.WriteLine("-- Failed to actuate activity --");
+                ret = false;
+            }
+
+            harmonyClient.CloseConnection();
+
+            return ret;
         }
 
         #endregion

@@ -17,7 +17,9 @@ namespace DataProviders.Harmony
         private string _ipAddress;
         private Config _harmonyConfig;
         private List<Activity> _activityList;
+        private Activity _powerOffActivity;
         private List<Device> _deviceList;
+        private Activity _currentActivity;
         
         #endregion
 
@@ -37,9 +39,25 @@ namespace DataProviders.Harmony
             get { return _deviceList; }
         }
 
+        public Activity CurrentActivity
+        {
+            get { return _currentActivity; }
+            
+        }
+
+        public Activity PowerOffActivity
+        {
+            get { return _powerOffActivity; }
+        }
+
         #endregion
 
-        #region Public Methods    
+        #region Public Methods 
+        public async Task SendCommand(string command, string deviceId)
+        {
+            await _hub.SendKeyPressAsync(deviceId, command);
+        }
+           
         public async Task StartActivity(string activityId)
         {
             await _hub.StartActivityAsync(activityId);
@@ -58,36 +76,14 @@ namespace DataProviders.Harmony
             return LookupList;
         }
 
+        public async Task CloseConnection()
+        {
+            await _hub.CloseAsync();
+        }
+
         #endregion
 
         #region Private Methods
-        private async void InitializeHubConnection()
-        {
-            _hub = new Client(_ipAddress);
-            try
-            {
-                HarmonyOpenAsync();
-                while (!_hub.IsReady)
-                {
-                    //Wait for hub to be ready
-                }
-
-                HarmonyGetConfigAsync();
-                while (_harmonyConfig == null)
-                {
-                    //wait
-                }
-            }
-            catch (Exception e)
-            {
-                throw new Exception("Connection error");
-            }
-
-
-            GetActivities();
-            GetDevices();
-        }
-
         private async Task HarmonyOpenAsync()
         {
             if (_hub == null || !_hub.Host.Equals(_ipAddress))
@@ -119,7 +115,7 @@ namespace DataProviders.Harmony
             }
         }
 
-        public async Task HarmonyGetConfigAsync()
+        private async Task HarmonyGetConfigAsync()
         {
             //Fetch our config
             var harmonyConfig = await _hub.GetConfigAsync();
@@ -128,6 +124,12 @@ namespace DataProviders.Harmony
                 return;
             }
             _harmonyConfig = harmonyConfig;
+        }
+
+        private async Task HarmonyCloseAsync()
+        {
+            Task t = _hub.CloseAsync();
+            t.Wait();
         }
 
         private void GetDevices()
@@ -152,6 +154,8 @@ namespace DataProviders.Harmony
             {
                 throw new Exception("Harmony config is empty");
             }
+
+            _powerOffActivity = _activityList.Where(e => e.Label == "PowerOff").FirstOrDefault();
         }
 
         private void _hub_OnConnectionClosed(object sender, bool e)
@@ -187,7 +191,31 @@ namespace DataProviders.Harmony
             _deviceList = new List<Device>();
             _ipAddress = ipAddress;
 
-            InitializeHubConnection();
+            _hub = new Client(_ipAddress);
+            try
+            {
+                Task t = HarmonyOpenAsync();
+                t.Wait();
+
+                Task x = HarmonyGetConfigAsync();
+                x.Wait();
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Connection error");
+            }
+            
+            GetActivities();
+            GetDevices();
+
+            //Get current activity
+            Task<string> y = _hub.GetCurrentActivityAsync();
+            y.Wait();
+
+            string activityId = y.Result;
+            string activityName = _harmonyConfig.ActivityNameFromId(activityId);
+            _currentActivity = ActivityLookup(activityName).First();
+
         }
 
         #endregion

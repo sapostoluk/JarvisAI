@@ -4,9 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NestControl;
-
-using DataProviders.Wit;
 using System.Collections.ObjectModel;
+using JarvisConsole.DataProviders.Wit;
 
 namespace JarvisConsole
 {

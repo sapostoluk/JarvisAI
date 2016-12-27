@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DataProviders.Wit
+namespace JarvisConsole.DataProviders.Wit
 {
     public class ThreadContent
     {

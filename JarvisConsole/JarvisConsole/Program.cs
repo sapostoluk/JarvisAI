@@ -1,23 +1,29 @@
 ﻿using System;
 using JarvisConsole.DataProviders.Wit;
 using JarvisConsole.DataProviders;
+using FirebaseSharp.Portable;
 
 namespace JarvisConsole
 {
     class Program
     {
         static void Main(string[] args)
-        {            
-            NestDataProvider.Initialize();
-            HarmonyDataProvider.Initialize();
-            bool continueConvo = true;
-            WitDataProvider wit = new WitDataProvider("test");
-            Console.WriteLine("Talk to jarvis");
-            while (continueConvo)
+        {
+            //NestDataProvider.Initialize();
+            //HarmonyDataProvider.Initialize();
+            //bool continueConvo = true;
+            //WitDataProvider wit = new WitDataProvider("test");
+            //Console.WriteLine("Talk to jarvis");
+            //while (continueConvo)
+            //{
+            //    string sndMsg = Console.ReadLine();                
+            //    Console.WriteLine("Jarvis: " + wit.SendMessage(sndMsg));
+
+            //}
+            bool go = true;
+            while (go)
             {
-                string sndMsg = Console.ReadLine();                
-                Console.WriteLine("Jarvis: " + wit.SendMessage(sndMsg));
-                
+
             }
         }
     }

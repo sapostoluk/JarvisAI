@@ -10,9 +10,9 @@ using System.Net;
 using Newtonsoft.Json;
 using FirebaseSharp.Portable;
 
-namespace NestControl
+namespace JarvisConsole.DataProviders
 {
-    public class NestDataProvider
+    public static class NestDataProvider
     {
         public enum NestItem
         {
@@ -28,37 +28,42 @@ namespace NestControl
         }
 
         #region Fields
+        private static bool _isInitialized = false;
 
         private static bool _authenticated;
         private static string _accessToken;
         private static string _authorizationUrl;
 
-        Firebase firebaseClient;
+        private static Firebase firebaseClient;
         
-        private static string _device_id = ConfigurationManager.AppSettings["thermostat_id"];
+        private static string _device_id = ConfigurationManager.AppSettings["nest_thermostat_id"];
         private static string _initPath         = "devices/thermostats/" + _device_id + "/";
-        private string _pathTempScale           = _initPath + "temperature_scale";
-        private string _pathTargetTemperature   = _initPath + "target_temperature_f";
-        private string _pathMode                = _initPath + "hvac_mode";
-        private string _pathAmbientTemperature  = _initPath + "ambient_temperature_f";
-        private string _pathHumidity            = _initPath + "humidity";
-        private string _pathState               = _initPath + "hvac_state";
-        private string _pathLabel               = _initPath + "label";
-        private string _pathWhereName           = _initPath + "where_name";
-        private string _pathTimeToTarget        = _initPath + "time_to_target";
+        private static string _pathTempScale           = _initPath + "temperature_scale";
+        private static string _pathTargetTemperature   = _initPath + "target_temperature_f";
+        private static string _pathMode                = _initPath + "hvac_mode";
+        private static string _pathAmbientTemperature  = _initPath + "ambient_temperature_f";
+        private static string _pathHumidity            = _initPath + "humidity";
+        private static string _pathState               = _initPath + "hvac_state";
+        private static string _pathLabel               = _initPath + "label";
+        private static string _pathWhereName           = _initPath + "where_name";
+        private static string _pathTimeToTarget        = _initPath + "time_to_target";
 
         #endregion
 
         #region Properties
-        public bool Authenticated
+        public static bool IsInitialized
+        {
+            get { return _isInitialized; }
+        }
+        public static bool Authenticated
         {
             get { return _authenticated; }
         }
-        public string AccessToken
+        public static string AccessToken
         {
             get { return _accessToken; }
         }
-        public string AuthorizationUrl
+        public static string AuthorizationUrl
         {
             get { return _authorizationUrl; }
             set
@@ -69,22 +74,54 @@ namespace NestControl
                 }
             }
         }
+        public static Firebase FirebaseClient
+        {
+            get { return firebaseClient; }
+            set
+            {
+                if(value != firebaseClient)
+                {
+                    firebaseClient = value;
+                }
+            }
+        }
+        
+        #endregion
+
+        #region Initializer
+        public static bool Initialize()
+        {
+            Console.WriteLine("Nest Initializing");
+
+            _authorizationUrl = string.Format("https://home.nest.com/login/oauth2?client_id={0}&state={1}",
+                ConfigurationManager.AppSettings["nest_client-id"], "dummy-random-value-for-anti-csfr");
+            if (!string.IsNullOrEmpty(JarvisConsole.Properties.Settings.Default.NestAccessToken))
+            {
+                _accessToken = JarvisConsole.Properties.Settings.Default.NestAccessToken;
+            }
+            else
+            {
+                _authenticated = AuthenticateNest();
+                JarvisConsole.Properties.Settings.Default.NestAccessToken = _accessToken;
+                JarvisConsole.Properties.Settings.Default.Save();
+            }            
+            firebaseClient = new Firebase("https://developer-api.nest.com", _accessToken);
+
+            if(_authenticated && !string.IsNullOrEmpty(_accessToken))
+            {
+                _isInitialized = true;
+            }
+
+            Console.WriteLine("Nest done initializing");
+            return _isInitialized;
+        }
 
         #endregion
 
         #region Public Methods
-        public void InitializeNestCommunication()
-        {
-            _authorizationUrl = string.Format("https://home.nest.com/login/oauth2?client_id={0}&state={1}",
-                ConfigurationManager.AppSettings["nest_client-id"], "dummy-random-value-for-anti-csfr");
-            _authenticated = AuthenticateNest();
-            firebaseClient = new Firebase("https://developer-api.nest.com", _accessToken);
 
-        }
-
-        public string GetNestItem(NestItem item)
+        public static string GetNestItem(NestItem item)
         {
-            //Firebase firebaseClient = new Firebase("https://developer-api.nest.com", _accessToken);
             string returnString = string.Empty;
             switch(item)
             {
@@ -102,7 +139,7 @@ namespace NestControl
             return returnString;
         }
 
-        public async Task<string> GetNestItemAsync(NestItem item)
+        public static async Task<string> GetNestItemAsync(NestItem item)
         {
             //Firebase firebaseClient = new Firebase("https://developer-api.nest.com", _accessToken);
             string returnString = string.Empty;
@@ -122,19 +159,18 @@ namespace NestControl
             return returnString;
         }
 
-        public void SetNestItem(NestItem item, string payload)
-        {
-            Firebase firebaseClient = new Firebase("https://developer-api.nest.com", _accessToken);
+        public static void SetNestItem(NestItem item, string payload)
+        {            
             switch (item)
             {
-                case NestItem.HvacMode: {firebaseClient.Put(_pathMode, payload); } break;
-                case NestItem.TargetTemperature: {firebaseClient.Put(_pathTargetTemperature, payload); } break;
+                case NestItem.HvacMode: {FirebaseClient.Put(_pathMode, payload); } break;
+                case NestItem.TargetTemperature: {FirebaseClient.Put(_pathTargetTemperature, payload); } break;
             }
         }
 
-        public async void SetNestItemAsync(NestItem item, string payload)
+        public static async void SetNestItemAsync(NestItem item, string payload)
         {
-            Firebase firebaseClient = new Firebase("https://developer-api.nest.com", _accessToken);
+            //Firebase firebaseClient = new Firebase("https://developer-api.nest.com", _accessToken);
             switch (item)
             {
                 case NestItem.HvacMode: {await firebaseClient.PutAsync(_pathMode, payload); } break;
@@ -145,11 +181,11 @@ namespace NestControl
         #endregion
 
         #region Private Methods
-        private bool AuthenticateNest()
+        private static bool AuthenticateNest()
         {
             bool authenticated = false;
 
-            var authorizationUrl = string.Format("https://home.nest.com/login/oauth2?client_id={0}&state={1}", ConfigurationManager.AppSettings["client-id"], "dummy-random-value-for-anti-csfr");
+            var authorizationUrl = string.Format("https://home.nest.com/login/oauth2?client_id={0}&state={1}", ConfigurationManager.AppSettings["nest_client-id"], "dummy-random-value-for-anti-csfr");
             using (var process = Process.Start(authorizationUrl))
             {
                 Console.WriteLine("Awaiting response, please accept the confirmation to continue");
@@ -172,7 +208,7 @@ namespace NestControl
             return authenticated;
         }     
 
-        private HttpResponseMessage Get(string state, string code)
+        private static HttpResponseMessage Get(string state, string code)
         {
             if (!string.Equals("dummy-random-value-for-anti-csfr", state))
             {
@@ -196,7 +232,7 @@ namespace NestControl
         private static async Task<string> GetAccessToken(string authCode)
         {
             var url = string.Format("https://api.home.nest.com/oauth2/access_token?code={0}&client_id={1}&client_secret={2}&grant_type=authorization_code",
-                authCode, ConfigurationManager.AppSettings["client-id"],
+                authCode, ConfigurationManager.AppSettings["nest_client-id"],
                 ConfigurationManager.AppSettings["nest_client-secret"]);
 
             using (var httpClient = new HttpClient())

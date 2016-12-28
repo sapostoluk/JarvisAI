@@ -17,10 +17,21 @@ namespace JarvisConsole.Actions
             {"HarmonyVolume", HarmonyVolume },         
 
             //Nest activities
-            {"NestTempDown", NestTempDown },
-            {"NestTempUp", NestTempUp },
-            {"NestSetTemp", NestSetTemp },
-            {"NestRunFan", NestRunFan }
+            {"NestSetTemperature", NestSetTemperature },
         };
+
+        //ContextKeys
+
+        //Harmony context keys
+        private static string _contextStereo = "Stereo";
+        private static string _contextTelevision = "Television";
+        private static string _contextDirection = "Direction";
+        private static string _volumeDown = "VolumeDown";
+        private static string _volumeUp = "VolumeUp";
+
+        //Nest context keys
+        private static string _contextProduct = "Product";
+        private static string _contextUnit = "Unit";
+        private static string _contextNumber = "number";
     }
 }

@@ -6,46 +6,52 @@ using System.Threading.Tasks;
 using HarmonyHub;
 using System.IO;
 using System.Diagnostics;
+using System.Configuration;
 
-
-namespace DataProviders.Harmony
+namespace JarvisConsole.DataProviders
 {
-    public class HarmonyDataProvider
+    public static class HarmonyDataProvider
     {
         #region Fields
-        private Client _hub;
-        private string _ipAddress;
-        private Config _harmonyConfig;
-        private List<Activity> _activityList;
-        private Activity _powerOffActivity;
-        private List<Device> _deviceList;
-        private Activity _currentActivity;
+        private static bool _isInitialized = false;
+        private static Client _hub;
+        private static string _ipAddress;
+        private static Config _harmonyConfig;
+        private static List<Activity> _activityList;
+        private static Activity _powerOffActivity;
+        private static List<Device> _deviceList;
+        private static Activity _currentActivity;
         
         #endregion
 
         #region Properties
-        public string IpAddress
+        public static bool IsInitialized
+        {
+            get { return _isInitialized; }
+        }
+
+        public static string IpAddress
         {
             get { return _ipAddress; }
         }
 
-        public List<Activity> ActivityList
+        public static List<Activity> ActivityList
         {
             get { return _activityList; }
         }
 
-        public List<Device> DeviceList
+        public static List<Device> DeviceList
         {
             get { return _deviceList; }
         }
 
-        public Activity CurrentActivity
+        public static Activity CurrentActivity
         {
             get { return _currentActivity; }
             
         }
 
-        public Activity PowerOffActivity
+        public static Activity PowerOffActivity
         {
             get { return _powerOffActivity; }
         }
@@ -53,17 +59,17 @@ namespace DataProviders.Harmony
         #endregion
 
         #region Public Methods 
-        public async Task SendCommand(string command, string deviceId)
+        public static async Task SendCommand(string command, string deviceId)
         {
             await _hub.SendKeyPressAsync(deviceId, command);
         }
            
-        public async Task StartActivity(string activityId)
+        public static async Task StartActivity(string activityId)
         {
             await _hub.StartActivityAsync(activityId);
         }
 
-        public List<Activity> ActivityLookup(string name)
+        public static List<Activity> ActivityLookup(string name)
         {
             List<Activity> LookupList = new List<Activity>();
             foreach(Activity activity in _activityList)
@@ -76,7 +82,7 @@ namespace DataProviders.Harmony
             return LookupList;
         }
 
-        public async Task CloseConnection()
+        public static async Task CloseConnection()
         {
             await _hub.CloseAsync();
         }
@@ -84,7 +90,7 @@ namespace DataProviders.Harmony
         #endregion
 
         #region Private Methods
-        private async Task HarmonyOpenAsync()
+        private static async Task HarmonyOpenAsync()
         {
             if (_hub == null || !_hub.Host.Equals(_ipAddress))
             {
@@ -105,7 +111,7 @@ namespace DataProviders.Harmony
             }
         }
 
-        private async Task HarmonyConnectAsync()
+        private static async Task HarmonyConnectAsync()
         {
             await HarmonyOpenAsync();
 
@@ -115,7 +121,7 @@ namespace DataProviders.Harmony
             }
         }
 
-        private async Task HarmonyGetConfigAsync()
+        private static async Task HarmonyGetConfigAsync()
         {
             //Fetch our config
             var harmonyConfig = await _hub.GetConfigAsync();
@@ -126,13 +132,13 @@ namespace DataProviders.Harmony
             _harmonyConfig = harmonyConfig;
         }
 
-        private async Task HarmonyCloseAsync()
+        private static async Task HarmonyCloseAsync()
         {
             Task t = _hub.CloseAsync();
             t.Wait();
         }
 
-        private void GetDevices()
+        private static void GetDevices()
         {
             if (_harmonyConfig != null)
             {
@@ -144,7 +150,7 @@ namespace DataProviders.Harmony
             }
         }
 
-        private void GetActivities()
+        private static void GetActivities()
         {
             if (_harmonyConfig != null)
             {
@@ -158,7 +164,7 @@ namespace DataProviders.Harmony
             _powerOffActivity = _activityList.Where(e => e.Label == "PowerOff").FirstOrDefault();
         }
 
-        private void _hub_OnConnectionClosed(object sender, bool e)
+        private static void _hub_OnConnectionClosed(object sender, bool e)
         {
             //    // Consistency check
             //    Debug.Assert(_hub.IsClosed);
@@ -178,18 +184,18 @@ namespace DataProviders.Harmony
             //    }
         }
 
-        private void _hub_OnTaskChanged(object sender, bool e)
+        private static void _hub_OnTaskChanged(object sender, bool e)
         {
             throw new NotImplementedException();
         }
         #endregion
 
-        #region Constructor
-        public HarmonyDataProvider(string ipAddress)
+        #region initializer
+        public static bool Initialize()
         {
             _activityList = new List<Activity>();
             _deviceList = new List<Device>();
-            _ipAddress = ipAddress;
+            _ipAddress = ConfigurationManager.AppSettings["harmony_ip"];
 
             _hub = new Client(_ipAddress);
             try
@@ -215,6 +221,12 @@ namespace DataProviders.Harmony
             string activityId = y.Result;
             string activityName = _harmonyConfig.ActivityNameFromId(activityId);
             _currentActivity = ActivityLookup(activityName).First();
+
+            if(_harmonyConfig != null)
+            {
+                _isInitialized = true;
+            }
+            return _isInitialized;
 
         }
 

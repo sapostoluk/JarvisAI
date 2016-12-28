@@ -1,5 +1,5 @@
 ﻿using com.valgut.libs.bots.Wit.Models;
-using DataProviders.Harmony;
+using JarvisConsole.DataProviders;
 using HarmonyHub;
 using System;
 using System.Collections.Generic;
@@ -13,13 +13,7 @@ namespace JarvisConsole.Actions
 {
     public static partial class Actions
     {
-        //ContextKeys
-        private static string _contextStereo = "Stereo";
-        private static string _contextTelevision = "Television";
-        private static string _contextDirection = "Direction";
-        private static string _volumeDown = "VolumeDown";
-        private static string _volumeUp = "VolumeUp";
-
+        
         //Harmony Strings
         private static string _playXboxOne = "Play Xbox One";
         private static string _xboxOne_Music = "Xbox One/Music";
@@ -36,7 +30,7 @@ namespace JarvisConsole.Actions
         private static string _powerOff = "PowerOff";
 
         #region Harmony Activities Methods
-        public static object HarmonyStartActivity(ObservableCollection<KeyValuePair<string, List<Entity>>> entities)
+        private static object HarmonyStartActivity(ObservableCollection<KeyValuePair<string, List<Entity>>> entities)
         {
             string StereoActivity = "";
             string TelevisionActivity = "";
@@ -99,7 +93,7 @@ namespace JarvisConsole.Actions
             return returnContext;
         }
 
-        public static object HarmonyVolume(ObservableCollection<KeyValuePair<string, List<Entity>>> entities)
+        private static object HarmonyVolume(ObservableCollection<KeyValuePair<string, List<Entity>>> entities)
         {
             string directionValue = "";
             object returnContext = null;
@@ -109,14 +103,17 @@ namespace JarvisConsole.Actions
                 directionValue = entities.Where(x => x.Key == _contextDirection).FirstOrDefault().Value.FirstOrDefault().value.ToString();
             }
 
-            HarmonyDataProvider harmonyClient = new HarmonyDataProvider(ConfigurationManager.AppSettings["harmony_ip"]);
+            if (!HarmonyDataProvider.IsInitialized)
+            {
+                HarmonyDataProvider.Initialize();
+            }
             Function function = null;
 
             switch (directionValue)
             {
                 case "up":
                     {
-                        IEnumerable<ControlGroup> controlGroups = harmonyClient.CurrentActivity.ControlGroups.Where(e => e.Name == "Volume");
+                        IEnumerable<ControlGroup> controlGroups = HarmonyDataProvider.CurrentActivity.ControlGroups.Where(e => e.Name == "Volume");
                         ControlGroup control = controlGroups.FirstOrDefault();
                         if (control.Functions.Any(e => e.Name == _volumeUp))
                         {
@@ -127,7 +124,7 @@ namespace JarvisConsole.Actions
 
                 case "down":
                     {
-                        IEnumerable<ControlGroup> controlGroups = harmonyClient.CurrentActivity.ControlGroups.Where(e => e.Name == "Volume");
+                        IEnumerable<ControlGroup> controlGroups = HarmonyDataProvider.CurrentActivity.ControlGroups.Where(e => e.Name == "Volume");
                         ControlGroup control = controlGroups.FirstOrDefault();
                         if (control.Functions.Any(e => e.Name == _volumeDown))
                         {
@@ -151,46 +148,53 @@ namespace JarvisConsole.Actions
         #region Private Methods
         private static bool ActuateHarmonyActivity(string harmonyActivity)
         {
-            HarmonyDataProvider harmonyClient = new HarmonyDataProvider(ConfigurationManager.AppSettings["harmony_ip"]);
-            List<Activity> activity = harmonyClient.ActivityLookup(harmonyActivity);
-            Console.WriteLine("-- System is attempting to actuate the '{0}' activity --", activity.First().Label);
-            //Task t = harmonyClient.StartActivity(activity.First().Id);
-            //t.Wait();
-            //if (t.IsCompleted)
-            //{
-            //    Console.WriteLine("-- System actuated the '{0}' activity", activity.First().Label);
-            //    return true;
-            //}
-            //else
-            //{
-            //    Console.WriteLine("-- Failed to actuate activity --");
-            //    return false;
-            //}            
+            if(!HarmonyDataProvider.IsInitialized)
+            {
+                HarmonyDataProvider.Initialize();
+            }
 
-            harmonyClient.CloseConnection();
+            List<Activity> activity = HarmonyDataProvider.ActivityLookup(harmonyActivity);
+            Console.WriteLine("-- System is attempting to actuate the '{0}' activity --", activity.First().Label);
+            Task t = HarmonyDataProvider.StartActivity(activity.First().Id);
+            t.Wait();
+            if (t.IsCompleted)
+            {
+                Console.WriteLine("-- System actuated the '{0}' activity", activity.First().Label);
+                return true;
+            }
+            else
+            {
+                Console.WriteLine("-- Failed to actuate activity --");
+                return false;
+            }
+
+            HarmonyDataProvider.CloseConnection();
 
             return false;
         }
 
         private static bool ActuateHarmonyCommand(Function func)
         {
-            HarmonyDataProvider harmonyClient = new HarmonyDataProvider(ConfigurationManager.AppSettings["harmony_ip"]);
+            if(!HarmonyDataProvider.IsInitialized)
+            {
+                HarmonyDataProvider.Initialize();
+            }
             Console.WriteLine("-- System is attempting to actuate the '{0}' command --", func.Name);
-            //Task t = harmonyClient.SendCommand(func.Name, func.Action.DeviceId );
-            //t.Wait();
+            Task t = HarmonyDataProvider.SendCommand(func.Name, func.Action.DeviceId);
+            t.Wait();
             bool ret = false;
-            //if (t.IsCompleted)
-            //{
-            //    Console.WriteLine("-- System actuated the '{0}' command", func.Name);
-            //    ret = true;
-            //}
-            //else
-            //{
-            //    Console.WriteLine("-- Failed to actuate activity --");
-            //    ret = false;
-            //}
+            if (t.IsCompleted)
+            {
+                Console.WriteLine("-- System actuated the '{0}' command", func.Name);
+                ret = true;
+            }
+            else
+            {
+                Console.WriteLine("-- Failed to actuate activity --");
+                ret = false;
+            }
 
-            harmonyClient.CloseConnection();
+            HarmonyDataProvider.CloseConnection();
 
             return ret;
         }
@@ -203,8 +207,11 @@ namespace JarvisConsole.Actions
                 command = entities.Where(x => x.Key == _powerOff).FirstOrDefault().Value.FirstOrDefault().value.ToString();
             }
 
-            HarmonyDataProvider harmonyClient = new HarmonyDataProvider(ConfigurationManager.AppSettings["harmony_ip"]);
-            Activity powerOffActivity = harmonyClient.PowerOffActivity;
+            if(!HarmonyDataProvider.IsInitialized)
+            {
+                HarmonyDataProvider.Initialize();
+            }
+            Activity powerOffActivity = HarmonyDataProvider.PowerOffActivity;
 
             return ActuateHarmonyActivity(powerOffActivity.Label);
         }

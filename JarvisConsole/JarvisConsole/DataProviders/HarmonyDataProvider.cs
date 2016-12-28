@@ -14,6 +14,7 @@ namespace JarvisConsole.DataProviders
     {
         #region Fields
         private static bool _isInitialized = false;
+        private static bool _ready;
         private static Client _hub;
         private static string _ipAddress;
         private static Config _harmonyConfig;
@@ -61,12 +62,19 @@ namespace JarvisConsole.DataProviders
         #region Public Methods 
         public static async Task SendCommand(string command, string deviceId)
         {
-            await _hub.SendKeyPressAsync(deviceId, command);
+            await _hub.SendKeyPressAsync(deviceId, command);                    
         }
            
         public static async Task StartActivity(string activityId)
         {
-            await _hub.StartActivityAsync(activityId);
+            if(_hub.IsReady)
+            {
+                await _hub.StartActivityAsync(activityId);
+            }
+            else
+            {
+                await _hub.StartActivityAsync(activityId);
+            }         
         }
 
         public static List<Activity> ActivityLookup(string name)
@@ -190,9 +198,10 @@ namespace JarvisConsole.DataProviders
         }
         #endregion
 
-        #region initializer
+        #region Initializer
         public static bool Initialize()
         {
+            Console.WriteLine("Harmony Initializing");
             _activityList = new List<Activity>();
             _deviceList = new List<Device>();
             _ipAddress = ConfigurationManager.AppSettings["harmony_ip"];
@@ -226,6 +235,7 @@ namespace JarvisConsole.DataProviders
             {
                 _isInitialized = true;
             }
+            Console.WriteLine("Harmony Initialized");
             return _isInitialized;
 
         }

@@ -175,10 +175,8 @@ namespace JarvisConsole.Actions
 
         private static bool ActuateHarmonyCommand(Function func)
         {
-            if(!HarmonyDataProvider.IsInitialized)
-            {
-                HarmonyDataProvider.Initialize();
-            }
+            HarmonyDataProvider.Initialize();
+
             Console.WriteLine("-- System is attempting to actuate the '{0}' command --", func.Name);
             Task t = HarmonyDataProvider.SendCommand(func.Name, func.Action.DeviceId);
             t.Wait();
@@ -193,6 +191,7 @@ namespace JarvisConsole.Actions
                 Console.WriteLine("-- Failed to actuate activity --");
                 ret = false;
             }
+            //bool ret = true;
 
             HarmonyDataProvider.CloseConnection();
 

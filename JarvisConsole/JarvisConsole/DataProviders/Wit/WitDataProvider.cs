@@ -73,10 +73,14 @@ namespace JarvisConsole.DataProviders.Wit
 
             //Get Entities
             Message msg = _witClient.GetMessage(message, _conversationId);
-            foreach (KeyValuePair<string, List<Entity>> entity in msg.entities)
+            if(msg.entities.Count > 0 && msg.entities != null)
             {
-                _currentThreadContent.Entities.Add(entity);
+                foreach (KeyValuePair<string, List<Entity>> entity in msg.entities)
+                {
+                    _currentThreadContent.Entities.Add(entity);
+                }
             }
+            
 
             //Send async message           
             Task<bool> t = _witConversationClient.SendMessageAsync(message);

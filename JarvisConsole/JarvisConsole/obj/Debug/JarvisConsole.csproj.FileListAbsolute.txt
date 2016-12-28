@@ -37,4 +37,3 @@ C:\Users\watso\Documents\GitHub\Jarvis\JarvisConsole\JarvisConsole\bin\Debug\Res
 C:\Users\watso\Documents\GitHub\Jarvis\JarvisConsole\JarvisConsole\bin\Debug\System.Net.Http.Extensions.xml
 C:\Users\watso\Documents\GitHub\Jarvis\JarvisConsole\JarvisConsole\bin\Debug\System.Net.Http.Primitives.xml
 C:\Users\watso\Documents\GitHub\Jarvis\JarvisConsole\JarvisConsole\obj\Debug\JarvisConsole.csproj.App.config
-C:\Users\watso\Documents\GitHub\Jarvis\JarvisConsole\JarvisConsole\obj\Debug\JarvisConsole.csprojResolveAssemblyReference.cache

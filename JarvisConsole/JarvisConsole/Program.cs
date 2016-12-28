@@ -17,7 +17,7 @@ namespace JarvisConsole
             while (continueConvo)
             {
                 string sndMsg = Console.ReadLine();
-                Console.WriteLine("Jarvis: " + WitDataProvider.SendMessage("test", sndMsg));
+                Console.WriteLine("Jarvis: " + WitDataProvider.SendMessage("test", sndMsg).AiMessage);
 
             }
             //bool go = true;

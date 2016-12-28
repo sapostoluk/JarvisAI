@@ -12,59 +12,73 @@ using JarvisConsole.Actions;
 
 namespace JarvisConsole.DataProviders.Wit
 {
-    public class WitDataProvider
+    public static class WitDataProvider
     {
         #region Fields
-        private WitClient _witClient;
-        private string _conversationId;
-        private WitConversation<object> _witConversationClient;
-        private string _witToken = ConfigurationManager.AppSettings["wit_token"];
-        private bool didMerge = false;
-        private bool didStop = false;
-        private ObservableCollection<ThreadContent> _ThreadContentCollection;
-        private ThreadContent _currentThreadContent;
-
-        
+        private static bool _isInitialized = false;
+        private static WitClient _witClient;
+        private static string _conversationId;
+        private static WitConversation<object> _witConversationClient;
+        private static string _witToken = ConfigurationManager.AppSettings["wit_token"];
+        private static bool didMerge = false;
+        private static bool didStop = false;
+        private static ObservableCollection<ThreadContent> _ThreadContentCollection;
+        private static ThreadContent _currentThreadContent;       
 
         #endregion
 
         #region Properties
-        public ObservableCollection<ThreadContent> ThreadContentCollection
+        public static bool IsInitialized
+        {
+            get { return _isInitialized; }
+        }
+
+        public static ObservableCollection<ThreadContent> ThreadContentCollection
         {
             get { return _ThreadContentCollection; }
         }
 
-        public ThreadContent CurrentThreadContent
+        public static ThreadContent CurrentThreadContent
         {
             get { return _currentThreadContent; }
         }
 
-        public string ConversationId
+        public static string ConversationId
         {
             get { return _conversationId; }            
         }
         #endregion 
 
-        #region Constructors
-        public WitDataProvider(string conversationId)
-        {
-            //Inititialization
-            _ThreadContentCollection = new ObservableCollection<ThreadContent>();
-            _currentThreadContent = new ThreadContent();
-            _conversationId = conversationId;
-
-            //New wit client
-            _witClient = new WitClient(_witToken);
-            _witConversationClient = new WitConversation<object>(_witToken, _conversationId, null,
-                doMerge, doSay, doAction, doStop);
+        #region Initializer
+        //public static bool Initialize()
+        //{
             
-        }
+
+        //    if (_witConversationClient != null && _witClient != null)
+        //    {
+        //        _isInitialized = true;
+        //    }
+        //    return _isInitialized;
+        //}
 
         #endregion
 
         #region Methods
-        public string SendMessage(string message)
+        public static ThreadContent SendMessage(string conversationId, string message)
         {
+            _conversationId = conversationId;
+            //Inititialization
+            //_ThreadContentCollection = new ObservableCollection<ThreadContent>();
+            _currentThreadContent = new ThreadContent();
+
+            //New wit client
+            _witToken = "HJHUAWTSYWSTRCPJBYTJILWEZ7X4EY53";
+            _witClient = new WitClient(_witToken);
+            _witConversationClient = new WitConversation<object>(_witToken, _conversationId, null,
+                doMerge, doSay, doAction, doStop);
+
+
+            _conversationId = conversationId;
             //Clear threading            
             _currentThreadContent.ClearAll();            
 
@@ -86,24 +100,24 @@ namespace JarvisConsole.DataProviders.Wit
             Task<bool> t = _witConversationClient.SendMessageAsync(message);
             t.Wait();
 
-            _ThreadContentCollection.Add(_currentThreadContent);
+            //_ThreadContentCollection.Add(_currentThreadContent);
 
-            return _currentThreadContent.AiMessage;
+            return _currentThreadContent;
         }
 
         #region Callbacks
-        private object doMerge(string conversationId, object context, object entities, double confidence)
+        private static object doMerge(string conversationId, object context, object entities, double confidence)
         {
             didMerge = true;
             return context;
         }
 
-        private void doSay(string conversationId, object context, string msg, double confidence)
+        private static void doSay(string conversationId, object context, string msg, double confidence)
         {
             _currentThreadContent.AiMessage = msg;
         }
 
-        private object doAction(string conversationId, object context, string action, double confidence)
+        private static object doAction(string conversationId, object context, string action, double confidence)
         {
             _currentThreadContent.Action = action;
             object updateContext = context;
@@ -116,10 +130,10 @@ namespace JarvisConsole.DataProviders.Wit
             return updateContext;
         }
 
-        private object doStop(string conversationId, object context)
+        private static object doStop(string conversationId, object context)
         {
             didStop = true;
-            _ThreadContentCollection.Clear();
+            //_ThreadContentCollection.Clear();
             return context;
         }
 

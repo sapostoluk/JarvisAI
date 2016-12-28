@@ -9,22 +9,22 @@ namespace JarvisConsole
     {
         static void Main(string[] args)
         {
-            //NestDataProvider.Initialize();
-            //HarmonyDataProvider.Initialize();
-            //bool continueConvo = true;
-            //WitDataProvider wit = new WitDataProvider("test");
-            //Console.WriteLine("Talk to jarvis");
-            //while (continueConvo)
-            //{
-            //    string sndMsg = Console.ReadLine();                
-            //    Console.WriteLine("Jarvis: " + wit.SendMessage(sndMsg));
-
-            //}
-            bool go = true;
-            while (go)
+            NestDataProvider.Initialize();
+            HarmonyDataProvider.Initialize();
+            bool continueConvo = true;
+            //WitDataProvider.Initialize();
+            Console.WriteLine("Talk to jarvis");
+            while (continueConvo)
             {
+                string sndMsg = Console.ReadLine();
+                Console.WriteLine("Jarvis: " + WitDataProvider.SendMessage("test", sndMsg));
 
             }
+            //bool go = true;
+            //while (go)
+            //{
+
+            //}
         }
     }
 }

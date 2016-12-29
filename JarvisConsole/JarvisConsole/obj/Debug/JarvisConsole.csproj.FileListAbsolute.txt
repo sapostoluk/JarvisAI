@@ -37,3 +37,23 @@ C:\Users\watso\Documents\GitHub\Jarvis\JarvisConsole\JarvisConsole\bin\Debug\Res
 C:\Users\watso\Documents\GitHub\Jarvis\JarvisConsole\JarvisConsole\bin\Debug\System.Net.Http.Extensions.xml
 C:\Users\watso\Documents\GitHub\Jarvis\JarvisConsole\JarvisConsole\bin\Debug\System.Net.Http.Primitives.xml
 C:\Users\watso\Documents\GitHub\Jarvis\JarvisConsole\JarvisConsole\obj\Debug\JarvisConsole.csproj.App.config
+C:\Users\Brandon Watson\Source\Repos\Jarvis\JarvisConsole\JarvisConsole\bin\Debug\JarvisConsole.exe.config
+C:\Users\Brandon Watson\Source\Repos\Jarvis\JarvisConsole\JarvisConsole\obj\Debug\JarvisConsole.exe
+C:\Users\Brandon Watson\Source\Repos\Jarvis\JarvisConsole\JarvisConsole\obj\Debug\JarvisConsole.pdb
+C:\Users\Brandon Watson\Source\Repos\Jarvis\JarvisConsole\JarvisConsole\bin\Debug\JarvisConsole.exe
+C:\Users\Brandon Watson\Source\Repos\Jarvis\JarvisConsole\JarvisConsole\bin\Debug\JarvisConsole.pdb
+C:\Users\Brandon Watson\Source\Repos\Jarvis\JarvisConsole\JarvisConsole\bin\Debug\agsXMPP.dll
+C:\Users\Brandon Watson\Source\Repos\Jarvis\JarvisConsole\JarvisConsole\bin\Debug\FirebaseSharp.Portable.dll
+C:\Users\Brandon Watson\Source\Repos\Jarvis\JarvisConsole\JarvisConsole\bin\Debug\HarmonyHub.dll
+C:\Users\Brandon Watson\Source\Repos\Jarvis\JarvisConsole\JarvisConsole\bin\Debug\Newtonsoft.Json.dll
+C:\Users\Brandon Watson\Source\Repos\Jarvis\JarvisConsole\JarvisConsole\bin\Debug\RestSharp.dll
+C:\Users\Brandon Watson\Source\Repos\Jarvis\JarvisConsole\JarvisConsole\bin\Debug\System.Net.Http.Extensions.dll
+C:\Users\Brandon Watson\Source\Repos\Jarvis\JarvisConsole\JarvisConsole\bin\Debug\System.Net.Http.Primitives.dll
+C:\Users\Brandon Watson\Source\Repos\Jarvis\JarvisConsole\JarvisConsole\bin\Debug\Wit.ai.net.dll
+C:\Users\Brandon Watson\Source\Repos\Jarvis\JarvisConsole\JarvisConsole\bin\Debug\agsXMPP.xml
+C:\Users\Brandon Watson\Source\Repos\Jarvis\JarvisConsole\JarvisConsole\bin\Debug\Newtonsoft.Json.xml
+C:\Users\Brandon Watson\Source\Repos\Jarvis\JarvisConsole\JarvisConsole\bin\Debug\RestSharp.xml
+C:\Users\Brandon Watson\Source\Repos\Jarvis\JarvisConsole\JarvisConsole\bin\Debug\System.Net.Http.Extensions.xml
+C:\Users\Brandon Watson\Source\Repos\Jarvis\JarvisConsole\JarvisConsole\bin\Debug\System.Net.Http.Primitives.xml
+C:\Users\Brandon Watson\Source\Repos\Jarvis\JarvisConsole\JarvisConsole\obj\Debug\JarvisConsole.csproj.App.config
+C:\Users\Brandon Watson\Source\Repos\Jarvis\JarvisConsole\JarvisConsole\obj\Debug\JarvisConsole.csprojResolveAssemblyReference.cache

@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<parameters>
+  <parameter name="IIS Web Application Name" description="" value="Default Web Site/Jarvis" tags="IisApp">
+    <parameterEntry kind="ProviderPath" scope="IisApp" match="^C:\\Users\\watso\\Documents\\GitHub\\Jarvis\\JarvisConsole\\JarvisAPI\\obj\\Debug\\Package\\PackageTmp$" />
+    <parameterEntry kind="ProviderPath" scope="setAcl" match="^C:\\Users\\watso\\Documents\\GitHub\\Jarvis\\JarvisConsole\\JarvisAPI\\obj\\Debug\\Package\\PackageTmp$" />
+  </parameter>
+  <parameter name="DefaultConnection-Web.config Connection String" description="" value="Data Source=(LocalDb)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\aspnet-JarvisAPI-20161228120625.mdf;Initial Catalog=aspnet-JarvisAPI-20161228120625;Integrated Security=True" tags="">
+    <parameterEntry kind="XmlFile" scope="C:\\Users\\watso\\Documents\\GitHub\\Jarvis\\JarvisConsole\\JarvisAPI\\obj\\Debug\\Package\\PackageTmp\\Web\.config$" match="/configuration/connectionStrings/add[@name='DefaultConnection']/@connectionString" />
+  </parameter>
+</parameters>

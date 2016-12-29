@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JarvisConsole", "JarvisCons
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JarvisAPI", "JarvisAPI\JarvisAPI.csproj", "{13A63945-FF34-4A3E-8D26-0EB14AF16430}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "JarvisAPI Setup", "JarvisAPI Setup\JarvisAPI Setup.vdproj", "{C90F1512-A5B3-491E-AAD9-D836C9FD5423}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,8 @@ Global
 		{13A63945-FF34-4A3E-8D26-0EB14AF16430}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{13A63945-FF34-4A3E-8D26-0EB14AF16430}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{13A63945-FF34-4A3E-8D26-0EB14AF16430}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C90F1512-A5B3-491E-AAD9-D836C9FD5423}.Debug|Any CPU.ActiveCfg = Debug
+		{C90F1512-A5B3-491E-AAD9-D836C9FD5423}.Release|Any CPU.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

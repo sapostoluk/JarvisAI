@@ -23,7 +23,7 @@ namespace JarvisAPI.Controllers
         }
 
         // POST: api/Nest
-        public HttpResponseMessage Post([FromBody]string value)
+        public HttpResponseMessage Post(string value)
         {
             return Request.CreateResponse<bool>(System.Net.HttpStatusCode.Created, NestDataProvider.FinishAuthenticateNest(value));
         }

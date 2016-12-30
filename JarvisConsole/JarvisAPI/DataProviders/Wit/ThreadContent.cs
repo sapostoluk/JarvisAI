@@ -11,6 +11,8 @@ namespace JarvisConsole.DataProviders.Wit
     public class ThreadContent
     {
         #region Fields
+        private bool _devicesInitialized = false;
+
         private string _conversationId = "";
 
         private string _aiMessage = "";
@@ -26,6 +28,18 @@ namespace JarvisConsole.DataProviders.Wit
         #endregion
 
         #region Properties
+        public bool DevicesInitialized
+        {
+            get { return _devicesInitialized; }
+            set
+            {
+                if(value != _devicesInitialized)
+                {
+                    _devicesInitialized = value;
+                }
+            }
+        }
+
         public string AiMessage
         {
             get { return _aiMessage; }

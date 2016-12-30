@@ -62,9 +62,12 @@ namespace JarvisConsole.Actions
             else if(directionPresent && !numberPresent)
             {
                 returnContext = new { Direction = directionValue, missingNumber = "" };
-                int tempInterval = Convert.ToInt32(configuration.AppSettings.Settings["temperature_interval"].Value);
+                int tempInterval; //= Convert.ToInt32(configuration.AppSettings.Settings["temperature_interval"].Value);
+                int.TryParse(configuration.AppSettings.Settings["temperature_interval"].Value, out tempInterval);
+                
                 //Get current target temp and add to interval. Set new value
-                int currentTemp = Convert.ToInt32(NestGetItem(NestDataProvider.NestItem.TargetTemperature));
+                int currentTemp;
+                int.TryParse(NestGetItem(NestDataProvider.NestItem.TargetTemperature), out currentTemp);
                 int newTarget = 0;
                 if(directionValue == "down")
                 {

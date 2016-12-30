@@ -34,6 +34,8 @@ namespace JarvisConsole.DataProviders
         private static string _accessToken;
         private static string _authorizationUrl;
 
+        private static bool _expectingNestPin;
+
         private static Firebase firebaseClient;
 
         private static Configuration configuration = System.Web.Configuration.WebConfigurationManager.OpenWebConfiguration("~");
@@ -61,6 +63,18 @@ namespace JarvisConsole.DataProviders
         {
             get { return _authenticated; }
         }
+        public static bool ExpectingNestPin
+        {
+            get { return _expectingNestPin; }
+            set
+            {
+                if(value != _expectingNestPin)
+                {
+                    _expectingNestPin = value;
+                }
+            }
+        }
+
         public static string AccessToken
         {
             get { return _accessToken; }
@@ -103,8 +117,7 @@ namespace JarvisConsole.DataProviders
             }
             else
             {
-                BeginAuthenticateNest();                
-                configuration.Save();
+                BeginAuthenticateNest();                                
             }            
             firebaseClient = new Firebase("https://developer-api.nest.com", _accessToken);
 
@@ -129,6 +142,7 @@ namespace JarvisConsole.DataProviders
 
             HttpResponseMessage message = Get("", pin);
             configuration.AppSettings.Settings["NestAccessToken"].Value = _accessToken;
+            configuration.Save();
             if (!string.IsNullOrWhiteSpace(_accessToken))
             {
                 Console.WriteLine("Nest authentication successful");
@@ -138,6 +152,7 @@ namespace JarvisConsole.DataProviders
             {
                 Console.WriteLine("Failed to recieve access token");
             }
+            _isInitialized = true;
             return authenticated;
         }
 

@@ -135,7 +135,8 @@ namespace JarvisConsole.Actions
                     break;
             }
             //Change volume correct number of times
-            int volInterval = Convert.ToInt32(configuration.AppSettings.Settings["volume_interval"]);
+            int volInterval;
+            int.TryParse(configuration.AppSettings.Settings["volume_interval"].Value, out volInterval);
             for (int i = 0; i < volInterval; i++)
             {
                 ActuateHarmonyCommand(function);

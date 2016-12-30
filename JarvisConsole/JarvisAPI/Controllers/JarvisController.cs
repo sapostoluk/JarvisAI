@@ -7,16 +7,58 @@ using System.Web.Http;
 using JarvisConsole.DataProviders.Wit;
 using Newtonsoft.Json;
 using JarvisConsole.DataProviders;
+using System.Configuration;
 
 namespace JarvisAPI.Controllers
 {
     public class JarvisController : ApiController
     {
+        
+
         // GET: api/Jarvis
         public string Get(string conversationId, string message)
         {
-            ThreadContent thread = WitDataProvider.SendMessage(conversationId, message); 
-            return JsonConvert.SerializeObject(thread); ;
+            
+            ThreadContent thread = new ThreadContent();
+
+            //Nest is not initialized and we are expecting a pin
+            if (!NestDataProvider.IsInitialized && NestDataProvider.ExpectingNestPin)
+            {
+                NestDataProvider.FinishAuthenticateNest(message);
+                if (NestDataProvider.IsInitialized)
+                {
+                    NestDataProvider.ExpectingNestPin = false;
+                    thread.AiMessage = "Nest authentication successful";
+                    
+                }
+                else
+                {
+                    NestDataProvider.ExpectingNestPin = true;
+                    thread.AiMessage = "Nest authentication uncessful, please try again";
+                }
+                    
+            }
+            else if(!NestDataProvider.IsInitialized && !NestDataProvider.ExpectingNestPin)
+            {
+                Configuration configuration = System.Web.Configuration.WebConfigurationManager.OpenWebConfiguration("~");
+                string authorizationUrl = string.Format("https://home.nest.com/login/oauth2?client_id={0}&state={1}",
+                    configuration.AppSettings.Settings["nest_client-id"].Value, "dummy-random-value-for-anti-csfr");
+
+                NestDataProvider.ExpectingNestPin = true;
+                thread.AiMessage = string.Format("Follow this link to connect your nest thermostat: {0} then reply with the pin", authorizationUrl);
+
+                
+            }
+            else
+            {
+                
+                thread.DevicesInitialized = true;
+                thread = WitDataProvider.SendMessage(conversationId, message);
+                
+            }
+
+            return JsonConvert.SerializeObject(thread);
+
         }
 
         // GET: api/Jarvis/5

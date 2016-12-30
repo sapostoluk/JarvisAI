@@ -19,11 +19,12 @@ namespace JarvisConsole.DataProviders.Wit
         private static WitClient _witClient;
         private static string _conversationId;
         private static WitConversation<object> _witConversationClient;
-        private static string _witToken = ConfigurationManager.AppSettings["wit_token"];
         private static bool didMerge = false;
         private static bool didStop = false;
         private static ObservableCollection<ThreadContent> _ThreadContentCollection;
-        private static ThreadContent _currentThreadContent;       
+        private static ThreadContent _currentThreadContent;
+        private static Configuration configuration = System.Web.Configuration.WebConfigurationManager.OpenWebConfiguration("~");
+        private static string _witToken = configuration.AppSettings.Settings["wit_token"].Value;
 
         #endregion
 

@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Web.Http;
 using JarvisConsole.DataProviders.Wit;
 using Newtonsoft.Json;
+using JarvisConsole.DataProviders;
 
 namespace JarvisAPI.Controllers
 {

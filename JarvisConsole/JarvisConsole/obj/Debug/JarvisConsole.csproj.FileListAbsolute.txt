@@ -57,3 +57,7 @@ C:\Users\Brandon Watson\Source\Repos\Jarvis\JarvisConsole\JarvisConsole\bin\Debu
 C:\Users\Brandon Watson\Source\Repos\Jarvis\JarvisConsole\JarvisConsole\bin\Debug\System.Net.Http.Primitives.xml
 C:\Users\Brandon Watson\Source\Repos\Jarvis\JarvisConsole\JarvisConsole\obj\Debug\JarvisConsole.csproj.App.config
 C:\Users\Brandon Watson\Source\Repos\Jarvis\JarvisConsole\JarvisConsole\obj\Debug\JarvisConsole.csprojResolveAssemblyReference.cache
+C:\Users\Brandon Watson\Source\Repos\Jarvis\JarvisConsole\JarvisConsole\bin\Debug\JarvisConsole.exe.manifest
+C:\Users\Brandon Watson\Source\Repos\Jarvis\JarvisConsole\JarvisConsole\bin\Debug\JarvisConsole.application
+C:\Users\Brandon Watson\Source\Repos\Jarvis\JarvisConsole\JarvisConsole\obj\Debug\JarvisConsole.exe.manifest
+C:\Users\Brandon Watson\Source\Repos\Jarvis\JarvisConsole\JarvisConsole\obj\Debug\JarvisConsole.application

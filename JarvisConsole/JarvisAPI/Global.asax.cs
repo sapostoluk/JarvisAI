@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JarvisConsole.DataProviders;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -18,6 +19,9 @@ namespace JarvisAPI
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
+
+            NestDataProvider.Initialize();
+            HarmonyDataProvider.Initialize();
         }
     }
 }

@@ -28,10 +28,8 @@ namespace JarvisConsole.DataProviders
         }
 
         #region Fields
-        private static bool _authenticated;
         private static string _accessToken;
         private static string _authorizationUrl;
-
         private static bool _expectingNestPin;
 
         private static Firebase firebaseClient;
@@ -57,16 +55,12 @@ namespace JarvisConsole.DataProviders
         {
             get
             {
-                if (_accessToken != null)
+                if (!string.IsNullOrWhiteSpace(_accessToken))
                     return true;
                 
                 else
                     return false;
             }
-        }
-        public static bool Authenticated
-        {
-            get { return _authenticated; }
         }
         public static bool ExpectingNestPin
         {

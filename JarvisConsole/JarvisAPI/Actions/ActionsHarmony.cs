@@ -114,7 +114,11 @@ namespace JarvisConsole.Actions
             {
                 case "up":
                     {
-                        IEnumerable<ControlGroup> controlGroups = HarmonyDataProvider.CurrentActivity.ControlGroups.Where(e => e.Name == "Volume");
+                        IEnumerable<ControlGroup> controlGroups = null;
+                        if (HarmonyDataProvider.CurrentActivity != null)
+                        {
+                            controlGroups = HarmonyDataProvider.CurrentActivity.ControlGroups.Where(e => e.Name == "Volume");
+                        }                       
                         ControlGroup control = controlGroups.FirstOrDefault();
                         if (control.Functions.Any(e => e.Name == _volumeUp))
                         {
@@ -125,7 +129,11 @@ namespace JarvisConsole.Actions
 
                 case "down":
                     {
-                        IEnumerable<ControlGroup> controlGroups = HarmonyDataProvider.CurrentActivity.ControlGroups.Where(e => e.Name == "Volume");
+                        IEnumerable<ControlGroup> controlGroups = null;
+                        if(HarmonyDataProvider.CurrentActivity != null)
+                        {
+                            controlGroups = HarmonyDataProvider.CurrentActivity.ControlGroups.Where(e => e.Name == "Volume");
+                        }
                         ControlGroup control = controlGroups.FirstOrDefault();
                         if (control.Functions.Any(e => e.Name == _volumeDown))
                         {
@@ -177,27 +185,29 @@ namespace JarvisConsole.Actions
 
         private static bool ActuateHarmonyCommand(Function func)
         {
+
             HarmonyDataProvider.Initialize();
 
+            
             Console.WriteLine("-- System is attempting to actuate the '{0}' command --", func.Name);
-            Task t = HarmonyDataProvider.SendCommand(func.Name, func.Action.DeviceId);
-            t.Wait();
-            bool ret = false;
-            if (t.IsCompleted)
-            {
-                Console.WriteLine("-- System actuated the '{0}' command", func.Name);
-                ret = true;
-            }
-            else
-            {
-                Console.WriteLine("-- Failed to actuate activity --");
-                ret = false;
-            }
+            HarmonyDataProvider.SendCommand(func.Name, func.Action.DeviceId);
+            
+            //bool ret = false;
+            //if (t.IsCompleted)
+            //{
+            //    Console.WriteLine("-- System actuated the '{0}' command", func.Name);
+            //    ret = true;
+            //}
+            //else
+            //{
+            //    Console.WriteLine("-- Failed to actuate activity --");
+            //    ret = false;
+            //}
             //bool ret = true;
 
             HarmonyDataProvider.CloseConnection();
 
-            return ret;
+            return true;
         }
 
         private static bool ActuateHarmonyPowerOff(ObservableCollection<KeyValuePair<string, List<Entity>>> entities)

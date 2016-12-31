@@ -45,10 +45,26 @@ namespace JarvisAPI.Controllers
 
                 
             }
+            else if(!HarmonyDataProvider.IsInitialized)
+            {
+                try
+                {
+                    HarmonyDataProvider.Initialize();
+                    if(HarmonyDataProvider.IsInitialized)
+                    {
+                        thread = WitDataProvider.SendMessage(conversationId, message);
+                    }                    
+                }
+                catch(Exception e)
+                {
+                    thread.AiMessage = e.Message;
+                }
+                
+            }
+
             //Everything is good 
             else
             {                
-                thread.DevicesInitialized = true;
                 thread = WitDataProvider.SendMessage(conversationId, message);              
             }
 

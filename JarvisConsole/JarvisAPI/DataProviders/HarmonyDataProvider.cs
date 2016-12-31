@@ -29,7 +29,15 @@ namespace JarvisConsole.DataProviders
         #region Properties
         public static bool IsInitialized
         {
-            get { return _isInitialized; }
+            get
+            {
+                if (_hub.IsReady)
+                {
+                    return true;
+                }
+                else
+                    return false;
+            }
         }
 
         public static string IpAddress

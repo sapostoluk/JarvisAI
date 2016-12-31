@@ -28,8 +28,6 @@ namespace JarvisConsole.DataProviders
         }
 
         #region Fields
-        private static bool _isInitialized = false;
-
         private static bool _authenticated;
         private static string _accessToken;
         private static string _authorizationUrl;
@@ -57,7 +55,14 @@ namespace JarvisConsole.DataProviders
         #region Properties
         public static bool IsInitialized
         {
-            get { return _isInitialized; }
+            get
+            {
+                if (_accessToken != null)
+                    return true;
+                
+                else
+                    return false;
+            }
         }
         public static bool Authenticated
         {
@@ -121,13 +126,8 @@ namespace JarvisConsole.DataProviders
             }            
             firebaseClient = new Firebase("https://developer-api.nest.com", _accessToken);
 
-            if(!string.IsNullOrEmpty(_accessToken))
-            {
-                _isInitialized = true;
-            }
-
             Console.WriteLine("Nest done initializing");
-            return _isInitialized;
+            return IsInitialized;
         }
 
         #endregion
@@ -152,7 +152,6 @@ namespace JarvisConsole.DataProviders
             {
                 Console.WriteLine("Failed to recieve access token");
             }
-            _isInitialized = true;
             return authenticated;
         }
 

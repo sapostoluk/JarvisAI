@@ -12,13 +12,10 @@ using System.Configuration;
 namespace JarvisAPI.Controllers
 {
     public class JarvisController : ApiController
-    {
-        
-
+    {       
         // GET: api/Jarvis
         public string Get(string conversationId, string message)
-        {
-            
+        {            
             ThreadContent thread = new ThreadContent();
 
             //Nest is not initialized and we are expecting a pin
@@ -28,16 +25,15 @@ namespace JarvisAPI.Controllers
                 if (NestDataProvider.IsInitialized)
                 {
                     NestDataProvider.ExpectingNestPin = false;
-                    thread.AiMessage = "Nest authentication successful";
-                    
+                    thread.AiMessage = "Nest authentication successful";                   
                 }
                 else
                 {
                     NestDataProvider.ExpectingNestPin = true;
                     thread.AiMessage = "Nest authentication uncessful, please try again";
-                }
-                    
+                }                   
             }
+            //Nest is not initialized. Not expecting a pin yet
             else if(!NestDataProvider.IsInitialized && !NestDataProvider.ExpectingNestPin)
             {
                 Configuration configuration = System.Web.Configuration.WebConfigurationManager.OpenWebConfiguration("~");
@@ -49,12 +45,11 @@ namespace JarvisAPI.Controllers
 
                 
             }
+            //Everything is good 
             else
-            {
-                
+            {                
                 thread.DevicesInitialized = true;
-                thread = WitDataProvider.SendMessage(conversationId, message);
-                
+                thread = WitDataProvider.SendMessage(conversationId, message);              
             }
 
             return JsonConvert.SerializeObject(thread);

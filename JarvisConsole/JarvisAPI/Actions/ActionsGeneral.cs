@@ -15,10 +15,12 @@ namespace JarvisConsole.Actions
         {
             //Harmony activites
             {"HarmonyStartActivity", HarmonyStartActivity },
-            {"HarmonyVolume", HarmonyVolume },         
+            {"HarmonyVolume", HarmonyVolume },
+            {"HarmonyCheckStatus", HarmonyCheckStatus },        
 
             //Nest activities
             {"NestSetTemperature", NestSetTemperature },
+            {"NestCheckStatus", NestCheckStatus },
         };
 
         //ContextKeys

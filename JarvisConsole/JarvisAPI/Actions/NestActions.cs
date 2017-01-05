@@ -11,9 +11,7 @@ using System.Threading.Tasks;
 namespace JarvisConsole.Actions
 {
     public static partial class Actions
-    {
-        
-
+    {        
         #region Nest Activities Methods
         private static object NestSetTemperature(ObservableCollection<KeyValuePair<string, List<Entity>>> entities)
         {
@@ -85,6 +83,13 @@ namespace JarvisConsole.Actions
             }
 
             return returnContext;
+        }
+
+        private static object NestCheckStatus(ObservableCollection<KeyValuePair<string, List<Entity>>> entities)
+        {
+            string ambientTemp = NestGetItem(NestDataProvider.NestItem.AmbientTemperature);
+            string targetTemp = NestGetItem(NestDataProvider.NestItem.TargetTemperature);
+            return new { expectedAmbientTemp = ambientTemp, expectedTargetTemp = targetTemp };
         }
 
         #endregion

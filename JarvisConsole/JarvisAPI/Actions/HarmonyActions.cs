@@ -153,6 +153,14 @@ namespace JarvisConsole.Actions
             return returnContext;
         }
 
+        private static object HarmonyCheckStatus(ObservableCollection<KeyValuePair<string, List<Entity>>> entities)
+        {
+            string activity = HarmonyDataProvider.CurrentActivity.Label;
+            string location = entities.FirstOrDefault(e => e.Key == "room").Value.FirstOrDefault().value.ToString();
+            object returnContext = new { expectedActivity = activity, room = location};
+            return returnContext;
+        }
+
         #endregion
 
         #region Private Methods

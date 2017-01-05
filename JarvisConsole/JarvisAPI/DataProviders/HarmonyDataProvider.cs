@@ -8,6 +8,7 @@ using System.IO;
 using System.Diagnostics;
 using System.Configuration;
 
+
 namespace JarvisConsole.DataProviders
 {
     public static class HarmonyDataProvider
@@ -31,7 +32,20 @@ namespace JarvisConsole.DataProviders
         {
             get
             {
-                if (_hub.IsReady && !string.IsNullOrWhiteSpace(_ipAddress) && _harmonyConfig!= null)
+                if (!string.IsNullOrWhiteSpace(_ipAddress) && _harmonyConfig != null)
+                {
+                    return true;
+                }
+                else
+                    return false;
+            }
+        }
+
+        public static bool IsReady
+        {
+            get
+            {
+                if (_hub.IsReady)
                 {
                     return true;
                 }
@@ -58,7 +72,7 @@ namespace JarvisConsole.DataProviders
         public static Activity CurrentActivity
         {
             get { return _currentActivity; }
-            
+
         }
 
         public static Activity PowerOffActivity
@@ -71,29 +85,26 @@ namespace JarvisConsole.DataProviders
         #region Public Methods 
         public static void SendCommand(string command, string deviceId)
         {
-            //while (!_hub.IsReady)
-            //{
-            //    //wait
-            //}
-            _hub.SendKeyPressAsync(deviceId, command);                    
+            while (!_hub.IsReady)
+            {
+                //wait
+            }
+            _hub.SendKeyPressAsync(deviceId, command);
         }
-           
+
         public static async Task StartActivity(string activityId)
         {
-            if(_hub.IsReady)
+            if (_hub.IsReady)
             {
                 await _hub.StartActivityAsync(activityId);
             }
-            else
-            {
-                await _hub.StartActivityAsync(activityId);
-            }         
+
         }
 
         public static List<Activity> ActivityLookup(string name)
         {
             List<Activity> LookupList = new List<Activity>();
-            foreach(Activity activity in _activityList)
+            foreach (Activity activity in _activityList)
             {
                 if (activity.Label.Contains(name))
                 {
@@ -113,11 +124,6 @@ namespace JarvisConsole.DataProviders
         #region Private Methods
         private static async Task HarmonyOpenAsync()
         {
-            if (_hub == null || !_hub.Host.Equals(_ipAddress))
-            {
-                _hub.OnTaskChanged += _hub_OnTaskChanged;
-                _hub.OnConnectionClosed += _hub_OnConnectionClosed;
-            }
             //First create our client and login
             if (File.Exists("SessionToken"))
             {
@@ -129,16 +135,6 @@ namespace JarvisConsole.DataProviders
             {
                 await _hub.TryOpenAsync();
                 File.WriteAllText("SessionToken", _hub.Token);
-            }
-        }
-
-        private static async Task HarmonyConnectAsync()
-        {
-            await HarmonyOpenAsync();
-
-            if (_hub.IsReady)
-            {
-                await HarmonyGetConfigAsync();
             }
         }
 
@@ -155,7 +151,7 @@ namespace JarvisConsole.DataProviders
 
         private static async Task HarmonyCloseAsync()
         {
-            await _hub.CloseAsync();            
+            await _hub.CloseAsync();
         }
 
         private static void GetDevices()
@@ -184,108 +180,66 @@ namespace JarvisConsole.DataProviders
             _powerOffActivity = _activityList.Where(e => e.Label == "PowerOff").FirstOrDefault();
         }
 
-        private static void _hub_OnConnectionClosed(object sender, bool e)
-        {
-            //    // Consistency check
-            //    Debug.Assert(_hub.IsClosed);
-
-            //    // We know this notification is not coming from the UI thread.
-            //    // Therefore we Invoke to be able to modifiy our tree view control.
-            //    // Try opening our connection again to keep it alive.
-            //    if (e)
-            //    {
-            //        //Server closed our connection try reconnect then
-            //        BeginInvoke(new MethodInvoker(delegate () { HarmonyConnectAsync(); }));
-            //    }
-            //    else
-            //    {
-            //        // Just clear our config
-            //        BeginInvoke(new MethodInvoker(delegate () { ClearConfig(); }));
-            //    }
-        }
-
-        private static void _hub_OnTaskChanged(object sender, bool e)
-        {
-            throw new NotImplementedException();
-        }
         #endregion
 
         #region Initializer
-        public static bool Initialize()
+        public async static void Initialize()
         {
+            _ipAddress = configuration.AppSettings.Settings["harmony_ip"].Value;
+            if (_hub == null || !_hub.Host.Equals(_ipAddress))
+            {
+                _hub = new Client(_ipAddress, true);
+                _hub.OnTaskChanged += _hub_OnTaskChanged1;
+                _hub.OnConnectionClosed += _hub_OnConnectionClosed1;
+                _hub.OnActivityChanged += _hub_OnActivityChanged;
+            }
             Console.WriteLine("Harmony Initializing");
             _activityList = new List<Activity>();
             _deviceList = new List<Device>();
-            _ipAddress = configuration.AppSettings.Settings["harmony_ip"].Value;            
- 
-            if(_hub == null)
+
+
+            await HarmonyOpenAsync();
+    
+            
+            if(_hub.IsReady)
             {
-                _hub = new Client(_ipAddress);
-                _hub.CancelCurrentTask();
-
-                Task t = HarmonyOpenAsync();
-                t.Wait();
-
-                _hub.CancelCurrentTask();
-
-                Task x = HarmonyGetConfigAsync();
-                x.Wait();
-
-                //Get current activity
-                Task<string> y = _hub.GetCurrentActivityAsync();
-                y.Wait();
-
-                string activityId = y.Result;
-                string activityName = _harmonyConfig.ActivityNameFromId(activityId);
-                _currentActivity = ActivityLookup(activityName).FirstOrDefault();
-
-                if (_harmonyConfig != null)
-                {
-                    _isInitialized = true;
-                }
-                _hub.OnActivityChanged += _hub_OnActivityChanged;
-                _hub.OnTaskChanged += _hub_OnTaskChanged1;
-                _hub.OnConnectionClosed += _hub_OnConnectionClosed1;
-
+                await HarmonyGetConfigAsync();
             }
+            
 
-
+            //Get current activity
             GetActivities();
             GetDevices();
-
-            //if(_hub.RequestPending)
-            //{
-            //    _hub.CancelCurrentTask();
-            //}
-
-            
+            string activityId = await _hub.GetCurrentActivityAsync();
+            string activityName = _harmonyConfig.ActivityNameFromId(activityId);
+            _currentActivity = ActivityLookup(activityName).FirstOrDefault();
+           
             Console.WriteLine("Harmony Initialized");
-            return _isInitialized;
 
         }
 
-        private static void _hub_OnConnectionClosed1(object sender, bool e)
-        {
-            Task t = HarmonyOpenAsync();
-            t.Wait();
-        }
-
-        private static void _hub_OnTaskChanged1(object sender, bool e)
-        {
-            //throw new NotImplementedException();
-        }
 
         #endregion
 
         #region Event
         private static void _hub_OnActivityChanged(object sender, string e)
         {
-            while(!_hub.IsReady)
-            {
-                //Wait until hub is ready
-            }
-
             _currentActivity = ActivityLookup(_harmonyConfig.ActivityNameFromId(e)).FirstOrDefault();
+        }
+
+
+        private async static void _hub_OnConnectionClosed1(object sender, bool e)
+        {
+            Debug.Assert(_hub.IsClosed);
+            if(e)
+            {
+                Initialize();
+            }
+        }
+
+        private static void _hub_OnTaskChanged1(object sender, bool e)
+        {
+            //throw new NotImplementedException();
         }
 
         #endregion

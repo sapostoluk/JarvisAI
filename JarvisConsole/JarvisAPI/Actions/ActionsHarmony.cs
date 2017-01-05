@@ -165,9 +165,8 @@ namespace JarvisConsole.Actions
 
             List<Activity> activity = HarmonyDataProvider.ActivityLookup(harmonyActivity);
             Console.WriteLine("-- System is attempting to actuate the '{0}' activity --", activity.First().Label);
-            Task t = HarmonyDataProvider.StartActivity(activity.First().Id);
-            t.Wait();
-            if (t.IsCompleted)
+            HarmonyDataProvider.StartActivity(activity.First().Id);
+            if (HarmonyDataProvider.CurrentActivity == activity.First())
             {
                 Console.WriteLine("-- System actuated the '{0}' activity", activity.First().Label);
                 return true;
@@ -178,7 +177,7 @@ namespace JarvisConsole.Actions
                 return false;
             }
 
-            HarmonyDataProvider.CloseConnection();
+            //HarmonyDataProvider.CloseConnection();
 
             return false;
         }
@@ -186,26 +185,14 @@ namespace JarvisConsole.Actions
         private static bool ActuateHarmonyCommand(Function func)
         {
 
-            HarmonyDataProvider.Initialize();
-
+            if (!HarmonyDataProvider.IsInitialized)
+            {
+                HarmonyDataProvider.Initialize();
+            }
             
             Console.WriteLine("-- System is attempting to actuate the '{0}' command --", func.Name);
             HarmonyDataProvider.SendCommand(func.Name, func.Action.DeviceId);
-            
-            //bool ret = false;
-            //if (t.IsCompleted)
-            //{
-            //    Console.WriteLine("-- System actuated the '{0}' command", func.Name);
-            //    ret = true;
-            //}
-            //else
-            //{
-            //    Console.WriteLine("-- Failed to actuate activity --");
-            //    ret = false;
-            //}
-            //bool ret = true;
 
-            HarmonyDataProvider.CloseConnection();
 
             return true;
         }

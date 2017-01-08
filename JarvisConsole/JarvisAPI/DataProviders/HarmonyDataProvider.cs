@@ -7,7 +7,7 @@ using HarmonyHub;
 using System.IO;
 using System.Diagnostics;
 using System.Configuration;
-
+using JarvisAPI;
 
 namespace JarvisConsole.DataProviders
 {
@@ -89,14 +89,29 @@ namespace JarvisConsole.DataProviders
             {
                 //wait
             }
-            _hub.SendKeyPressAsync(deviceId, command);
+            try
+            {
+                _hub.SendKeyPressAsync(deviceId, command);
+            }
+            catch(Exception e)
+            {
+                Logging.Log("general", string.Format("Harmony failed to send command {0}: " + e.Message, command));
+            }
+            
         }
 
         public static async Task StartActivity(string activityId)
         {
             if (_hub.IsReady)
             {
-                await _hub.StartActivityAsync(activityId);
+                try
+                {
+                    await _hub.StartActivityAsync(activityId);
+                }
+                catch(Exception e)
+                {
+                    Logging.Log("general", string.Format("Harmony failed to start activity '{0}': " + e.Message, activityId));
+                }
             }
 
         }
@@ -194,27 +209,44 @@ namespace JarvisConsole.DataProviders
                 _hub.OnActivityChanged += _hub_OnActivityChanged;
             }
             Console.WriteLine("Harmony Initializing");
+            Logging.Log("general", "Harmony attempting to initialize"); 
             _activityList = new List<Activity>();
             _deviceList = new List<Device>();
 
-
-            await HarmonyOpenAsync();
-    
-            
-            if(_hub.IsReady)
+            try
             {
+                await HarmonyOpenAsync();
+
+
+                while (!_hub.IsReady)
+                {
+                    //wait
+                }
                 await HarmonyGetConfigAsync();
+            }
+            catch(Exception e)
+            {
+                Logging.Log("general","Harmony failed to open connection: " +  e.Message);
             }
             
 
             //Get current activity
             GetActivities();
             GetDevices();
-            string activityId = await _hub.GetCurrentActivityAsync();
+            string activityId = "";
+            try
+            {
+                activityId = await _hub.GetCurrentActivityAsync();
+            }
+            catch(Exception e)
+            {
+                Logging.Log("general", "Harmony failedto get current activity: " + e.Message);
+            }
+            
             string activityName = _harmonyConfig.ActivityNameFromId(activityId);
             _currentActivity = ActivityLookup(activityName).FirstOrDefault();
            
-            Console.WriteLine("Harmony Initialized");
+            Console.WriteLine("Harmony finished initialization attempt");
 
         }
 

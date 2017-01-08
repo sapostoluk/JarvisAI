@@ -16,7 +16,9 @@ namespace JarvisConsole.Actions
             //Harmony activites
             {"HarmonyStartActivity", HarmonyStartActivity },
             {"HarmonyVolume", HarmonyVolume },
-            {"HarmonyCheckStatus", HarmonyCheckStatus },        
+            {"HarmonyCheckStatus", HarmonyCheckStatus },
+            {"HarmonySendCommand", HarmonySendCommand },
+                    
 
             //Nest activities
             {"NestSetTemperature", NestSetTemperature },
@@ -29,8 +31,13 @@ namespace JarvisConsole.Actions
         private static string _contextStereo = "Stereo";
         private static string _contextTelevision = "Television";
         private static string _contextDirection = "Direction";
-        private static string _volumeDown = "VolumeDown";
-        private static string _volumeUp = "VolumeUp";
+        private static string _contextVolumeDown = "VolumeDown";
+        private static string _contextVolumeUp = "VolumeUp";
+        private static string _contextHarmonyCommand = "HarmonyCommand";
+        private static string _contextPlay = "Play";
+        private static string _contextPause = "Pause";
+        private static string _contextRewind = "Rewind";
+        private static string _contextFastForward = "FastForward";
 
         //Nest context keys
         private static string _contextProduct = "Product";

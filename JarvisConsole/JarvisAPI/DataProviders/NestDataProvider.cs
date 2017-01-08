@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Net;
 using Newtonsoft.Json;
 using FirebaseSharp.Portable;
+using JarvisAPI;
 
 namespace JarvisConsole.DataProviders
 {
@@ -131,10 +132,16 @@ namespace JarvisConsole.DataProviders
         public static bool FinishAuthenticateNest(string pin)
         {
             bool authenticated = false;
-            //Enter credentials
-            Console.WriteLine("Please enter the pin");
 
-            HttpResponseMessage message = Get("", pin);
+            try
+            {
+                HttpResponseMessage message = Get("", pin);
+            }
+            catch(Exception e)
+            {
+                Logging.Log("general", "Failed to retrieve nest authentication token: " + e.Message);
+            }
+
             configuration.AppSettings.Settings["NestAccessToken"].Value = _accessToken;
             configuration.Save();
             if (!string.IsNullOrWhiteSpace(_accessToken))
@@ -152,18 +159,26 @@ namespace JarvisConsole.DataProviders
         public static string GetNestItem(NestItem item)
         {
             string returnString = string.Empty;
-            switch(item)
+            try
             {
-                case NestItem.AmbientTemperature: {returnString = firebaseClient.Get(_pathAmbientTemperature).ToString(); } break;
-                case NestItem.Humidity: { returnString = firebaseClient.Get(_pathHumidity).ToString(); } break;
-                case NestItem.HvacMode: { returnString = firebaseClient.Get(_pathMode).ToString(); } break;
-                case NestItem.HvacState: { returnString = firebaseClient.Get(_pathState).ToString(); } break;
-                case NestItem.Label: { returnString = firebaseClient.Get(_pathLabel).ToString(); } break;
-                case NestItem.Name: { returnString = firebaseClient.Get(_pathWhereName).ToString(); } break;
-                case NestItem.TargetTemperature: { returnString = firebaseClient.Get(_pathTargetTemperature).ToString(); } break;
-                case NestItem.TemperatureScale: { returnString = firebaseClient.Get(_pathTempScale).ToString(); } break;
-                case NestItem.TimeToTarget: { returnString = firebaseClient.Get(_pathTimeToTarget).ToString(); } break;
+                switch (item)
+                {
+                    case NestItem.AmbientTemperature: { returnString = firebaseClient.Get(_pathAmbientTemperature).ToString(); } break;
+                    case NestItem.Humidity: { returnString = firebaseClient.Get(_pathHumidity).ToString(); } break;
+                    case NestItem.HvacMode: { returnString = firebaseClient.Get(_pathMode).ToString(); } break;
+                    case NestItem.HvacState: { returnString = firebaseClient.Get(_pathState).ToString(); } break;
+                    case NestItem.Label: { returnString = firebaseClient.Get(_pathLabel).ToString(); } break;
+                    case NestItem.Name: { returnString = firebaseClient.Get(_pathWhereName).ToString(); } break;
+                    case NestItem.TargetTemperature: { returnString = firebaseClient.Get(_pathTargetTemperature).ToString(); } break;
+                    case NestItem.TemperatureScale: { returnString = firebaseClient.Get(_pathTempScale).ToString(); } break;
+                    case NestItem.TimeToTarget: { returnString = firebaseClient.Get(_pathTimeToTarget).ToString(); } break;
+                }
             }
+            catch(Exception e)
+            {
+                Logging.Log("general", string.Format("Nest failed to retrieve nest item '{0}': " + e.Message, item.ToString()));
+            }
+            
 
             return returnString;
         }
@@ -172,39 +187,61 @@ namespace JarvisConsole.DataProviders
         {
             //Firebase firebaseClient = new Firebase("https://developer-api.nest.com", _accessToken);
             string returnString = string.Empty;
-            switch (item)
+            try
             {
-                case NestItem.AmbientTemperature: { returnString = await firebaseClient.GetAsync(_pathAmbientTemperature); } break;
-                case NestItem.Humidity: { returnString = await firebaseClient.GetAsync(_pathHumidity); } break;
-                case NestItem.HvacMode: { returnString = await firebaseClient.GetAsync(_pathMode); } break;
-                case NestItem.HvacState: { returnString = await firebaseClient.GetAsync(_pathState); } break;
-                case NestItem.Label: { returnString = await firebaseClient.GetAsync(_pathLabel); } break;
-                case NestItem.Name: { returnString = await firebaseClient.GetAsync(_pathWhereName); } break;
-                case NestItem.TargetTemperature: { returnString = await firebaseClient.GetAsync(_pathTargetTemperature); } break;
-                case NestItem.TemperatureScale: { returnString = await firebaseClient.GetAsync(_pathTempScale); } break;
-                case NestItem.TimeToTarget: { returnString = await firebaseClient.GetAsync(_pathTimeToTarget); } break;
+                switch (item)
+                {
+                    case NestItem.AmbientTemperature: { returnString = await firebaseClient.GetAsync(_pathAmbientTemperature); } break;
+                    case NestItem.Humidity: { returnString = await firebaseClient.GetAsync(_pathHumidity); } break;
+                    case NestItem.HvacMode: { returnString = await firebaseClient.GetAsync(_pathMode); } break;
+                    case NestItem.HvacState: { returnString = await firebaseClient.GetAsync(_pathState); } break;
+                    case NestItem.Label: { returnString = await firebaseClient.GetAsync(_pathLabel); } break;
+                    case NestItem.Name: { returnString = await firebaseClient.GetAsync(_pathWhereName); } break;
+                    case NestItem.TargetTemperature: { returnString = await firebaseClient.GetAsync(_pathTargetTemperature); } break;
+                    case NestItem.TemperatureScale: { returnString = await firebaseClient.GetAsync(_pathTempScale); } break;
+                    case NestItem.TimeToTarget: { returnString = await firebaseClient.GetAsync(_pathTimeToTarget); } break;
+                }
+            }
+            catch(Exception e)
+            {
+                Logging.Log("general", string.Format("Nest failed to retrieve nest item '{0}': " + e.Message, item.ToString()));
             }
 
             return returnString;
         }
 
         public static void SetNestItem(NestItem item, string payload)
-        {            
-            switch (item)
+        {
+            try
             {
-                case NestItem.HvacMode: {FirebaseClient.Put(_pathMode, payload); } break;
-                case NestItem.TargetTemperature: {FirebaseClient.Put(_pathTargetTemperature, payload); } break;
+                switch (item)
+                {
+                    case NestItem.HvacMode: { FirebaseClient.Put(_pathMode, payload); } break;
+                    case NestItem.TargetTemperature: { FirebaseClient.Put(_pathTargetTemperature, payload); } break;
+                }
+            }
+            catch(Exception e)
+            {
+                Logging.Log("general", string.Format("Nest failed to set nest item '{0}' to '{1}': " + e.Message, item.ToString(), payload));
             }
         }
 
         public static async void SetNestItemAsync(NestItem item, string payload)
         {
             //Firebase firebaseClient = new Firebase("https://developer-api.nest.com", _accessToken);
-            switch (item)
+            try
             {
-                case NestItem.HvacMode: {await firebaseClient.PutAsync(_pathMode, payload); } break;
-                case NestItem.TargetTemperature: { await firebaseClient.PutAsync(_pathTargetTemperature, payload); } break;
+                switch (item)
+                {
+                    case NestItem.HvacMode: { await firebaseClient.PutAsync(_pathMode, payload); } break;
+                    case NestItem.TargetTemperature: { await firebaseClient.PutAsync(_pathTargetTemperature, payload); } break;
+                }
             }
+            catch(Exception e)
+            {
+                Logging.Log("general", string.Format("Nest failed to set nest item '{0}' to '{1}': " + e.Message, item.ToString(), payload));
+            }
+            
         }
 
         #endregion

@@ -8,6 +8,7 @@ using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using JarvisAPI;
 
 namespace JarvisConsole.Actions
 {
@@ -28,7 +29,9 @@ namespace JarvisConsole.Actions
         private static string _airplayMusic = "Airplay Music";
         private static string _watchAppleTv = "Watch Apple Tv";
         private static string _powerOff = "PowerOff";
-        
+
+        //Harmony commands
+        private static string _transportBasic = "TransportBasic";
 
         #region Harmony Activities Methods
         private static object HarmonyStartActivity(ObservableCollection<KeyValuePair<string, List<Entity>>> entities)
@@ -120,9 +123,9 @@ namespace JarvisConsole.Actions
                             controlGroups = HarmonyDataProvider.CurrentActivity.ControlGroups.Where(e => e.Name == "Volume");
                         }                       
                         ControlGroup control = controlGroups.FirstOrDefault();
-                        if (control.Functions.Any(e => e.Name == _volumeUp))
+                        if (control.Functions.Any(e => e.Name == _contextVolumeUp))
                         {
-                            function = control.Functions.Where(x => x.Name == _volumeUp).FirstOrDefault();
+                            function = control.Functions.Where(x => x.Name == _contextVolumeUp).FirstOrDefault();
                         }
                     }
                     break;
@@ -135,9 +138,9 @@ namespace JarvisConsole.Actions
                             controlGroups = HarmonyDataProvider.CurrentActivity.ControlGroups.Where(e => e.Name == "Volume");
                         }
                         ControlGroup control = controlGroups.FirstOrDefault();
-                        if (control.Functions.Any(e => e.Name == _volumeDown))
+                        if (control.Functions.Any(e => e.Name == _contextVolumeDown))
                         {
-                            function = control.Functions.Where(x => x.Name == _volumeDown).FirstOrDefault();
+                            function = control.Functions.Where(x => x.Name == _contextVolumeDown).FirstOrDefault();
                         }
                     }
                     break;
@@ -161,6 +164,79 @@ namespace JarvisConsole.Actions
             return returnContext;
         }
 
+        private static object HarmonySendCommand(ObservableCollection<KeyValuePair<string, List<Entity>>> entities)
+        {
+            string command = "";
+            if(entities.Any(e => e.Key == _contextHarmonyCommand))
+            {
+                command = entities.FirstOrDefault(e => e.Key == _contextHarmonyCommand).Value.FirstOrDefault().value.ToString();
+            }
+            Function function = null;
+            switch(command)
+            {
+                case "Play":
+                    {
+                        IEnumerable<ControlGroup> controlGroups = null;
+                        if (HarmonyDataProvider.CurrentActivity != null)
+                        {
+                            controlGroups = HarmonyDataProvider.CurrentActivity.ControlGroups.Where(e => e.Name == _transportBasic);
+                        }
+                        ControlGroup control = controlGroups.FirstOrDefault();
+                        if (control.Functions.Any(e => e.Name == _contextPlay))
+                        {
+                            function = control.Functions.Where(x => x.Name == _contextPlay).FirstOrDefault();
+                        }
+                    }
+                    break;
+
+                case "Pause":
+                    {
+                        IEnumerable<ControlGroup> controlGroups = null;
+                        if (HarmonyDataProvider.CurrentActivity != null)
+                        {
+                            controlGroups = HarmonyDataProvider.CurrentActivity.ControlGroups.Where(e => e.Name == _transportBasic);
+                        }
+                        ControlGroup control = controlGroups.FirstOrDefault();
+                        if (control.Functions.Any(e => e.Name == _contextPause))
+                        {
+                            function = control.Functions.Where(x => x.Name == _contextPause).FirstOrDefault();
+                        }
+                    }
+                    break;
+
+                case "Rewind":
+                    {
+                        IEnumerable<ControlGroup> controlGroups = null;
+                        if(HarmonyDataProvider.CurrentActivity != null)
+                        {
+                            controlGroups = HarmonyDataProvider.CurrentActivity.ControlGroups.Where(e => e.Name == _transportBasic);
+                        }
+                        ControlGroup control = controlGroups.FirstOrDefault();
+                        if(control.Functions.Any(e => e.Name == _contextRewind))
+                        {
+                            function = control.Functions.Where(x => x.Name == _contextRewind).FirstOrDefault();
+                        }
+                    }
+                    break;
+
+                case "FastForward":
+                    {
+                        IEnumerable<ControlGroup> controlGroups = null;
+                        if(HarmonyDataProvider.CurrentActivity != null)
+                        {
+                            controlGroups = HarmonyDataProvider.CurrentActivity.ControlGroups.Where(e => e.Name == _transportBasic);
+                        }
+                        ControlGroup control = controlGroups.FirstOrDefault();
+                        if(control.Functions.Any(e => e.Name == _contextFastForward))
+                        {
+                            function = control.Functions.Where(x => x.Name == _contextFastForward).FirstOrDefault();
+                        }
+                    }
+                    break;                  
+            }
+            ActuateHarmonyCommand(function);
+            return null;
+        }
         #endregion
 
         #region Private Methods
@@ -198,8 +274,16 @@ namespace JarvisConsole.Actions
                 HarmonyDataProvider.Initialize();
             }
             
-            Console.WriteLine("-- System is attempting to actuate the '{0}' command --", func.Name);
-            HarmonyDataProvider.SendCommand(func.Name, func.Action.DeviceId);
+            //Console.WriteLine("-- System is attempting to actuate the '{0}' command --", func.Name);
+            if(func != null)
+            {
+                HarmonyDataProvider.SendCommand(func.Name, func.Action.DeviceId);
+            }
+            else
+            {
+                Logging.Log("general", "Harmony failed cannot send command");
+            }
+            
 
 
             return true;

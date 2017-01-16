@@ -281,7 +281,7 @@
     <Compile Include="Controllers\NestController.cs" />
     <Compile Include="DataProviders\HarmonyDataProvider.cs" />
     <Compile Include="DataProviders\NestDataProvider.cs" />
-    <Compile Include="DataProviders\OrviboDataProvider.cs" />
+    <Compile Include="DataProviders\OriviboDataProvider.cs" />
     <Compile Include="DataProviders\Wit\ThreadContent.cs" />
     <Compile Include="DataProviders\Wit\WitDataProvider.cs" />
     <Compile Include="Global.asax.cs">

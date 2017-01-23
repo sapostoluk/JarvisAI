@@ -8,7 +8,8 @@ using System.Configuration;
 using com.valgut.libs.bots.Wit;
 using System.Collections.ObjectModel;
 using JarvisConsole.Actions;
-
+using JarvisAPI;
+using JarvisAPI.DataProviders.Orvibo;
 
 namespace JarvisConsole.DataProviders.Wit
 {
@@ -103,6 +104,86 @@ namespace JarvisConsole.DataProviders.Wit
             return _currentThreadContent;
         }
 
+        private static bool InitializeDataProviders(string message)
+        {
+            int Initialized = 0;
+            if(NestDataProvider.IsInitialized && HarmonyDataProvider.IsInitialized && OrviboDataProvider.isInitialized)
+            {
+                return true;
+            }
+
+            //Nest is not initialized and we are expecting a pin
+            if (!NestDataProvider.IsInitialized && NestDataProvider.ExpectingNestPin)
+            {
+                NestDataProvider.FinishAuthenticateNest(message);
+                if(NestDataProvider.IsInitialized)
+                {
+                    NestDataProvider.ExpectingNestPin = false;                   
+                }
+                else
+                {
+                    NestDataProvider.ExpectingNestPin = false;
+                    Initialized++;
+                }
+            }
+
+            //Nest is not initialized. Not expecting a pin yet
+            else if (!NestDataProvider.IsInitialized && !NestDataProvider.ExpectingNestPin)
+            {
+                Configuration configuration = System.Web.Configuration.WebConfigurationManager.OpenWebConfiguration("~");
+                string authorizationUrl = string.Format("https://home.nest.com/login/oauth2?client_id={0}&state={1}",
+                    configuration.AppSettings.Settings["nest_client-id"].Value, "dummy-random-value-for-anti-csfr");
+
+                NestDataProvider.ExpectingNestPin = true;
+                Initialized++;
+
+            }
+
+            else if (!NestDataProvider.IsInitialized)
+            {
+                try
+                {
+                    HarmonyDataProvider.Initialize();
+                    if (!HarmonyDataProvider.IsInitialized)
+                    {
+                        Initialized++;
+                    }                   
+                }
+                catch (Exception e)
+                {
+                    Logging.Log("general", "Harmony failed to initialied: " + e.Message);
+                }
+            }
+
+            else if (!OrviboDataProvider.isInitialized)
+            {
+                try
+                {
+                    OrviboDataProvider.Initialize();
+                    if (!HarmonyDataProvider.IsInitialized)
+                    {
+                        //thread = WitDataProvider.SendMessage(conversationId, message);
+                        Initialized++;
+                    }
+                }
+                catch (Exception e)
+                {
+                    //thread.AiMessage = e.Message;
+                    Logging.Log("general", "Error initialaizing OrviboDataProvider: " + e.Message);
+                }
+            }
+
+            if(Initialized > 0)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+
+        }
+
         #region Callbacks
         private static object doMerge(string conversationId, object context, object entities, double confidence)
         {
@@ -117,6 +198,7 @@ namespace JarvisConsole.DataProviders.Wit
 
         private static object doAction(string conversationId, object context, string action, double confidence)
         {
+            InitializeDataProviders(_currentThreadContent.AiMessage);
             _currentThreadContent.Action = action;
             object updateContext = context;
             if(Actions.Actions.ActionDictionary.ContainsKey(action))

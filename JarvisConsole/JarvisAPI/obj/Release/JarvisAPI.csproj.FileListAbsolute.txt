@@ -199,3 +199,4 @@ C:\Users\Brandon Watson\Source\Repos\Jarvis\JarvisConsole\JarvisAPI\obj\Release\
 C:\Users\Brandon Watson\Source\Repos\Jarvis\JarvisConsole\JarvisAPI\obj\Release\JarvisAPI.csprojResolveAssemblyReference.cache
 C:\Users\Brandon Watson\Source\Repos\Jarvis\JarvisConsole\JarvisAPI\obj\Release\JarvisAPI.dll
 C:\Users\Brandon Watson\Source\Repos\Jarvis\JarvisConsole\JarvisAPI\obj\Release\JarvisAPI.pdb
+C:\Users\Brandon Watson\Source\Repos\Jarvis\JarvisConsole\JarvisAPI\bin\OrviboController.Common.dll

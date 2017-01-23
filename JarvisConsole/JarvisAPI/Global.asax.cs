@@ -1,4 +1,5 @@
 ﻿using JarvisConsole.DataProviders;
+using JarvisAPI.DataProviders.Orvibo;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,6 +23,7 @@ namespace JarvisAPI
 
             NestDataProvider.Initialize();
             HarmonyDataProvider.Initialize();
+            OrviboDataProvider.Initialize();
         }
     }
 }

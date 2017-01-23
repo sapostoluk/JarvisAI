@@ -234,6 +234,7 @@
     <Compile Include="Actions\ActionsGeneral.cs" />
     <Compile Include="Actions\HarmonyActions.cs" />
     <Compile Include="Actions\NestActions.cs" />
+    <Compile Include="Actions\OrviboActions.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\IdentityConfig.cs" />
@@ -281,7 +282,8 @@
     <Compile Include="Controllers\NestController.cs" />
     <Compile Include="DataProviders\HarmonyDataProvider.cs" />
     <Compile Include="DataProviders\NestDataProvider.cs" />
-    <Compile Include="DataProviders\OriviboDataProvider.cs" />
+    <Compile Include="DataProviders\Orvibo\OriviboDataProvider.cs" />
+    <Compile Include="DataProviders\Orvibo\OrviboDevice.cs" />
     <Compile Include="DataProviders\Wit\ThreadContent.cs" />
     <Compile Include="DataProviders\Wit\WitDataProvider.cs" />
     <Compile Include="Global.asax.cs">

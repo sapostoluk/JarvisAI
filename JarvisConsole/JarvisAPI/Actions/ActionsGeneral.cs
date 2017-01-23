@@ -3,9 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Configuration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace JarvisConsole.Actions
 {
@@ -23,6 +20,9 @@ namespace JarvisConsole.Actions
             //Nest activities
             {"NestSetTemperature", NestSetTemperature },
             {"NestCheckStatus", NestCheckStatus },
+
+            //Orvibo activities
+            {"OrviboControl", OrviboControl },
         };
 
         //ContextKeys
@@ -43,6 +43,9 @@ namespace JarvisConsole.Actions
         private static string _contextProduct = "Product";
         private static string _contextUnit = "Unit";
         private static string _contextNumber = "number";
+
+        //Orvibo context keys
+        private static string _contextOnOff = "on_off";
 
         private static Configuration configuration = System.Web.Configuration.WebConfigurationManager.OpenWebConfiguration("~");
     }

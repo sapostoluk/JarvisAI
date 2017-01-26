@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Configuration;
+using System.Linq;
 
 namespace JarvisConsole.Actions
 {
@@ -10,6 +11,9 @@ namespace JarvisConsole.Actions
     {
         public static Dictionary<string, Func<ObservableCollection<KeyValuePair<string, List<Entity>>>, object>> ActionDictionary => new Dictionary<string, Func<ObservableCollection<KeyValuePair<string, List<Entity>>>, object>>
         {
+            //General activites
+            {"CheckStatus", CheckStatus },
+
             //Harmony activites
             {"HarmonyStartActivity", HarmonyStartActivity },
             {"HarmonyVolume", HarmonyVolume },
@@ -25,7 +29,12 @@ namespace JarvisConsole.Actions
             {"OrviboControl", OrviboControl },
         };
 
-        //ContextKeys
+        #region ContextKeys
+
+        //General Context Keys
+        private static string _contextSuccess = "Success";
+        private static string _contextSuccessful = "Successful";
+        private static string _contextUnsuccessful = "Unsuccessful";
 
         //Harmony context keys
         private static string _contextStereo = "Stereo";
@@ -47,6 +56,33 @@ namespace JarvisConsole.Actions
         //Orvibo context keys
         private static string _contextOnOff = "on_off";
 
+        #endregion
         private static Configuration configuration = System.Web.Configuration.WebConfigurationManager.OpenWebConfiguration("~");
+
+        #region Methods
+        private static object CheckStatus(ObservableCollection<KeyValuePair<string, List<Entity>>> entities)
+        {
+            object returnContext = null;
+            string status = "";
+
+            if(entities.Any(e => e.Key == _contextSuccess))
+            {
+                status = entities.FirstOrDefault(e => e.Key == _contextSuccess).Value.FirstOrDefault().value.ToString();
+            }
+            if(!string.IsNullOrWhiteSpace(status))
+            {
+                if (status == _contextSuccessful)
+                {
+                    returnContext = new { Successful = "True" };
+                }
+                else if (status == _contextUnsuccessful)
+                {
+                    returnContext = new { Unsuccessful = "True" };
+                }
+            }
+            return returnContext;
+        }
+
+        #endregion
     }
 }

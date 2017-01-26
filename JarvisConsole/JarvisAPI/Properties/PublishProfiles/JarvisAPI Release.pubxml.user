@@ -6,7 +6,6 @@ by editing this MSBuild file. In order to learn more about this please visit htt
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <TimeStampOfAssociatedLegacyPublishXmlFile />
-    <EncryptedPassword />
     <_PublishTargetUrl>C:\JarvisAI</_PublishTargetUrl>
   </PropertyGroup>
   <ItemGroup>
@@ -98,7 +97,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>12/28/2016 23:38:04</publishTime>
     </File>
     <File Include="bin/JarvisAPI.dll">
-      <publishTime>01/18/2017 01:27:46</publishTime>
+      <publishTime>01/25/2017 22:50:16</publishTime>
     </File>
     <File Include="bin/Microsoft.AI.Agent.Intercept.dll">
       <publishTime>12/28/2016 23:37:19</publishTime>
@@ -344,7 +343,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>12/28/2016 23:37:14</publishTime>
     </File>
     <File Include="Web.config">
-      <publishTime>01/17/2017 21:41:58</publishTime>
+      <publishTime>01/23/2017 16:59:38</publishTime>
     </File>
   </ItemGroup>
 </Project>

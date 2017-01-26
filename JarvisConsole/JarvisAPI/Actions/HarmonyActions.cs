@@ -72,9 +72,10 @@ namespace JarvisConsole.Actions
             //Stereo present / Television missing
             else if (!string.IsNullOrWhiteSpace(StereoActivity) && string.IsNullOrWhiteSpace(TelevisionActivity))
             {
-                returnContext = new { Stereo = StereoActivity, missingTelevision = "" };
+                
                 //Actuate stereo activity
-                ActuateHarmonyActivity(StereoActivity);
+                bool success = ActuateHarmonyActivity(StereoActivity);
+                returnContext = new { Stereo = StereoActivity, missingTelevision = "", Success = success.ToString() };
             }
             //Stereo missing / television present
             else if (string.IsNullOrWhiteSpace(StereoActivity) && !string.IsNullOrWhiteSpace(TelevisionActivity))
@@ -84,8 +85,9 @@ namespace JarvisConsole.Actions
                 {
                     ActuateHarmonyPowerOff(entities);
                 }
-                returnContext = new { missingStereo = "", Television = TelevisionActivity };
-                ActuateHarmonyActivity(TelevisionActivity);
+                
+                bool success = ActuateHarmonyActivity(TelevisionActivity);
+                returnContext = new { missingStereo = "", Television = TelevisionActivity, Success = success.ToString() };
             }
             //None present
             else if (string.IsNullOrWhiteSpace(StereoActivity) && string.IsNullOrWhiteSpace(TelevisionActivity))

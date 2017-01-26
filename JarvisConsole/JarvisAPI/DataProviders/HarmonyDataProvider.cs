@@ -106,7 +106,7 @@ namespace JarvisConsole.DataProviders
             {
                 try
                 {
-                    await _hub.StartActivityAsync(activityId);
+                    //await _hub.StartActivityAsync(activityId);
                 }
                 catch(Exception e)
                 {
@@ -171,6 +171,10 @@ namespace JarvisConsole.DataProviders
 
         private static void GetDevices()
         {
+            if(_harmonyConfig == null)
+            {
+                HarmonyGetConfigAsync();
+            }
             if (_harmonyConfig != null)
             {
                 _deviceList = _harmonyConfig.Devices.ToList();

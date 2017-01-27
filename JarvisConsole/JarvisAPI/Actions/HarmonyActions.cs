@@ -149,11 +149,21 @@ namespace JarvisConsole.Actions
             }
             //Change volume correct number of times
             int volInterval;
-            int.TryParse(configuration.AppSettings.Settings["volume_interval"].Value, out volInterval);
-            for (int i = 0; i < volInterval; i++)
+            try
             {
-                ActuateHarmonyCommand(function);
+                int.TryParse(configuration.AppSettings.Settings["volume_interval"].Value, out volInterval);
+                for (int i = 0; i < volInterval; i++)
+                {
+                    ActuateHarmonyCommand(function);
+                }
+                returnContext = new { Success = true.ToString() };
             }
+            catch(Exception e)
+            {
+                Logging.Log(_actionLogPath, "Harmony volume action failed: " + e.Message);
+                returnContext = new { Success = false.ToString() };
+            }
+            
 
             return returnContext;
         }
@@ -162,7 +172,15 @@ namespace JarvisConsole.Actions
         {
             string activity = HarmonyDataProvider.CurrentActivity.Label;
             string location = entities.FirstOrDefault(e => e.Key == "room").Value.FirstOrDefault().value.ToString();
-            object returnContext = new { expectedActivity = activity, room = location};
+            object returnContext = null;
+            if(activity != null && location != null)
+            {
+                returnContext = new { expectedActivity = activity, room = location, Success = true.ToString() };
+            }
+            else
+            {
+                returnContext = new { Success = false.ToString() };
+            }
             return returnContext;
         }
 
@@ -236,8 +254,28 @@ namespace JarvisConsole.Actions
                     }
                     break;                  
             }
-            ActuateHarmonyCommand(function);
-            return null;
+            object returnContext = null;
+            //HACK - need to have consistency in exception handling
+            //Is the system on?
+            if(HarmonyDataProvider.CurrentActivity != HarmonyDataProvider.PowerOffActivity)
+            {
+                try
+                {
+                    ActuateHarmonyCommand(function);
+                    returnContext = new { Success = true.ToString() };
+                }
+                catch (Exception e)
+                {
+                    Logging.Log(_actionLogPath, string.Format("System failed to actuate command '{0}'", function.Name));
+                    returnContext = new { Success = false.ToString() };
+                }
+            }
+            else
+            {
+                returnContext = new { Success = false.ToString() };
+            }
+            
+            return returnContext;
         }
         #endregion
 

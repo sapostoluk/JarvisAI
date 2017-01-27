@@ -97,7 +97,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>12/28/2016 23:38:04</publishTime>
     </File>
     <File Include="bin/JarvisAPI.dll">
-      <publishTime>01/25/2017 22:50:16</publishTime>
+      <publishTime>01/27/2017 13:56:02</publishTime>
     </File>
     <File Include="bin/Microsoft.AI.Agent.Intercept.dll">
       <publishTime>12/28/2016 23:37:19</publishTime>
@@ -343,7 +343,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>12/28/2016 23:37:14</publishTime>
     </File>
     <File Include="Web.config">
-      <publishTime>01/23/2017 16:59:38</publishTime>
+      <publishTime>01/25/2017 23:22:57</publishTime>
     </File>
   </ItemGroup>
 </Project>

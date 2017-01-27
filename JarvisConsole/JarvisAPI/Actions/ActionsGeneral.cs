@@ -12,7 +12,7 @@ namespace JarvisConsole.Actions
         public static Dictionary<string, Func<ObservableCollection<KeyValuePair<string, List<Entity>>>, object>> ActionDictionary => new Dictionary<string, Func<ObservableCollection<KeyValuePair<string, List<Entity>>>, object>>
         {
             //General activites
-            {"CheckStatus", CheckStatus },
+            {"CheckSuccess", CheckSuccess },
 
             //Harmony activites
             {"HarmonyStartActivity", HarmonyStartActivity },
@@ -29,12 +29,14 @@ namespace JarvisConsole.Actions
             {"OrviboControl", OrviboControl },
         };
 
+        private static string _actionLogPath = "actions";
+
         #region ContextKeys
 
         //General Context Keys
         private static string _contextSuccess = "Success";
-        private static string _contextSuccessful = "Successful";
-        private static string _contextUnsuccessful = "Unsuccessful";
+        private static string _contextSuccessful = "true";
+        private static string _contextUnsuccessful = "false";
 
         //Harmony context keys
         private static string _contextStereo = "Stereo";
@@ -60,7 +62,7 @@ namespace JarvisConsole.Actions
         private static Configuration configuration = System.Web.Configuration.WebConfigurationManager.OpenWebConfiguration("~");
 
         #region Methods
-        private static object CheckStatus(ObservableCollection<KeyValuePair<string, List<Entity>>> entities)
+        private static object CheckSuccess(ObservableCollection<KeyValuePair<string, List<Entity>>> entities)
         {
             object returnContext = null;
             string status = "";
@@ -73,11 +75,11 @@ namespace JarvisConsole.Actions
             {
                 if (status == _contextSuccessful)
                 {
-                    returnContext = new { Successful = "True" };
+                    returnContext = new { Successful = "true" };
                 }
                 else if (status == _contextUnsuccessful)
                 {
-                    returnContext = new { Unsuccessful = "True" };
+                    returnContext = new { Unsuccessful = "true" };
                 }
             }
             return returnContext;

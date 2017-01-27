@@ -34,6 +34,7 @@ namespace JarvisConsole.DataProviders
         private static bool _expectingNestPin;
 
         private static Firebase firebaseClient;
+        private static string _nestLogPath = "nest";
 
         private static Configuration configuration = System.Web.Configuration.WebConfigurationManager.OpenWebConfiguration("~");
 
@@ -139,7 +140,7 @@ namespace JarvisConsole.DataProviders
             }
             catch(Exception e)
             {
-                Logging.Log("general", "Failed to retrieve nest authentication token: " + e.Message);
+                Logging.Log(_nestLogPath, "Failed to retrieve nest authentication token: " + e.Message);
             }
 
             configuration.AppSettings.Settings["NestAccessToken"].Value = _accessToken;
@@ -176,7 +177,7 @@ namespace JarvisConsole.DataProviders
             }
             catch(Exception e)
             {
-                Logging.Log("general", string.Format("Nest failed to retrieve nest item '{0}': " + e.Message, item.ToString()));
+                Logging.Log(_nestLogPath, string.Format("Nest failed to retrieve nest item '{0}': " + e.Message, item.ToString()));
             }
             
 
@@ -204,7 +205,7 @@ namespace JarvisConsole.DataProviders
             }
             catch(Exception e)
             {
-                Logging.Log("general", string.Format("Nest failed to retrieve nest item '{0}': " + e.Message, item.ToString()));
+                Logging.Log(_nestLogPath, string.Format("Nest failed to retrieve nest item '{0}': " + e.Message, item.ToString()));
             }
 
             return returnString;
@@ -222,7 +223,7 @@ namespace JarvisConsole.DataProviders
             }
             catch(Exception e)
             {
-                Logging.Log("general", string.Format("Nest failed to set nest item '{0}' to '{1}': " + e.Message, item.ToString(), payload));
+                Logging.Log(_nestLogPath, string.Format("Nest failed to set nest item '{0}' to '{1}': " + e.Message, item.ToString(), payload));
             }
         }
 
@@ -239,7 +240,7 @@ namespace JarvisConsole.DataProviders
             }
             catch(Exception e)
             {
-                Logging.Log("general", string.Format("Nest failed to set nest item '{0}' to '{1}': " + e.Message, item.ToString(), payload));
+                Logging.Log(_nestLogPath, string.Format("Nest failed to set nest item '{0}' to '{1}': " + e.Message, item.ToString(), payload));
             }
             
         }

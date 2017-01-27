@@ -23,6 +23,7 @@ namespace JarvisConsole.DataProviders
         private static Activity _powerOffActivity;
         private static List<Device> _deviceList;
         private static Activity _currentActivity;
+        private static string _harmonyLogPath = "harmony";
         private static Configuration configuration = System.Web.Configuration.WebConfigurationManager.OpenWebConfiguration("~");
 
         #endregion
@@ -89,14 +90,14 @@ namespace JarvisConsole.DataProviders
             {
                 //wait
             }
-            try
-            {
+            //try
+            //{
                 _hub.SendKeyPressAsync(deviceId, command);
-            }
-            catch(Exception e)
-            {
-                Logging.Log("general", string.Format("Harmony failed to send command {0}: " + e.Message, command));
-            }
+            //}
+            //catch(Exception e)
+            //{
+            //    Logging.Log(_harmonyLogPath, string.Format("Harmony failed to send command {0}: " + e.Message, command));
+            //}
             
         }
 
@@ -110,7 +111,7 @@ namespace JarvisConsole.DataProviders
                 }
                 catch(Exception e)
                 {
-                    Logging.Log("general", string.Format("Harmony failed to start activity '{0}': " + e.Message, activityId));
+                    Logging.Log(_harmonyLogPath, string.Format("Harmony failed to start activity '{0}': " + e.Message, activityId));
                 }
             }
 
@@ -140,17 +141,17 @@ namespace JarvisConsole.DataProviders
         private static async Task HarmonyOpenAsync()
         {
             //First create our client and login
-            if (File.Exists("SessionToken"))
-            {
-                var sessionToken = File.ReadAllText("SessionToken");
-                Trace.WriteLine("Reusing token: {0}", sessionToken);
-                await _hub.TryOpenAsync(sessionToken);
-            }
-            else
-            {
+            //if (File.Exists("SessionToken"))
+            //{
+            //    var sessionToken = File.ReadAllText("SessionToken");
+            //    Trace.WriteLine("Reusing token: {0}", sessionToken);
+            //    await _hub.TryOpenAsync(sessionToken);
+            //}
+            //else
+            //{
                 await _hub.TryOpenAsync();
-                File.WriteAllText("SessionToken", _hub.Token);
-            }
+                //File.WriteAllText("SessionToken", _hub.Token);
+            //}
         }
 
         private static async Task HarmonyGetConfigAsync()
@@ -213,7 +214,7 @@ namespace JarvisConsole.DataProviders
                 _hub.OnActivityChanged += _hub_OnActivityChanged;
             }
             Console.WriteLine("Harmony Initializing");
-            Logging.Log("general", "Harmony attempting to initialize"); 
+            Logging.Log(_harmonyLogPath, "Harmony attempting to initialize"); 
             _activityList = new List<Activity>();
             _deviceList = new List<Device>();
 
@@ -230,7 +231,7 @@ namespace JarvisConsole.DataProviders
             }
             catch(Exception e)
             {
-                Logging.Log("general","Harmony failed to open connection: " +  e.Message);
+                Logging.Log(_harmonyLogPath,"Harmony failed to open connection: " +  e.Message);
             }
             
 
@@ -244,7 +245,7 @@ namespace JarvisConsole.DataProviders
             }
             catch(Exception e)
             {
-                Logging.Log("general", "Harmony failedto get current activity: " + e.Message);
+                Logging.Log(_harmonyLogPath, "Harmony failedto get current activity: " + e.Message);
             }
             
             string activityName = _harmonyConfig.ActivityNameFromId(activityId);

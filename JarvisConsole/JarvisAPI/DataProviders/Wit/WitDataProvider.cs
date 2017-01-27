@@ -26,6 +26,7 @@ namespace JarvisConsole.DataProviders.Wit
         private static ThreadContent _currentThreadContent;
         private static Configuration configuration = System.Web.Configuration.WebConfigurationManager.OpenWebConfiguration("~");
         private static string _witToken = configuration.AppSettings.Settings["wit_token"].Value;
+        private static string _witLogPath = "wit";
 
         #endregion
 
@@ -151,7 +152,7 @@ namespace JarvisConsole.DataProviders.Wit
                 }
                 catch (Exception e)
                 {
-                    Logging.Log("general", "Harmony failed to initialied: " + e.Message);
+                    Logging.Log(_witLogPath, "Harmony failed to initialied: " + e.Message);
                 }
             }
 
@@ -169,7 +170,7 @@ namespace JarvisConsole.DataProviders.Wit
                 catch (Exception e)
                 {
                     //thread.AiMessage = e.Message;
-                    Logging.Log("general", "Error initialaizing OrviboDataProvider: " + e.Message);
+                    Logging.Log(_witLogPath, "Error initialaizing OrviboDataProvider: " + e.Message);
                 }
             }
 
@@ -205,6 +206,10 @@ namespace JarvisConsole.DataProviders.Wit
             {
                 updateContext = Actions.Actions.ActionDictionary[action].Invoke(_currentThreadContent.Entities);
                 _currentThreadContent.Context = updateContext;
+            }
+            else
+            {
+                Logging.Log(_witLogPath, string.Format("System does not contain an action '{0}'", action));
             }
             
             return updateContext;

@@ -48,6 +48,10 @@
       <HintPath>..\packages\Loamen.agsXMPP.1.3.1\lib\net45\agsXMPP.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="ApiAiSDK, Version=1.6.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ApiAiSDK.1.6.5\lib\net35\ApiAiSDK.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="FirebaseSharp.Portable, Version=1.0.0.5, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\FirebaseSharp.1.0.0.5\lib\portable-net45+win+wp80\FirebaseSharp.Portable.dll</HintPath>
       <Private>True</Private>
@@ -231,10 +235,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Actions\ActionsGeneral.cs" />
-    <Compile Include="Actions\HarmonyActions.cs" />
-    <Compile Include="Actions\NestActions.cs" />
-    <Compile Include="Actions\OrviboActions.cs" />
+    <Compile Include="Actions\ApiAiActions\ActionsGeneral.cs" />
+    <Compile Include="Actions\ApiAiActions\HarmonyActions.cs" />
+    <Compile Include="Actions\ApiAiActions\NestActions.cs" />
+    <Compile Include="Actions\ApiAiActions\OrviboActions.cs" />
+    <Compile Include="Actions\WitActions\ActionsGeneral.cs" />
+    <Compile Include="Actions\WitActions\HarmonyActions.cs" />
+    <Compile Include="Actions\WitActions\NestActions.cs" />
+    <Compile Include="Actions\WitActions\OrviboActions.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\IdentityConfig.cs" />
@@ -280,6 +288,8 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\JarvisController.cs" />
     <Compile Include="Controllers\NestController.cs" />
+    <Compile Include="DataProviders\APIAI\APIAIDataProvider.cs" />
+    <Compile Include="DataProviders\APIAI\ThreadContent.cs" />
     <Compile Include="DataProviders\HarmonyDataProvider.cs" />
     <Compile Include="DataProviders\NestDataProvider.cs" />
     <Compile Include="DataProviders\Orvibo\OriviboDataProvider.cs" />

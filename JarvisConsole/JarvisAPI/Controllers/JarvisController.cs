@@ -4,11 +4,12 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
-using JarvisConsole.DataProviders.Wit;
 using Newtonsoft.Json;
 using JarvisConsole.DataProviders;
 using System.Configuration;
 using JarvisAPI.DataProviders.Orvibo;
+using JarvisAPI.DataProviders.APIAI;
+using JarvisConsole.DataProviders.APIAI;
 
 namespace JarvisAPI.Controllers
 {
@@ -17,7 +18,7 @@ namespace JarvisAPI.Controllers
         // GET: api/Jarvis
         public string Get(string conversationId, string message)
         {            
-            ThreadContent thread = new ThreadContent();
+             ThreadContent thread = new ThreadContent();
 
             ////Nest is not initialized and we are expecting a pin
             //if (!NestDataProvider.IsInitialized && NestDataProvider.ExpectingNestPin)
@@ -84,7 +85,7 @@ namespace JarvisAPI.Controllers
             //{
                 try
                 {
-                    thread = WitDataProvider.SendMessage(conversationId, message);
+                    thread = APIAIDataProvider.SendMessage(conversationId, message);
                 }  
                 catch(Exception e)
                 {

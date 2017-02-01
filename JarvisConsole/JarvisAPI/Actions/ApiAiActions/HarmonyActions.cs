@@ -217,13 +217,11 @@ namespace JarvisConsole.Actions
             Dictionary<string, string> contextParameters = new Dictionary<string, string>();
             if (activity != null && location != null)
             {
-
                 contextParameters.Add("activity", activity);
                 contextParameters.Add("location", location);
                 context.Parameters = contextParameters;
 
                 contexts.Add(context);
-
             }
 
             return contexts;

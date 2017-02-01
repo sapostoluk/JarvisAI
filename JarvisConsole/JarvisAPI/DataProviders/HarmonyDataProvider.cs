@@ -107,12 +107,16 @@ namespace JarvisConsole.DataProviders
             {
                 try
                 {
-                    //await _hub.StartActivityAsync(activityId);
+                    await _hub.StartActivityAsync(activityId);
                 }
                 catch(Exception e)
                 {
                     Logging.Log(_harmonyLogPath, string.Format("Harmony failed to start activity '{0}': " + e.Message, activityId));
                 }
+            }
+            else
+            {
+                Logging.Log(_harmonyLogPath, string.Format("Harmony failed to start activity '{0}': ", activityId));
             }
 
         }
@@ -210,7 +214,7 @@ namespace JarvisConsole.DataProviders
             {
                 _hub = new Client(_ipAddress, true);
                 _hub.OnTaskChanged += _hub_OnTaskChanged1;
-                _hub.OnConnectionClosed += _hub_OnConnectionClosed1;
+                //_hub.OnConnectionClosed += _hub_OnConnectionClosed1;
                 _hub.OnActivityChanged += _hub_OnActivityChanged;
             }
             Console.WriteLine("Harmony Initializing");

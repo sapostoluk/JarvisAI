@@ -32,7 +32,7 @@ namespace JarvisAPI.DataProviders.Orvibo
         #region Initializer
         public static void Initialize()
         {
-            _controller = Controller.CreateController(true);
+            _controller = Controller.CreateController(false);
             _deviceList = new ObservableCollection<OrviboDevice>();
             //Get list of orvibo devices from web config
 
@@ -50,10 +50,10 @@ namespace JarvisAPI.DataProviders.Orvibo
             }            
 
 
-            _controller.OnFoundNewDevice += _controller_OnFoundNewDevice;
+            //_controller.OnFoundNewDevice += _controller_OnFoundNewDevice;
 
-            _controller.StartListening();
-            _controller.SendDiscoveryCommand();
+            //_controller.StartListening();
+            //_controller.SendDiscoveryCommand();
 
         }
 

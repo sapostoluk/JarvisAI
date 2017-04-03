@@ -300,6 +300,5 @@ C:\Users\brandon\Source\Repos\Jarvis\JarvisConsole\JarvisAPI\bin\Microsoft.Owin.
 C:\Users\brandon\Source\Repos\Jarvis\JarvisConsole\JarvisAPI\bin\Microsoft.Owin.Security.MicrosoftAccount.xml
 C:\Users\brandon\Source\Repos\Jarvis\JarvisConsole\JarvisAPI\bin\System.Web.Http.Owin.xml
 C:\Users\brandon\Source\Repos\Jarvis\JarvisConsole\JarvisAPI\obj\Debug\JarvisAPI.csproj.App.config
-C:\Users\brandon\Source\Repos\Jarvis\JarvisConsole\JarvisAPI\obj\Debug\JarvisAPI.csprojResolveAssemblyReference.cache
 C:\Users\brandon\Source\Repos\Jarvis\JarvisConsole\JarvisAPI\obj\Debug\JarvisAPI.dll
 C:\Users\brandon\Source\Repos\Jarvis\JarvisConsole\JarvisAPI\obj\Debug\JarvisAPI.pdb

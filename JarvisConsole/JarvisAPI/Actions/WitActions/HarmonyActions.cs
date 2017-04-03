@@ -1,5 +1,5 @@
 ﻿using com.valgut.libs.bots.Wit.Models;
-using JarvisConsole.DataProviders;
+using JarvisAPI.DataProviders;
 using HarmonyHub;
 using System;
 using System.Collections.Generic;
@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using JarvisAPI;
 
-namespace JarvisConsole.Actions
+namespace JarvisAPI.Actions.WitActions
 {
     public static partial class Actions
     {

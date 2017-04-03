@@ -5,7 +5,7 @@ using System.Collections.ObjectModel;
 using System.Configuration;
 using System.Linq;
 
-namespace JarvisConsole.Actions
+namespace JarvisAPI.Actions.WitActions
 {
     public static partial class Actions
     {

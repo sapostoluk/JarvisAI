@@ -6,7 +6,7 @@ using System.Collections.ObjectModel;
 using System.Configuration;
 using System.Linq;
 
-namespace JarvisConsole.Actions
+namespace JarvisAPI.Actions.ApiAiActions
 {
     public static partial class ApiAiActions
     {
@@ -23,8 +23,8 @@ namespace JarvisConsole.Actions
                     
 
             //Nest activities
-            //{"NestSetTemperature", NestSetTemperature },
-            //{"NestCheckStatus", NestCheckStatus },
+            {"NestSetTemperature", NestSetTemperature },
+            {"NestCheckStatus", NestCheckStatus },
 
             //Orvibo activities
             //{"OrviboControl", OrviboControl },
@@ -55,6 +55,7 @@ namespace JarvisConsole.Actions
         private static string _contextProduct = "Product";
         private static string _contextUnit = "Unit";
         private static string _contextNumber = "number";
+        private static string _contextTemperature = "temperature";
 
         //Orvibo context keys
         private static string _contextOnOff = "on_off";

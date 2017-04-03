@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace JarvisConsole.DataProviders.APIAI
+namespace JarvisAPI.DataProviders.APIAI
 {
     public class ThreadContent
     {
@@ -22,7 +22,7 @@ namespace JarvisConsole.DataProviders.APIAI
 
         private string _action = "";
 
-        private object _context ="";        
+        //private object _context ="";        
 
         #endregion
 
@@ -87,17 +87,17 @@ namespace JarvisConsole.DataProviders.APIAI
             }
         }
 
-        public object Context
-        {
-            get { return _context; }
-            set
-            {
-                if(value != _context)
-                {
-                    _context = value;
-                }
-            }
-        }
+        //public object Context
+        //{
+        //    get { return _context; }
+        //    set
+        //    {
+        //        if(value != _context)
+        //        {
+        //            _context = value;
+        //        }
+        //    }
+        //}
 
         #endregion
 

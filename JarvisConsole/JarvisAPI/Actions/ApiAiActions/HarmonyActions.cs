@@ -1,5 +1,5 @@
 ﻿using com.valgut.libs.bots.Wit.Models;
-using JarvisConsole.DataProviders;
+using JarvisAPI.DataProviders;
 using HarmonyHub;
 using System;
 using System.Collections.Generic;
@@ -12,7 +12,7 @@ using JarvisAPI;
 using JarvisAPI.DataProviders.APIAI;
 using ApiAiSDK.Model;
 
-namespace JarvisConsole.Actions
+namespace JarvisAPI.Actions.ApiAiActions
 {
     public static partial class ApiAiActions
     {

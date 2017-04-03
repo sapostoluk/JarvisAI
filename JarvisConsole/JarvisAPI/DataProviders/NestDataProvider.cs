@@ -9,9 +9,9 @@ using System.Net.Http;
 using System.Net;
 using Newtonsoft.Json;
 using FirebaseSharp.Portable;
-using JarvisAPI;
 
-namespace JarvisConsole.DataProviders
+
+namespace JarvisAPI.DataProviders
 {
     public static class NestDataProvider
     {
@@ -227,7 +227,7 @@ namespace JarvisConsole.DataProviders
             }
         }
 
-        public static async void SetNestItemAsync(NestItem item, string payload)
+        public static async Task SetNestItemAsync(NestItem item, string payload)
         {
             //Firebase firebaseClient = new Firebase("https://developer-api.nest.com", _accessToken);
             try

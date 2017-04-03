@@ -1,15 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Web.Http;
 using Newtonsoft.Json;
-using JarvisConsole.DataProviders;
-using System.Configuration;
-using JarvisAPI.DataProviders.Orvibo;
 using JarvisAPI.DataProviders.APIAI;
-using JarvisConsole.DataProviders.APIAI;
 
 namespace JarvisAPI.Controllers
 {
@@ -19,11 +11,21 @@ namespace JarvisAPI.Controllers
         public string Get(string conversationId, string message)
         {            
              ThreadContent thread = new ThreadContent();
-             APIAIDataProvider.Initialize();
-             thread = APIAIDataProvider.SendMessage(conversationId, message);
+            string serialized = "";
+            try
+            {
+                APIAIDataProvider.Initialize();
+                thread = APIAIDataProvider.SendMessage(conversationId, message);
+                serialized = JsonConvert.SerializeObject(thread);
+            }
+            catch(Exception e)
+            {
+                Logging.Log("JarvisAPIController", "Error with apiai" + e.Message);
+            }
 
 
-            return JsonConvert.SerializeObject(thread);
+
+            return serialized;
 
         }
 

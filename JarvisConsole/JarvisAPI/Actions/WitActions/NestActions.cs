@@ -1,5 +1,6 @@
 ﻿using com.valgut.libs.bots.Wit.Models;
-using JarvisConsole.DataProviders;
+using JarvisAPI.DataProviders;
+using JarvisAPI.DataProviders;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -8,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace JarvisConsole.Actions
+namespace JarvisAPI.Actions.WitActions
 {
     public static partial class Actions
     {        

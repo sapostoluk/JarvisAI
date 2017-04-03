@@ -1,15 +1,14 @@
 ﻿using ApiAiSDK;
 using ApiAiSDK.Model;
 using JarvisAPI.DataProviders.Orvibo;
-using JarvisConsole.Actions;
-using JarvisConsole.DataProviders;
-using JarvisConsole.DataProviders.APIAI;
+using JarvisAPI.Actions;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using JarvisAPI.Actions.ApiAiActions;
 
 namespace JarvisAPI.DataProviders.APIAI
 {
@@ -52,11 +51,11 @@ namespace JarvisAPI.DataProviders.APIAI
             if (response.Result.Action != null)
             {
                 InitializeDataProviders(_currentThreadContent.AiMessage);
-                if (Actions.ActionDictionary.ContainsKey(response.Result.Action))
+                if (ApiAiActions.ActionDictionary.ContainsKey(response.Result.Action))
                 {
                     //Invoke action
                     List<AIContext> contexts = ApiAiActions.ActionDictionary[response.Result.Action].Invoke(response.Result.Parameters);
-                    if (contexts != null)
+                    if (contexts.Count > 0)
                     {
                         List<Entity> entities = new List<Entity>();
                         RequestExtras extras = new RequestExtras(contexts, entities);

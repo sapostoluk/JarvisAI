@@ -7,11 +7,10 @@ using com.valgut.libs.bots.Wit.Models;
 using System.Configuration;
 using com.valgut.libs.bots.Wit;
 using System.Collections.ObjectModel;
-using JarvisConsole.Actions;
-using JarvisAPI;
 using JarvisAPI.DataProviders.Orvibo;
+using JarvisAPI.Actions.WitActions;
 
-namespace JarvisConsole.DataProviders.Wit
+namespace JarvisAPI.DataProviders.Wit
 {
     public static class WitDataProvider
     {
@@ -202,9 +201,9 @@ namespace JarvisConsole.DataProviders.Wit
             InitializeDataProviders(_currentThreadContent.AiMessage);
             _currentThreadContent.Action = action;
             object updateContext = context;
-            if(Actions.Actions.ActionDictionary.ContainsKey(action))
+            if(Actions.WitActions.Actions.ActionDictionary.ContainsKey(action))
             {
-                updateContext = Actions.Actions.ActionDictionary[action].Invoke(_currentThreadContent.Entities);
+                updateContext = Actions.WitActions.Actions.ActionDictionary[action].Invoke(_currentThreadContent.Entities);
                 _currentThreadContent.Context = updateContext;
             }
             else

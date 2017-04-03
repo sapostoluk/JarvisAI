@@ -1,4 +1,5 @@
-﻿using OrviboController.Common;
+﻿using JarvisAPI.DataProviders.Orvibo;
+using OrviboController.Common;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -16,6 +17,7 @@ namespace JarvisAPI.DataProviders.Orvibo
         private static bool _isCycling;
         private static bool _nextCycleIsOn;
         private static ObservableCollection<OrviboDevice> _deviceList;
+        private static string _orvibo_log_location = "orvibo";
         
         private static Configuration configuration = System.Web.Configuration.WebConfigurationManager.OpenWebConfiguration("~");
 
@@ -24,7 +26,7 @@ namespace JarvisAPI.DataProviders.Orvibo
         #region Properties
         public static bool isInitialized
         {
-            get { return (_controller != null); }
+            get { return (_controller != null && _deviceList.Count > 0); }
         }
 
         #endregion
@@ -32,29 +34,45 @@ namespace JarvisAPI.DataProviders.Orvibo
         #region Initializer
         public static void Initialize()
         {
-            _controller = Controller.CreateController(false);
-            _deviceList = new ObservableCollection<OrviboDevice>();
-            //Get list of orvibo devices from web config
+            Logging.Log(_orvibo_log_location, "Orvibo begin initialization");
 
-            int numOfDevices = 0;
-            Int32.TryParse(configuration.AppSettings.Settings["OrviboNumberOfDevices"].Value,out numOfDevices);
-
-            for(int i = 0; i < numOfDevices; i++)
+            if(_controller == null || _deviceList.Count <= 0)
             {
-                string mac = configuration.AppSettings.Settings[configuration.AppSettings.Settings.AllKeys.FirstOrDefault(e => e.Contains("Orvibo") && e.Contains("MacAddress") && e.Contains(i.ToString()))].Value;
-                string ip = configuration.AppSettings.Settings[configuration.AppSettings.Settings.AllKeys.FirstOrDefault(e => e.Contains("Orvibo") && e.Contains("IpAddress") && e.Contains(i.ToString()))].Value;
+                Logging.Log("orvibo", "Controller is null");
+                //Logging.Log("orvibo", "Count" + _deviceList.Count.ToString());           
+                _controller = Controller.CreateController(false);
+                _deviceList = new ObservableCollection<OrviboDevice>();
+                //Get list of orvibo devices from web config
 
-                OrviboDevice device = new OrviboDevice("OrviboDevice" + i.ToString(), Device.CreateDevice(ip, mac));
-                    
-                _deviceList.Add(device);
-            }            
+                Logging.Log(_orvibo_log_location, "Got to Try");
+                int numOfDevices = 0;
+                try
+                {
+                    Int32.TryParse(configuration.AppSettings.Settings["OrviboNumberOfDevices"].Value, out numOfDevices);
 
+                    for (int i = 0; i < numOfDevices; i++)
+                    {
+                        string mac = configuration.AppSettings.Settings[configuration.AppSettings.Settings.AllKeys.FirstOrDefault(e => e.Contains("Orvibo") && e.Contains("MacAddress") && e.Contains(i.ToString()))].Value;
+                        string ip = configuration.AppSettings.Settings[configuration.AppSettings.Settings.AllKeys.FirstOrDefault(e => e.Contains("Orvibo") && e.Contains("IpAddress") && e.Contains(i.ToString()))].Value;
 
-            //_controller.OnFoundNewDevice += _controller_OnFoundNewDevice;
+                        OrviboDevice device = new OrviboDevice("OrviboDevice" + i.ToString(), Device.CreateDevice(ip, mac));
 
-            //_controller.StartListening();
-            //_controller.SendDiscoveryCommand();
+                        _deviceList.Add(device);
+                    }
 
+                    //_controller.OnFoundNewDevice += _controller_OnFoundNewDevice;
+
+                    _controller.StartListening();
+                    _controller.SendDiscoveryCommand();
+                }
+                catch (Exception ex)
+                {
+                    Logging.Log(_orvibo_log_location, "Exception while initializing orvibo: " + ex.Message);
+                }
+            }
+            
+
+            Logging.Log(_orvibo_log_location, "Orvibo finished initialization");
         }
 
         #endregion
@@ -81,22 +99,56 @@ namespace JarvisAPI.DataProviders.Orvibo
             return returnDevice;
         }
 
-        public static void OnCommand(OrviboDevice oDevice)
+        public static bool OnCommand(string name)
         {
-            var success = false;
-            Device device = null;
+            bool success = false;
+            try
+            {
+                OrviboDevice oDevice = GetDevice(name);
+                Device device = null;
 
-            device = Device.CreateDevice(oDevice.ODevice.IpAddr, oDevice.ODevice.MacAddr);
-            success = DoControlPower(device, true);
+                device = Device.CreateDevice(oDevice.ODevice.IpAddr, oDevice.ODevice.MacAddr);
+                success = DoControlPower(device, true);
+
+            }
+            catch(Exception ex)
+            {
+                Logging.Log(_orvibo_log_location, string.Format("Exception while changing device {0} to 'on': " + ex.Message, name));
+            }
+
+            return success;
         }
 
-        public static void OffCommand(OrviboDevice oDevice)
+        public static bool OffCommand(string name)
         {
-            var success = false;
-            Device device = null;
+            bool success = false;
+            try
+            {
+                OrviboDevice oDevice = GetDevice(name);
+                Device device = null;
+                device = Device.CreateDevice(oDevice.ODevice.IpAddr, oDevice.ODevice.MacAddr);
+                
+                success = DoControlPower(device, false);
+            }
+            catch(Exception ex)
+            {
+                Logging.Log(_orvibo_log_location, string.Format("Exception while changing device {0} to 'off': " + ex.Message, name));
+            }
 
-            device = Device.CreateDevice(oDevice.ODevice.IpAddr, oDevice.ODevice.MacAddr);
-            success = DoControlPower(device, false);
+            return success;
+        }
+
+        public static ObservableCollection<string> GetDevices()
+        {
+            ObservableCollection<string> stringList = new ObservableCollection<string>();
+            if (_deviceList != null)
+            {               
+                foreach (OrviboDevice device in _deviceList)
+                {
+                    stringList.Add(device.Name);
+                }
+            }
+            return stringList;
         }
         #endregion
 
@@ -108,11 +160,10 @@ namespace JarvisAPI.DataProviders.Orvibo
             var subscription = Command.CreateSubscribeCommand(device);
 
             var success = _controller.SendCommandWaitResponse(device, subscription);
-
             if(success)
             {
                 var control = Command.CreatePowerControlCommand(device, on);
-                success = _controller.SendCommandWaitResponse(device, control);
+                success = _controller.SendCommandWaitResponse(device, control);           
             }
             return success;
         }

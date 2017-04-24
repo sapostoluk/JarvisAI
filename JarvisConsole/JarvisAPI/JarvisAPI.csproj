@@ -98,7 +98,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="OrviboController.Common">
-      <HintPath>..\..\..\..\JarvisConsole\JarvisAPI\bin\OrviboController.Common.dll</HintPath>
+      <HintPath>..\..\..\HomeAutomation---API\HomeServerAPI\packages\Orvibo\OrviboController.Common.dll</HintPath>
     </Reference>
     <Reference Include="RestSharp, Version=105.2.3.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\RestSharp.105.2.3\lib\net452\RestSharp.dll</HintPath>

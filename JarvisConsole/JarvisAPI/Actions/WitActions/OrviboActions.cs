@@ -7,7 +7,7 @@ using System.Web;
 using JarvisAPI.DataProviders.Orvibo;
 
 
-namespace JarvisConsole.Actions
+namespace JarvisAPI.Actions.WitActions
 {
     public static partial class Actions
     {
@@ -42,13 +42,13 @@ namespace JarvisConsole.Actions
                 {
                     case "on":
                         {
-                            OrviboDataProvider.OnCommand(device);
+                            OrviboDataProvider.OnCommand(device.Name);
                         }
                         break;
 
                     case "off":
                         {
-                            OrviboDataProvider.OffCommand(device);
+                            OrviboDataProvider.OffCommand(device.Name);
                         }
                         break;
                 }

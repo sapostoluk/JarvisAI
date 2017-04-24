@@ -9,7 +9,7 @@ using System.Diagnostics;
 using System.Configuration;
 using JarvisAPI;
 
-namespace JarvisConsole.DataProviders
+namespace JarvisAPI.DataProviders
 {
     public static class HarmonyDataProvider
     {
@@ -33,7 +33,7 @@ namespace JarvisConsole.DataProviders
         {
             get
             {
-                if (!string.IsNullOrWhiteSpace(_ipAddress) && _harmonyConfig != null)
+                if (_harmonyConfig != null)
                 {
                     return true;
                 }
@@ -101,20 +101,33 @@ namespace JarvisConsole.DataProviders
             
         }
 
-        public static async Task StartActivity(string activityId)
+        private static async void ActivityStart(string activityId)
         {
+            await _hub.StartActivityAsync(activityId);         
+        }
+
+        public static async Task<bool> StartActivity(string activityId)
+        {
+            bool success = false;
             if (_hub.IsReady)
             {
                 try
                 {
-                    //await _hub.StartActivityAsync(activityId);
+                    Logging.Log(_harmonyLogPath, "Starting Activity");
+                    _hub.StartActivityAsync(activityId);
+                    _hub_OnActivityChanged(null, activityId);
+                    if(_currentActivity.Id == activityId)
+                    {                       
+                        success = true;                       
+                    }
+                    
                 }
                 catch(Exception e)
                 {
                     Logging.Log(_harmonyLogPath, string.Format("Harmony failed to start activity '{0}': " + e.Message, activityId));
                 }
             }
-
+            return success;
         }
 
         public static List<Activity> ActivityLookup(string name)
@@ -154,14 +167,20 @@ namespace JarvisConsole.DataProviders
             //}
         }
 
-        private static async Task HarmonyGetConfigAsync()
+        private static void HarmonyGetConfigAsync()
         {
             //Fetch our config
-            var harmonyConfig = await _hub.GetConfigAsync();
-            if (harmonyConfig == null)
+            Logging.Log(_harmonyLogPath, "Waiting for hub to be ready and not pending");
+            while(_hub.RequestPending && !_hub.IsReady)
             {
-                return;
+                //Wait
             }
+            Logging.Log(_harmonyLogPath, "Hub ready and not pending");
+            Task<Config> t = _hub.GetConfigAsync();
+            t.Wait();
+            var harmonyConfig = t.Result;
+            Logging.Log(_harmonyLogPath, "Finished trying to get config");
+            
             _harmonyConfig = harmonyConfig;
         }
 
@@ -182,19 +201,19 @@ namespace JarvisConsole.DataProviders
             }
             else
             {
-                throw new Exception("Harmony config is empty");
+                Logging.Log(_harmonyLogPath,"Error getting devices: Harmony config is empty");
             }
         }
 
         private static void GetActivities()
         {
-            if (_harmonyConfig != null)
+            if (_harmonyConfig != null && _harmonyConfig.Activities != null)
             {
                 _activityList = _harmonyConfig.Activities.ToList();
             }
             else
             {
-                throw new Exception("Harmony config is empty");
+                Logging.Log(_harmonyLogPath, "Error getting devices: Harmony config is empty");
             }
 
             _powerOffActivity = _activityList.Where(e => e.Label == "PowerOff").FirstOrDefault();
@@ -205,29 +224,78 @@ namespace JarvisConsole.DataProviders
         #region Initializer
         public async static void Initialize()
         {
+            Logging.Log(_harmonyLogPath, "Harmony attempting to initialize");
             _ipAddress = configuration.AppSettings.Settings["harmony_ip"].Value;
             if (_hub == null || !_hub.Host.Equals(_ipAddress))
             {
+                Logging.Log(_harmonyLogPath, "Creating new hub");
                 _hub = new Client(_ipAddress, true);
                 _hub.OnTaskChanged += _hub_OnTaskChanged1;
                 _hub.OnConnectionClosed += _hub_OnConnectionClosed1;
                 _hub.OnActivityChanged += _hub_OnActivityChanged;
             }
+            //else
+            //{
+            //    _hub.CancelCurrentTask();
+            //    _hub.CloseAsync();
+                
+            //}
             Console.WriteLine("Harmony Initializing");
-            Logging.Log(_harmonyLogPath, "Harmony attempting to initialize"); 
+            
             _activityList = new List<Activity>();
             _deviceList = new List<Device>();
-
+            
             try
             {
-                await HarmonyOpenAsync();
-
-
-                while (!_hub.IsReady)
+                if (_hub.IsClosed)
                 {
-                    //wait
+                    Logging.Log(_harmonyLogPath, "Hub is closed, attempting to open hub");
+                    HarmonyOpenAsync();
+                    while(!_hub.IsOpen)
+                    {
+                        //Wait
+                    }
+                    if (_hub.IsOpen)
+                    {
+                        Logging.Log(_harmonyLogPath, "Connection has been opened");
+                    }
+
+                    Logging.Log(_harmonyLogPath, "Waiting for hub to be ready");
+                    while (!_hub.IsReady)
+                    {
+                        //wait                      
+                    }
+                    if(_hub.RequestPending)
+                    {
+                        Logging.Log(_harmonyLogPath, "Request is pending, cancelling task");
+                        _hub.CancelCurrentTask();
+                    }
+                    Logging.Log(_harmonyLogPath, "Waiting for hub to be ready");
+                    while (!_hub.IsReady)
+                    {
+                        //wait                      
+                    }
+                    if (_hub.RequestPending)
+                    {
+                        Logging.Log(_harmonyLogPath, "Request is still pending, continuing");
+                        
+                    }
                 }
-                await HarmonyGetConfigAsync();
+                if(_hub.IsReady)
+                {
+                    Logging.Log(_harmonyLogPath, "Hub is ready getting config");
+                    HarmonyGetConfigAsync();
+                    if(_harmonyConfig != null)
+                    {
+                        Logging.Log(_harmonyLogPath, "Got config");
+                    }
+                    else
+                    {
+                        Logging.Log(_harmonyLogPath, "Did not get config");
+                    }
+                    
+                }
+                
             }
             catch(Exception e)
             {
@@ -245,7 +313,7 @@ namespace JarvisConsole.DataProviders
             }
             catch(Exception e)
             {
-                Logging.Log(_harmonyLogPath, "Harmony failedto get current activity: " + e.Message);
+                Logging.Log(_harmonyLogPath, "Harmony failed to get current activity: " + e.Message);
             }
             
             string activityName = _harmonyConfig.ActivityNameFromId(activityId);
@@ -267,11 +335,11 @@ namespace JarvisConsole.DataProviders
 
         private async static void _hub_OnConnectionClosed1(object sender, bool e)
         {
-            Debug.Assert(_hub.IsClosed);
-            if(e)
-            {
-                Initialize();
-            }
+            //Debug.Assert(_hub.IsClosed);
+            //if(e)
+            //{
+            //    Initialize();
+            //}
         }
 
         private static void _hub_OnTaskChanged1(object sender, bool e)

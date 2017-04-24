@@ -1,15 +1,16 @@
-﻿using com.valgut.libs.bots.Wit.Models;
+﻿using ApiAiSDK.Model;
+using com.valgut.libs.bots.Wit.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Configuration;
 using System.Linq;
 
-namespace JarvisConsole.Actions
+namespace JarvisAPI.Actions.ApiAiActions
 {
-    public static partial class Actions
+    public static partial class ApiAiActions
     {
-        public static Dictionary<string, Func<ObservableCollection<KeyValuePair<string, List<Entity>>>, object>> ActionDictionary => new Dictionary<string, Func<ObservableCollection<KeyValuePair<string, List<Entity>>>, object>>
+        public static Dictionary<string, Func<Dictionary<string, object>, List<AIContext>>> ActionDictionary => new Dictionary<string, Func<Dictionary<string, object>, List<AIContext>>>
         {
             //General activites
             {"CheckSuccess", CheckSuccess },
@@ -26,7 +27,7 @@ namespace JarvisConsole.Actions
             {"NestCheckStatus", NestCheckStatus },
 
             //Orvibo activities
-            {"OrviboControl", OrviboControl },
+            //{"OrviboControl", OrviboControl },
         };
 
         private static string _actionLogPath = "actions";
@@ -54,6 +55,7 @@ namespace JarvisConsole.Actions
         private static string _contextProduct = "Product";
         private static string _contextUnit = "Unit";
         private static string _contextNumber = "number";
+        private static string _contextTemperature = "temperature";
 
         //Orvibo context keys
         private static string _contextOnOff = "on_off";
@@ -62,27 +64,29 @@ namespace JarvisConsole.Actions
         private static Configuration configuration = System.Web.Configuration.WebConfigurationManager.OpenWebConfiguration("~");
 
         #region Methods
-        private static object CheckSuccess(ObservableCollection<KeyValuePair<string, List<Entity>>> entities)
+        private static List<AIContext> CheckSuccess(Dictionary<string, object> parameters)
         {
-            object returnContext = null;
-            string status = "";
+            //object returnContext = null;
+            //string status = "";
 
-            if(entities.Any(e => e.Key == _contextSuccess))
-            {
-                status = entities.FirstOrDefault(e => e.Key == _contextSuccess).Value.FirstOrDefault().value.ToString();
-            }
-            if(!string.IsNullOrWhiteSpace(status))
-            {
-                if (status == _contextSuccessful)
-                {
-                    returnContext = new { Successful = "true" };
-                }
-                else if (status == _contextUnsuccessful)
-                {
-                    returnContext = new { Unsuccessful = "true" };
-                }
-            }
-            return returnContext;
+            //if(parameters.Any(e => e.Key == _contextSuccess))
+            //{
+            //    status = parameters.FirstOrDefault(e => e.Key == _contextSuccess).Value.ToString();
+            //}
+            //if(!string.IsNullOrWhiteSpace(status))
+            //{
+            //    if (status == _contextSuccessful)
+            //    {
+            //        returnContext = new { Successful = "true" };
+            //    }
+            //    else if (status == _contextUnsuccessful)
+            //    {
+            //        returnContext = new { Unsuccessful = "true" };
+            //    }
+            //}
+            ////return returnContext;
+            List<AIContext> contexts = null;
+            return contexts;
         }
 
         #endregion

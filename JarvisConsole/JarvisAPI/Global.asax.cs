@@ -1,4 +1,4 @@
-﻿using JarvisConsole.DataProviders;
+﻿using JarvisAPI.DataProviders;
 using JarvisAPI.DataProviders.Orvibo;
 using System;
 using System.Collections.Generic;

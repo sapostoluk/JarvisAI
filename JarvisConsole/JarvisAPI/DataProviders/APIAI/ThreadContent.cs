@@ -1,4 +1,5 @@
-﻿using com.valgut.libs.bots.Wit.Models;
+﻿
+using ApiAiSDK.Model;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -6,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace JarvisAPI.DataProviders.Wit
+namespace JarvisAPI.DataProviders.APIAI
 {
     public class ThreadContent
     {
@@ -15,13 +16,13 @@ namespace JarvisAPI.DataProviders.Wit
 
         private string _aiMessage = "";
 
+        private string _returnAiMessage = "";
+
         private string _userMessage = "";
 
         private string _action = "";
 
-        private object _context ="";
-
-        private ObservableCollection<KeyValuePair<string, List<Entity>>> _entities;
+        //private object _context ="";        
 
         #endregion
 
@@ -34,6 +35,18 @@ namespace JarvisAPI.DataProviders.Wit
                 if(value != _aiMessage)
                 {
                     _aiMessage = value;
+                }
+            }
+        }
+
+        public string ReturnAiMessage
+        {
+            get { return _returnAiMessage; }
+            set
+            {
+                if(value != _returnAiMessage)
+                {
+                    _returnAiMessage = value;
                 }
             }
         }
@@ -74,36 +87,24 @@ namespace JarvisAPI.DataProviders.Wit
             }
         }
 
-        public object Context
-        {
-            get { return _context; }
-            set
-            {
-                if(value != _context)
-                {
-                    _context = value;
-                }
-            }
-        }
-
-        public ObservableCollection<KeyValuePair<string, List<Entity>>> Entities
-        {
-            get { return _entities; }
-            set
-            {
-                if(!_entities.Equals(value))
-                {
-                    _entities = value;
-                }
-            }
-        }
+        //public object Context
+        //{
+        //    get { return _context; }
+        //    set
+        //    {
+        //        if(value != _context)
+        //        {
+        //            _context = value;
+        //        }
+        //    }
+        //}
 
         #endregion
 
         #region Constructor
         public ThreadContent()
         {
-            _entities = new ObservableCollection<KeyValuePair<string, List<Entity>>>();
+            //_entities = new ObservableCollection<KeyValuePair<string, List<Entity>>>();
             //Entities = new ObservableCollection<KeyValuePair<string, List<Entity>>>();
         }
 
@@ -113,7 +114,7 @@ namespace JarvisAPI.DataProviders.Wit
         #region Methods
         public void ClearAll()
         {
-            Entities.Clear();           
+            //Entities.Clear();           
         }
 
         #endregion

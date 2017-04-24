@@ -1,5 +1,6 @@
-﻿using com.valgut.libs.bots.Wit.Models;
-using JarvisConsole.DataProviders;
+﻿using ApiAiSDK.Model;
+using com.valgut.libs.bots.Wit.Models;
+using JarvisAPI.DataProviders;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -8,32 +9,37 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace JarvisConsole.Actions
+namespace JarvisAPI.Actions.ApiAiActions
 {
-    public static partial class Actions
+    public static partial class ApiAiActions
     {        
         #region Nest Activities Methods
-        private static object NestSetTemperature(ObservableCollection<KeyValuePair<string, List<Entity>>> entities)
+        private static List<AIContext> NestSetTemperature(Dictionary<string, object> parameters)
         {
-            object returnContext = null;
+            //object returnContext = null;
             string directionValue = "";
             bool directionPresent = false;
             string unitValue = "";
             bool unitPresent = false;
-            string numberValue = "";
+            string temperatureValue = "";
             bool numberPresent = false;
-            
-            if(entities.Any(e => e.Key == _contextDirection))
+
+            List<AIContext> contexts = new List<AIContext>();
+            AIContext context = new AIContext();
+            context.Name = "NestSetTemperatureReturn";
+            Dictionary<string, string> contextParameters = new Dictionary<string, string>();
+
+            if (parameters.Any(e => e.Key == _contextDirection))
             {
-                directionValue = entities.Where(e => e.Key == _contextDirection).FirstOrDefault().Value.FirstOrDefault().value.ToString();
+                directionValue = parameters.Where(e => e.Key == _contextDirection).FirstOrDefault().Value.ToString();
             }
-            if(entities.Any(e => e.Key == _contextUnit))
+            if(parameters.Any(e => e.Key == _contextUnit))
             {
-                unitValue = entities.Where(e => e.Key == _contextUnit).FirstOrDefault().Value.FirstOrDefault().value.ToString();
+                unitValue = parameters.Where(e => e.Key == _contextUnit).FirstOrDefault().Value.ToString();
             }
-            if(entities.Any(e => e.Key == _contextNumber))
+            if(parameters.Any(e => e.Key == _contextTemperature))
             {
-                numberValue = entities.Where(e => e.Key == _contextNumber).FirstOrDefault().Value.FirstOrDefault().value.ToString();
+                temperatureValue = parameters.Where(e => e.Key == _contextTemperature).FirstOrDefault().Value.ToString();
             }
 
             //set flags
@@ -43,23 +49,24 @@ namespace JarvisConsole.Actions
             if (!string.IsNullOrWhiteSpace(unitValue))
                 unitPresent = true;
 
-            if (!string.IsNullOrWhiteSpace(numberValue))
+            if (!string.IsNullOrWhiteSpace(temperatureValue))
                 numberPresent = true;
 
             //decisions
+            bool success = false;
             if(directionPresent && numberPresent)
             {
-                returnContext = new { Direction = directionValue, number = numberValue };
-                NestSetItem(NestDataProvider.NestItem.TargetTemperature, numberValue);
+                //returnContext = new { Direction = directionValue, number = numberValue };
+                success = NestSetItem(NestDataProvider.NestItem.TargetTemperature, temperatureValue);
             }
             else if(!directionPresent && numberPresent)
             {
-                returnContext = new { number = numberValue, missingDirection = "" };
-                NestSetItem(NestDataProvider.NestItem.TargetTemperature, numberValue);
+                //returnContext = new { number = numberValue, missingDirection = "" };
+                success = NestSetItem(NestDataProvider.NestItem.TargetTemperature, temperatureValue);
             }
             else if(directionPresent && !numberPresent)
             {
-                returnContext = new { Direction = directionValue, missingNumber = "" };
+                //returnContext = new { Direction = directionValue, missingNumber = "" };
                 int tempInterval; //= Convert.ToInt32(configuration.AppSettings.Settings["temperature_interval"].Value);
                 int.TryParse(configuration.AppSettings.Settings["temperature_interval"].Value, out tempInterval);
                 
@@ -75,21 +82,45 @@ namespace JarvisConsole.Actions
                 {
                     newTarget = currentTemp + tempInterval;
                 }
-                NestSetItem(NestDataProvider.NestItem.TargetTemperature, newTarget.ToString());
+                success = NestSetItem(NestDataProvider.NestItem.TargetTemperature, newTarget.ToString());
             }
-            else if(!directionPresent && !numberPresent)
+            if (!success)
             {
-                returnContext = new { missingNumber = "", missingValue = "" };
+                contextParameters.Add("direction", directionValue);
+                contextParameters.Add("temperature", temperatureValue);
+                context.Parameters = contextParameters;
+
+                contexts.Add(context);
             }
 
-            return returnContext;
+            return contexts;
         }
 
-        private static object NestCheckStatus(ObservableCollection<KeyValuePair<string, List<Entity>>> entities)
+        private static List<AIContext> NestCheckStatus(Dictionary<string, object> parameters)
         {
             string ambientTemp = NestGetItem(NestDataProvider.NestItem.AmbientTemperature);
             string targetTemp = NestGetItem(NestDataProvider.NestItem.TargetTemperature);
-            return new { expectedAmbientTemp = ambientTemp, expectedTargetTemp = targetTemp };
+
+            List<AIContext> contexts = new List<AIContext>();
+            AIContext context = new AIContext();           
+            context.Name = "NestCheckStatusReturn";
+            Dictionary<string, string> contextParameters = new Dictionary<string, string>();
+
+            if(ambientTemp != null && targetTemp != null)
+            {
+                contextParameters.Add("ambientTemp", ambientTemp);
+                contextParameters.Add("targetTemp", targetTemp);
+                context.Parameters = contextParameters;
+                contexts.Add(context);
+            }
+            //else if(ambientTemp == null || targetTemp ==null)
+            //{
+            //    contextParameters.Add("success", "false");
+            //    context.Parameters = contextParameters;
+            //    contexts.Add(context);
+            //}
+
+            return contexts;
         }
 
         #endregion

@@ -288,11 +288,14 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\JarvisController.cs" />
     <Compile Include="Controllers\LocationController.cs" />
+    <Compile Include="Controllers\LogsController.cs" />
     <Compile Include="Controllers\ManualControlControllers\HarmonyControlController.cs" />
     <Compile Include="Controllers\ManualControlControllers\Nest\NestTemperatureController.cs" />
     <Compile Include="Controllers\OrviboController.cs" />
+    <Compile Include="Controllers\ServicesController.cs" />
     <Compile Include="Controllers\SettingsControllers\GlobalSettingsController.cs" />
     <Compile Include="Controllers\SettingsControllers\UserSettingsController.cs" />
+    <Compile Include="Controllers\UsersController.cs" />
     <Compile Include="DataProviders\APIAI\APIAIDataProvider.cs" />
     <Compile Include="DataProviders\APIAI\ThreadContent.cs" />
     <Compile Include="DataProviders\HarmonyDataProvider.cs" />
@@ -359,9 +362,12 @@
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
+    <Content Include="Scripts\knockout-3.4.2.debug.js" />
+    <Content Include="Scripts\knockout-3.4.2.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
+    <Content Include="Views\Home\HomeViewModel.js" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -377,6 +383,9 @@
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Views\Users\Users.cshtml" />
+    <Content Include="Views\Services\Services.cshtml" />
+    <Content Include="Views\Logs\Logs.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -9,7 +9,7 @@ namespace JarvisAPI.Models.Providers
     public class SettingsDBProvider
     {
         string globalSettingsFileName = "GlobalSettings.json";
-        string path = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + "\\HomeServer\\";
+        string path = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + "\\JarvisAI\\";
 
         /// <summary>
         /// Writes serialized json settings to a flat settings file

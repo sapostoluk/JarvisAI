@@ -81,6 +81,9 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     <File Include="bin/Antlr3.Runtime.dll">
       <publishTime>01/28/2017 15:07:44</publishTime>
     </File>
+    <File Include="bin/ApiAiSDK.dll">
+      <publishTime>04/24/2017 16:53:42</publishTime>
+    </File>
     <File Include="bin/ApplicationInsights.config">
       <publishTime>01/28/2017 15:07:39</publishTime>
     </File>
@@ -97,7 +100,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>01/28/2017 15:07:50</publishTime>
     </File>
     <File Include="bin/JarvisAPI.dll">
-      <publishTime>01/28/2017 16:17:26</publishTime>
+      <publishTime>05/02/2017 22:26:35</publishTime>
     </File>
     <File Include="bin/Microsoft.AI.Agent.Intercept.dll">
       <publishTime>01/28/2017 15:07:46</publishTime>
@@ -286,7 +289,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>01/28/2017 15:07:42</publishTime>
     </File>
     <File Include="packages.config">
-      <publishTime>01/28/2017 15:07:44</publishTime>
+      <publishTime>05/02/2017 20:58:30</publishTime>
     </File>
     <File Include="Scripts/bootstrap.js">
       <publishTime>01/28/2017 15:07:44</publishTime>
@@ -315,6 +318,12 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     <File Include="Scripts/jquery.validate.unobtrusive.min.js">
       <publishTime>01/28/2017 15:07:44</publishTime>
     </File>
+    <File Include="Scripts/knockout-3.4.2.debug.js">
+      <publishTime>05/02/2017 20:58:30</publishTime>
+    </File>
+    <File Include="Scripts/knockout-3.4.2.js">
+      <publishTime>05/02/2017 20:58:29</publishTime>
+    </File>
     <File Include="Scripts/modernizr-2.6.2.js">
       <publishTime>01/28/2017 15:07:44</publishTime>
     </File>
@@ -325,16 +334,40 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>01/28/2017 15:07:44</publishTime>
     </File>
     <File Include="Scripts/_references.js">
-      <publishTime>01/28/2017 15:07:44</publishTime>
+      <publishTime>05/02/2017 21:38:32</publishTime>
+    </File>
+    <File Include="Views/Home/HomeViewModel.js">
+      <publishTime>05/02/2017 21:02:29</publishTime>
     </File>
     <File Include="Views/Home/Index.cshtml">
-      <publishTime>01/28/2017 15:07:44</publishTime>
+      <publishTime>05/02/2017 21:15:57</publishTime>
+    </File>
+    <File Include="Views/Log/Logs.cshtml">
+      <publishTime>05/02/2017 22:22:28</publishTime>
+    </File>
+    <File Include="Views/Logs/Logs.cshtml">
+      <publishTime>05/02/2017 22:22:28</publishTime>
+    </File>
+    <File Include="Views/Services/Services.cshtml">
+      <publishTime>05/02/2017 22:22:07</publishTime>
     </File>
     <File Include="Views/Shared/Error.cshtml">
       <publishTime>01/28/2017 15:07:44</publishTime>
     </File>
     <File Include="Views/Shared/_Layout.cshtml">
-      <publishTime>01/28/2017 15:07:44</publishTime>
+      <publishTime>05/02/2017 22:23:39</publishTime>
+    </File>
+    <File Include="Views/Users.cshtml">
+      <publishTime>05/02/2017 21:38:01</publishTime>
+    </File>
+    <File Include="Views/Users/Users.cshtml">
+      <publishTime>05/02/2017 22:21:36</publishTime>
+    </File>
+    <File Include="Views/Users/UsersView.html">
+      <publishTime>05/02/2017 21:24:05</publishTime>
+    </File>
+    <File Include="Views/Users/UsersViewModel.js">
+      <publishTime>05/02/2017 21:24:34</publishTime>
     </File>
     <File Include="Views/Web.config">
       <publishTime>01/28/2017 15:07:44</publishTime>
@@ -343,7 +376,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>01/28/2017 15:07:44</publishTime>
     </File>
     <File Include="Web.config">
-      <publishTime>01/28/2017 16:18:04</publishTime>
+      <publishTime>05/02/2017 21:04:23</publishTime>
     </File>
   </ItemGroup>
 </Project>

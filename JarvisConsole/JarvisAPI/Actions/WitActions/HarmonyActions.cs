@@ -37,17 +37,58 @@ namespace JarvisAPI.Actions.WitActions
         private static object HarmonyStartActivity(ObservableCollection<KeyValuePair<string, List<Entity>>> entities)
         {
             string StereoActivity = "";
+            string StereoActivity1 = "";
             string TelevisionActivity = "";
+            string TelevisionActivity1 = "";
+            string Location = "";
+            string Location1 = "";
+            List<string> stereoEntities = new List<string>();
+            List<string> televisionEntities = new List<string>();
+            List<string> locationEntities = new List<string>();
 
             object returnContext = null;
             //Check entities for Stereo or Television entities
-            if (entities.Any(e => e.Key == _contextStereo))
+            ////Check for stereo entity
+            //if (entities.Any(e => e.Key == _contextStereo))
+            //{
+            //    StereoActivity = entities.Where(x => x.Key == _contextStereo).FirstOrDefault().Value.FirstOrDefault().value.ToString();
+            //}
+            ////Check for another stereo entity
+            //if (entities.Any(e => e.Key == _contextStereo1))
+            //{
+            //    StereoActivity1 = entities.Where(x => x.Key == _contextStereo).FirstOrDefault().Value.FirstOrDefault().value.ToString();
+            //}
+
+            ////Check for Television entity
+            //if (entities.Any(e => e.Key == _contextTelevision))
+            //{
+            //    TelevisionActivity = entities.Where(x => x.Key == _contextTelevision).FirstOrDefault().Value.FirstOrDefault().value.ToString();
+            //}
+            ////Check for another stereo entity
+
+            //if(entities.Any(e => e.Key == _contextHomeLocation))
+            //{
+            //    Location = entities.Where(x => x.Key == _contextHomeLocation).FirstOrDefault().Value.FirstOrDefault().value.ToString();
+            //}
+            //if (entities.Any(e => e.Key == _contextHomeLocation1))
+            //{
+            //    Location1 = entities.Where(x => x.Key == _contextHomeLocation1).FirstOrDefault().Value.FirstOrDefault().value.ToString();
+            //}
+
+            foreach(KeyValuePair<string, List<Entity>> ents in entities)
             {
-                StereoActivity = entities.Where(x => x.Key == _contextStereo).FirstOrDefault().Value.FirstOrDefault().value.ToString();
-            }
-            if (entities.Any(e => e.Key == _contextTelevision))
-            {
-                TelevisionActivity = entities.Where(x => x.Key == _contextTelevision).FirstOrDefault().Value.FirstOrDefault().value.ToString();
+                if(ents.Key.Contains(_contextHomeLocation))
+                {
+                    locationEntities.Add(ents.Value.FirstOrDefault().value.ToString());
+                }
+                if(ents.Key.Contains(_contextTelevision))
+                {
+                    televisionEntities.Add(ents.Value.FirstOrDefault().value.ToString());
+                }
+                if(ents.Key.Contains(_contextStereo))
+                {
+                    stereoEntities.Add(ents.Value.FirstOrDefault().value.ToString());
+                }
             }
 
             //Set return

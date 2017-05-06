@@ -37,10 +37,14 @@ namespace JarvisAPI.Actions.WitActions
         private static string _contextSuccess = "Success";
         private static string _contextSuccessful = "true";
         private static string _contextUnsuccessful = "false";
+        private static string _contextHomeLocation = "HomeLocation";
+        private static string _contextHomeLocation1 = "HomeLocation1";
 
         //Harmony context keys
         private static string _contextStereo = "Stereo";
+        private static string _contextStereo1 = "Stereo1";
         private static string _contextTelevision = "Television";
+        private static string _contextTelevision1 = "Television1";
         private static string _contextDirection = "Direction";
         private static string _contextVolumeDown = "VolumeDown";
         private static string _contextVolumeUp = "VolumeUp";

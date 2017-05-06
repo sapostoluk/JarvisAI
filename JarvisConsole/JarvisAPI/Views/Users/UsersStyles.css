@@ -1,0 +1,19 @@
+﻿body {
+}
+
+label {
+    color: blue;
+    font-size: 300%;
+}
+
+li {
+    color: blue;
+}
+
+#menu {
+    color: blue;
+}
+
+#usersettings {
+    margin-top: auto;
+}

@@ -19,6 +19,7 @@ namespace JarvisAPI.DataProviders.APIAI
         private static AIConfiguration _config;
         private static ApiAi _apiAi;
         private static ThreadContent _currentThreadContent;
+        private static string _apiaiLogLocation = "apiai";
 
         public static bool IsInitialized
         {
@@ -32,20 +33,37 @@ namespace JarvisAPI.DataProviders.APIAI
             _isInitialized = true;
         }
 
-        public static ThreadContent SendMessage(string conversationId, string message)
+        public static ThreadContent SendMessage(string conversationId,string userId, string requestLocation, string message)
         {
+            //TODO lookup user name from userId to send to Jarvis as a context. (So Jarvis can make personal responses).
             _currentThreadContent = new ThreadContent();
             AIResponse response = null;
             if (_isInitialized)
             {
-                AIRequest request = new AIRequest(message);
+                //Include location in initial AIrequest
+                List<AIContext> initContexts = new List<AIContext>();
+                AIContext locContext = new AIContext();
+                locContext.Name = "Location";
+                Dictionary<string, string> initContextParameters = new Dictionary<string, string>();
+                initContextParameters.Add("inputLocation", requestLocation);
+                locContext.Parameters = initContextParameters;
+                initContexts.Add(locContext);
+                List<Entity> initEntities = new List<Entity>();
+                RequestExtras initExtras = new RequestExtras(initContexts, initEntities);                
+
+                //Send request to apiai
+                AIRequest request = new AIRequest(message, initExtras);
+
+                Logging.Log(_apiaiLogLocation, "Sent request");
 
                 response = _apiAi.TextRequest(request);
                 _currentThreadContent.Action = response.Result.Action;
                 _currentThreadContent.AiMessage = response.Result.Fulfillment.Speech;
                 _currentThreadContent.UserMessage = message;
                 _currentThreadContent.ConversationId = conversationId;
-                //thread.Entities = response.Result.
+                //_currentThreadContent.Context = response.Result.Contexts;
+                //thread.Entities = response.Result.             
+
             }
             //invoke actions
             if (response.Result.Action != null)

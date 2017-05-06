@@ -22,7 +22,7 @@ namespace JarvisAPI.DataProviders.APIAI
 
         private string _action = "";
 
-        //private object _context ="";        
+        private object _context ="";        
 
         #endregion
 
@@ -87,17 +87,17 @@ namespace JarvisAPI.DataProviders.APIAI
             }
         }
 
-        //public object Context
-        //{
-        //    get { return _context; }
-        //    set
-        //    {
-        //        if(value != _context)
-        //        {
-        //            _context = value;
-        //        }
-        //    }
-        //}
+        public object Context
+        {
+            get { return _context; }
+            set
+            {
+                if (value != _context)
+                {
+                    _context = value;
+                }
+            }
+        }
 
         #endregion
 
@@ -106,6 +106,7 @@ namespace JarvisAPI.DataProviders.APIAI
         {
             //_entities = new ObservableCollection<KeyValuePair<string, List<Entity>>>();
             //Entities = new ObservableCollection<KeyValuePair<string, List<Entity>>>();
+            _context = new object();
         }
 
 

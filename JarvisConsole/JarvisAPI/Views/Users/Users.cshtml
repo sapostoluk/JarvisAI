@@ -1,8 +1,51 @@
 ﻿
+<script type='text/javascript' src='UsersViewModel.js'></script>
+
+
+<link href="~/Views/Users/UsersStyles.css" rel="stylesheet" />
+
+
 @{
     ViewBag.Title = "Users";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Users</h2>
+<div id="header" style="height: 100px;">
+    <h2>Users</h2>
+    <ul id="menu" style="position: relative; left: 340px; display: inline-block;">
+        <li style="font-weight: bold; display: inline; text-transform: uppercase; margin-right: 14px;">Global Settings</li>
+        <li style="font-weight: bold; display: inline; text-transform: uppercase; margin-right: 14px;">Individual Settings</li>
+    </ul>
+    <hr />
+</div>
+
+<div id="usersettings">
+    <ul>
+        <li>
+            <label>UserId</label>
+        </li>
+        <li>
+            <label>Priority</label>
+        </li>
+        <li>
+            <label>Server Address</label>
+        </li>
+        <li>
+            <label>Main Activity</label>
+        </li>
+        <li>
+            <label>Volume</label>
+        </li>
+        <li>
+            <label>Temperature (F)</label>
+        </li>
+        <li>
+            <label>Outlet I</label>
+        </li>
+        <li>
+            <label>Outlet II</label>
+        </li>
+    </ul>
+
+</div>
 

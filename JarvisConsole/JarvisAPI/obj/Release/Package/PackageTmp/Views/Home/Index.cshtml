@@ -1,32 +1,7 @@
-﻿<script type="text/javascript">
-        AuthenticateNest = function() {
-            $.post("api/Nest",
-                $("#NestAuthenticationForm").serialize(),
-                function (value) {
-                    $('#nest').append('<li>' + value.Name + '</Li>');
-                },
-            "json"
-            );
-        };
+﻿<script type='text/javascript' src="~/Views/Home/HomeViewModel.js"></script>
+<span>Home</span>
 
-        //function AuthenticateNest()
-        //{
-        //    $.post("api/Nest", document.getElementById('<%= Pin %>').textContent);
-        //}
 
-</script>
-
-<div id="body">
-    <ul id="nest"></ul>
-    <form id="NestAuthenticationForm" method="post">
-        <h3>Enter the Nest authentication pin</h3>
-        <p>
-            <label for="Pin">Nest Authentication Pin:</label>
-            <input type="text" name="pin" id="pin" />
-        </p>
-        <Button id="btnAuthenticate" onClick="AuthenticateNest();">Authenticate</Button>
-    </form>
-</div>
 
 
     

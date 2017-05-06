@@ -8,14 +8,15 @@ namespace JarvisAPI.Controllers
     public class JarvisController : ApiController
     {                      
         // GET: api/Jarvis
-        public string Get(string conversationId, string message)
-        {            
-             ThreadContent thread = new ThreadContent();
+        public string Get(string conversationId, string requestLocation, string userId, string message)
+        {
+            Logging.Log("JarvisAPIController", string.Format("Recieved a Jarvis request from user: '{0}': REQUEST: '{1}'", userId, message));
+            ThreadContent thread = new ThreadContent();
             string serialized = "";
             try
             {
                 APIAIDataProvider.Initialize();
-                thread = APIAIDataProvider.SendMessage(conversationId, message);
+                thread = APIAIDataProvider.SendMessage(conversationId, userId, requestLocation, message);
                 serialized = JsonConvert.SerializeObject(thread);
             }
             catch(Exception e)

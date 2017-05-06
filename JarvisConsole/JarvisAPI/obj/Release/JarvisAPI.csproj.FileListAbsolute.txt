@@ -17,7 +17,6 @@ C:\Users\watso\Documents\GitHub\Jarvis\JarvisConsole\JarvisAPI\bin\JarvisAPI.pdb
 C:\Users\watso\Documents\GitHub\Jarvis\JarvisConsole\JarvisAPI\bin\Antlr3.Runtime.dll
 C:\Users\watso\Documents\GitHub\Jarvis\JarvisConsole\JarvisAPI\bin\EntityFramework.dll
 C:\Users\watso\Documents\GitHub\Jarvis\JarvisConsole\JarvisAPI\bin\EntityFramework.SqlServer.dll
-C:\Users\watso\Documents\GitHub\Jarvis\JarvisConsole\JarvisAPI\bin\JarvisConsole.exe
 C:\Users\watso\Documents\GitHub\Jarvis\JarvisConsole\JarvisAPI\bin\Microsoft.AI.Agent.Intercept.dll
 C:\Users\watso\Documents\GitHub\Jarvis\JarvisConsole\JarvisAPI\bin\Microsoft.AI.DependencyCollector.dll
 C:\Users\watso\Documents\GitHub\Jarvis\JarvisConsole\JarvisAPI\bin\Microsoft.AI.PerfCounterCollector.dll
@@ -58,7 +57,6 @@ C:\Users\watso\Documents\GitHub\Jarvis\JarvisConsole\JarvisAPI\bin\FirebaseSharp
 C:\Users\watso\Documents\GitHub\Jarvis\JarvisConsole\JarvisAPI\bin\Wit.ai.net.dll
 C:\Users\watso\Documents\GitHub\Jarvis\JarvisConsole\JarvisAPI\bin\agsXMPP.dll
 C:\Users\watso\Documents\GitHub\Jarvis\JarvisConsole\JarvisAPI\bin\RestSharp.dll
-C:\Users\watso\Documents\GitHub\Jarvis\JarvisConsole\JarvisAPI\bin\JarvisConsole.pdb
 C:\Users\watso\Documents\GitHub\Jarvis\JarvisConsole\JarvisAPI\bin\Microsoft.AI.DependencyCollector.xml
 C:\Users\watso\Documents\GitHub\Jarvis\JarvisConsole\JarvisAPI\bin\Microsoft.AI.ServerTelemetryChannel.xml
 C:\Users\watso\Documents\GitHub\Jarvis\JarvisConsole\JarvisAPI\bin\Microsoft.AI.Web.xml
@@ -302,3 +300,10 @@ C:\Users\brandon\Source\Repos\Jarvis\JarvisConsole\JarvisAPI\obj\Release\JarvisA
 C:\Users\brandon\Source\Repos\Jarvis\JarvisConsole\JarvisAPI\obj\Release\JarvisAPI.csprojResolveAssemblyReference.cache
 C:\Users\brandon\Source\Repos\Jarvis\JarvisConsole\JarvisAPI\obj\Release\JarvisAPI.dll
 C:\Users\brandon\Source\Repos\Jarvis\JarvisConsole\JarvisAPI\obj\Release\JarvisAPI.pdb
+C:\Users\watso\Documents\GitHub\Jarvis\JarvisConsole\JarvisAPI\bin\ApiAiSDK.dll
+C:\Users\watso\Documents\GitHub\Jarvis\JarvisConsole\JarvisAPI\bin\OrviboController.Common.dll
+C:\Users\watso\Documents\GitHub\Jarvis\JarvisConsole\JarvisAPI\bin\System.Net.Http.Extensions.dll
+C:\Users\watso\Documents\GitHub\Jarvis\JarvisConsole\JarvisAPI\bin\System.Net.Http.Primitives.dll
+C:\Users\watso\Documents\GitHub\Jarvis\JarvisConsole\JarvisAPI\bin\System.Net.Http.Extensions.xml
+C:\Users\watso\Documents\GitHub\Jarvis\JarvisConsole\JarvisAPI\bin\System.Net.Http.Primitives.xml
+C:\Users\watso\Documents\GitHub\Jarvis\JarvisConsole\JarvisAPI\obj\Release\JarvisAPI.csproj.App.config

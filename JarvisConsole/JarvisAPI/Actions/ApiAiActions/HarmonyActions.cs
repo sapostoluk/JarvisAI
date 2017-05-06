@@ -46,7 +46,7 @@ namespace JarvisAPI.Actions.ApiAiActions
             Dictionary<string, string> contextParameters = new Dictionary<string, string>();
 
             object returnContext = null;
-            //Check entities for Stereo or Television entities
+            //Check parameters for Stereo or Television entities
             if (parameters.Any(e => e.Key == _contextStereo))
             {
                 StereoActivity = parameters.Where(x => x.Key == _contextStereo).FirstOrDefault().Value.ToString();

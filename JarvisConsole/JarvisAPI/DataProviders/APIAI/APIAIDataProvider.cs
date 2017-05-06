@@ -15,15 +15,28 @@ namespace JarvisAPI.DataProviders.APIAI
     public static class APIAIDataProvider
     {
         private static bool _isInitialized = false;
-        private static string _accessToken = "63a28bd84bea4d3493af8850752ce6ba";
+        private static string _accessToken;
         private static AIConfiguration _config;
         private static ApiAi _apiAi;
         private static ThreadContent _currentThreadContent;
         private static string _apiaiLogLocation = "apiai";
+        private static Configuration configuration = System.Web.Configuration.WebConfigurationManager.OpenWebConfiguration("~");
 
         public static bool IsInitialized
         {
             get { return _isInitialized; }
+        }
+        
+        public static string AccessToken
+        {
+            get { return _accessToken; }
+            set
+            {
+                if(value != _accessToken)
+                {
+                    _accessToken = value;
+                }
+            }
         }
 
         public static void Initialize()
@@ -31,6 +44,7 @@ namespace JarvisAPI.DataProviders.APIAI
             _config = new AIConfiguration(_accessToken, SupportedLanguage.English);
             _apiAi = new ApiAi(_config);
             _isInitialized = true;
+            _accessToken = configuration.AppSettings.Settings["apiai_token"].Value;
         }
 
         public static ThreadContent SendMessage(string conversationId,string userId, string requestLocation, string message)
@@ -53,8 +67,6 @@ namespace JarvisAPI.DataProviders.APIAI
 
                 //Send request to apiai
                 AIRequest request = new AIRequest(message, initExtras);
-
-                Logging.Log(_apiaiLogLocation, "Sent request");
 
                 response = _apiAi.TextRequest(request);
                 _currentThreadContent.Action = response.Result.Action;

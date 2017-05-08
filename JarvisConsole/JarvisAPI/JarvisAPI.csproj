@@ -298,6 +298,7 @@
     <Compile Include="Controllers\UsersController.cs" />
     <Compile Include="DataProviders\APIAI\APIAIDataProvider.cs" />
     <Compile Include="DataProviders\APIAI\ThreadContent.cs" />
+    <Compile Include="DataProviders\DomainDataProvider.cs" />
     <Compile Include="DataProviders\HarmonyDataProvider.cs" />
     <Compile Include="DataProviders\NestDataProvider.cs" />
     <Compile Include="DataProviders\Orvibo\OriviboDataProvider.cs" />
@@ -308,9 +309,13 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Logging.cs" />
+    <Compile Include="DataProviders\Logging.cs" />
     <Compile Include="Models\AccountBindingModels.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\Domain\Domain.cs" />
+    <Compile Include="Models\Domain\HarmonyDevice.cs" />
+    <Compile Include="Models\Domain\OutletDevice.cs" />
+    <Compile Include="Models\Domain\Room.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\Location.cs" />
     <Compile Include="Models\Settings\GlobalSettings.cs" />

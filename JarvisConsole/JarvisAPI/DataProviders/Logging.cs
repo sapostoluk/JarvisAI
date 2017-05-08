@@ -12,7 +12,7 @@ namespace JarvisAPI
         {
             string fileName = location + ".txt";
             string timeStamp = DateTime.Now.ToString();
-            string path = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + "\\JarvisAI\\";
+            string path = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + "\\JarvisAI\\" + "\\logs\\";
             string newLog = timeStamp + ": " + lines;
 
             Directory.CreateDirectory(path);

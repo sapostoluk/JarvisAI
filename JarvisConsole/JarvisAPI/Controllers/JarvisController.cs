@@ -21,10 +21,8 @@ namespace JarvisAPI.Controllers
             }
             catch(Exception e)
             {
-                Logging.Log("JarvisAPIController", "Error with apiai" + e.Message);
+                Logging.Log("JarvisAPIController", "Error with apiai: " + e.Message);
             }
-
-
 
             return serialized;
 

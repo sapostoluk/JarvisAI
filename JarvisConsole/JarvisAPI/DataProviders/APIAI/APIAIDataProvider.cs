@@ -15,12 +15,12 @@ namespace JarvisAPI.DataProviders.APIAI
     public static class APIAIDataProvider
     {
         private static bool _isInitialized = false;
-        private static string _accessToken;
+        private static string _accessToken = "";
         private static AIConfiguration _config;
         private static ApiAi _apiAi;
         private static ThreadContent _currentThreadContent;
         private static string _apiaiLogLocation = "apiai";
-        private static Configuration configuration = System.Web.Configuration.WebConfigurationManager.OpenWebConfiguration("~");
+        private static Configuration _configuration;
 
         public static bool IsInitialized
         {
@@ -41,10 +41,11 @@ namespace JarvisAPI.DataProviders.APIAI
 
         public static void Initialize()
         {
+            _configuration = System.Web.Configuration.WebConfigurationManager.OpenWebConfiguration("~");
+            _accessToken = _configuration.AppSettings.Settings["apiai_token"].Value;
             _config = new AIConfiguration(_accessToken, SupportedLanguage.English);
             _apiAi = new ApiAi(_config);
-            _isInitialized = true;
-            _accessToken = configuration.AppSettings.Settings["apiai_token"].Value;
+            _isInitialized = true;        
         }
 
         public static ThreadContent SendMessage(string conversationId,string userId, string requestLocation, string message)

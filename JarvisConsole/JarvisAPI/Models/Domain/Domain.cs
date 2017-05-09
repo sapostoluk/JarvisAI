@@ -11,6 +11,8 @@ namespace JarvisAPI.Models.Domain
         #region Fields
         private string _name;
         private List<Room> _rooms;
+        private List<HarmonyDevice> _harmonyDevices;
+        private List<OutletDevice> _outletDevices;
         #endregion Fields
 
         #region Properties
@@ -36,12 +38,36 @@ namespace JarvisAPI.Models.Domain
                 }
             }
         }
+        public List<HarmonyDevice> HarmonyDevices
+        {
+            get { return _harmonyDevices; }
+            set
+            {
+                if(value != _harmonyDevices)
+                {
+                    _harmonyDevices = value;
+                }
+            }
+        }
+        public List<OutletDevice> OutletDevices
+        {
+            get { return _outletDevices; }
+            set
+            {
+                if(value != _outletDevices)
+                {
+                    _outletDevices = value;
+                }
+            }
+        }
         #endregion Properties 
 
         #region Constructor
         public Domain()
         {
             _rooms = new List<Room>();
+            _harmonyDevices = new List<HarmonyDevice>();
+            _outletDevices = new List<OutletDevice>();
         }
         #endregion Constructor
     }

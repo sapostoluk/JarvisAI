@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Web;
+using System.Xml.Serialization;
 
 namespace JarvisAPI.Models.Domain
 {
@@ -14,6 +15,9 @@ namespace JarvisAPI.Models.Domain
         private string _roomOwner;
         private List<HarmonyDevice> _harmonyDevices;
         private List<OutletDevice> _outletDevices;
+
+        [XmlIgnore]
+        private HarmonyActivity _currentHarmonyActivity;
         #endregion Fields
 
         #region Properties
@@ -61,6 +65,19 @@ namespace JarvisAPI.Models.Domain
                 }
             }
         }
+
+        [XmlIgnore]
+        public HarmonyActivity CurrentHarmonyActivity
+        {
+            get { return _currentHarmonyActivity; }
+            set
+            {
+                if(value != _currentHarmonyActivity)
+                {
+                    _currentHarmonyActivity = value;
+                }
+            }
+        }
         #endregion Properties
 
         #region Constructor
@@ -68,6 +85,7 @@ namespace JarvisAPI.Models.Domain
         {
             HarmonyDevices = new List<HarmonyDevice>();
             OutletDevices = new List<OutletDevice>();
+            _currentHarmonyActivity = new HarmonyActivity();
         }
         #endregion Constructor
     }

@@ -143,6 +143,19 @@ namespace JarvisAPI.DataProviders
             return LookupList;
         }
 
+        public static List<Device> DeviceLookup(string name)
+        {
+            List<Device> LookupList = new List<Device>();
+            foreach(Device device in _deviceList)
+            {
+                if(device.Label.Contains(name))
+                {
+                    LookupList.Add(device);
+                }
+            }
+            return LookupList;
+        }
+
         public static async Task CloseConnection()
         {
             await _hub.CloseAsync();

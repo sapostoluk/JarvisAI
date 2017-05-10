@@ -8,6 +8,7 @@ using System.IO;
 using System.Diagnostics;
 using System.Configuration;
 using JarvisAPI;
+using JarvisAPI.Models.Domain;
 
 namespace JarvisAPI.DataProviders
 {
@@ -156,6 +157,61 @@ namespace JarvisAPI.DataProviders
             return LookupList;
         }
 
+        public static bool PowerOnDevice(HarmonyDevice device)
+        {
+            Device dev = DeviceLookup(device.DeviceName).FirstOrDefault();
+            ControlGroup ctrGrp;
+            Function func = new Function();
+            string controlGroupName = "Power";
+            string FunctionName = "PowerOn";
+            if (dev.ControlGroups.Any(e => e.Name == controlGroupName))
+            {
+                //Get misc control group
+                ctrGrp = dev.ControlGroups.Where(e => e.Name == controlGroupName).FirstOrDefault();
+                if(ctrGrp.Functions.Any(e => e.Name == FunctionName))
+                {
+                    func = ctrGrp.Functions.Where(e => e.Name == FunctionName).FirstOrDefault();
+                }
+                
+                //Check status of device
+                if(device.OnState == HarmonyDevice.HarmonyDeviceState.off)
+                {
+                    SendCommand(func.Name, func.Action.DeviceId);
+                    device.OnState = HarmonyDevice.HarmonyDeviceState.on;                  
+                }
+            }
+            //TODO CHECK THIS
+            return true;
+                       
+        }
+
+        public static bool PowerOffDevice(HarmonyDevice device)
+        {
+            Device dev = DeviceLookup(device.DeviceName).FirstOrDefault();
+            ControlGroup ctrGrp;
+            Function func = new Function();
+            string controlGroupName = "Power";
+            string FunctionName = "PowerOff";
+            if (dev.ControlGroups.Any(e => e.Name == controlGroupName))
+            {
+                //Get misc control group
+                ctrGrp = dev.ControlGroups.Where(e => e.Name == controlGroupName).FirstOrDefault();
+                if (ctrGrp.Functions.Any(e => e.Name == FunctionName))
+                {
+                    func = ctrGrp.Functions.Where(e => e.Name == FunctionName).FirstOrDefault();
+                }
+
+                //Check status of device
+                if (device.OnState == HarmonyDevice.HarmonyDeviceState.on)
+                {
+                    SendCommand(func.Name, func.Action.DeviceId);
+                    device.OnState = HarmonyDevice.HarmonyDeviceState.off;
+                }
+            }
+            //TODO check this
+            return true;
+        }
+
         public static async Task CloseConnection()
         {
             await _hub.CloseAsync();
@@ -215,7 +271,7 @@ namespace JarvisAPI.DataProviders
             else
             {
                 Logging.Log(_harmonyLogPath,"Error getting devices: Harmony config is empty");
-            }
+            }           
         }
 
         private static void GetActivities()
@@ -332,8 +388,7 @@ namespace JarvisAPI.DataProviders
             string activityName = _harmonyConfig.ActivityNameFromId(activityId);
             _currentActivity = ActivityLookup(activityName).FirstOrDefault();
            
-            Console.WriteLine("Harmony finished initialization attempt");
-
+            Console.WriteLine("Harmony finished initialization attempt");            
         }
 
 

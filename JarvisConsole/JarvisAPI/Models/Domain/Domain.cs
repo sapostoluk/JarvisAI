@@ -69,6 +69,6 @@ namespace JarvisAPI.Models.Domain
             _harmonyDevices = new List<HarmonyDevice>();
             _outletDevices = new List<OutletDevice>();
         }
-        #endregion Constructor
+        #endregion Constructor      
     }
 }

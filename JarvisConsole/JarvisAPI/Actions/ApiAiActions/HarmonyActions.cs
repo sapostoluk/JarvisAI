@@ -11,6 +11,8 @@ using System.Threading.Tasks;
 using JarvisAPI;
 using JarvisAPI.DataProviders.APIAI;
 using ApiAiSDK.Model;
+using JarvisAPI.Models.Domain;
+using JarvisAPI.Models.Globals;
 
 namespace JarvisAPI.Actions.ApiAiActions
 {
@@ -332,6 +334,96 @@ namespace JarvisAPI.Actions.ApiAiActions
 
             return contexts;
         }
+
+        private static List<AIContext> HarmonyRouteActivity(Dictionary<string, object> parameters)
+        {
+            string StereoActivity = "";
+            string TelevisionActivity = "";
+            List<AIContext> contexts = new List<AIContext>();
+            AIContext context = new AIContext();
+            context.Name = "HarmonyControlReturn";
+            Dictionary<string, string> contextParameters = new Dictionary<string, string>();
+
+            object returnContext = null;
+            //Check parameters for Stereo or Television entities
+            if (parameters.Any(e => e.Key == _contextStereo))
+            {
+                StereoActivity = parameters.Where(x => x.Key == _contextStereo).FirstOrDefault().Value.ToString();
+            }
+            if (parameters.Any(e => e.Key == _contextTelevision))
+            {
+                TelevisionActivity = parameters.Where(x => x.Key == _contextTelevision).FirstOrDefault().Value.ToString();
+            }
+
+            //Set return
+            //ActuateActivity
+
+            bool success = false;
+
+            //Stereo present / Television present
+            if (!string.IsNullOrWhiteSpace(StereoActivity) && !string.IsNullOrWhiteSpace(TelevisionActivity))
+            {
+                returnContext = new { Stereo = StereoActivity, Television = TelevisionActivity };
+                string activity = "";
+                switch (TelevisionActivity)
+                {
+                    case "Play Wii": success = ActuateHarmonyActivity(_playWii_Music); activity = _playWii_Music; break;
+
+                    case "Play Xbox One": success = ActuateHarmonyActivity(_xboxOne_Music); activity = _xboxOne_Music; break;
+
+                    case "Play PS4": success = ActuateHarmonyActivity(_ps4_Music); activity = _ps4_Music; break;
+
+                    case "Watch TV": success = ActuateHarmonyActivity(_watchTv_Music); activity = _watchTv_Music; break;
+                }
+                if (!success)
+                {
+                    contextParameters.Add("activity", activity);
+                    context.Parameters = contextParameters;
+
+                    contexts.Add(context);
+                }
+            }
+
+            //Stereo present / Television missing
+            else if (!string.IsNullOrWhiteSpace(StereoActivity) && string.IsNullOrWhiteSpace(TelevisionActivity))
+            {
+
+                //Actuate stereo activity
+                success = ActuateHarmonyActivity(StereoActivity);
+                if (!success)
+                {
+                    contextParameters.Add("activity", StereoActivity);
+                    context.Parameters = contextParameters;
+
+                    contexts.Add(context);
+                }
+            }
+            //Stereo missing / television present
+            else if (string.IsNullOrWhiteSpace(StereoActivity) && !string.IsNullOrWhiteSpace(TelevisionActivity))
+            {
+                //Actuate television activity                
+                if (TelevisionActivity == _powerOff)
+                {
+                    ActuateHarmonyPowerOff(parameters);
+                }
+
+                success = ActuateHarmonyActivity(TelevisionActivity);
+                if (!success)
+                {
+                    contextParameters.Add("activity", TelevisionActivity);
+                    context.Parameters = contextParameters;
+
+                    contexts.Add(context);
+                }
+            }
+            //None present
+            else if (string.IsNullOrWhiteSpace(StereoActivity) && string.IsNullOrWhiteSpace(TelevisionActivity))
+            {
+                //There is no activity to actuate
+                //returnContext = new { missingStereo = "", missingTelevision = "" };
+            }
+            return contexts;
+        }
         #endregion
 
         #region Private Methods
@@ -399,6 +491,31 @@ namespace JarvisAPI.Actions.ApiAiActions
             Activity powerOffActivity = HarmonyDataProvider.PowerOffActivity;
 
             return ActuateHarmonyActivity(powerOffActivity.Label);
+        }
+
+        private static bool RouteHarmonyActivity(string activityName, string roomName)
+        {
+            if (!HarmonyDataProvider.IsInitialized)
+            {
+                HarmonyDataProvider.Initialize();
+            }
+
+            //TODO should I load this domain each time??
+            Room rm = new Room();
+            if(Globals.Domain.Rooms.Any(e => e.RoomName == roomName))
+            {
+                rm = Globals.Domain.Rooms.FirstOrDefault(e => e.RoomName == roomName);
+            }
+
+            if(rm != null)
+            {
+                //Turn on the devices in the room
+                foreach (HarmonyDevice device in rm.HarmonyDevices)
+                {
+                    HarmonyDataProvider.PowerOnDevice(device);
+                }
+                //Change the input for each device
+            }          
         }
 
         #endregion

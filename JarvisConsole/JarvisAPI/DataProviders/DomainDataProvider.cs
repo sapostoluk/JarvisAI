@@ -1,5 +1,6 @@
 ﻿
 using JarvisAPI.Models.Domain;
+using JarvisAPI.Models.Globals;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -17,7 +18,7 @@ namespace JarvisAPI.DataProviders
         private static string _outputDirectory = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + "\\JarvisAI\\" + "\\Domain\\";
         private static string _outputFileName = "Domain.xml";
 
-        public static void Save(Domain domain)
+        public static void Save()
         {
             try
             {
@@ -38,13 +39,13 @@ namespace JarvisAPI.DataProviders
 
             }
             
-            if(domain != null)
+            if(Globals.Domain != null)
             {
                 FileStream stream = null;
                 try
                 {
                     stream = _outputFile.Create();
-                    _serializer.Serialize(stream, domain);
+                    _serializer.Serialize(stream, Globals.Domain);
                 }
                 catch(Exception e)
                 {
@@ -59,7 +60,7 @@ namespace JarvisAPI.DataProviders
                 }
             }
         }
-        public static Domain Load()
+        public static void Load()
         {
             FileInfo file = new FileInfo(Path.Combine(_outputDirectory, _outputFileName));
             Domain loadedDomain = new Domain();
@@ -89,7 +90,7 @@ namespace JarvisAPI.DataProviders
                     }
                 }               
             }
-            return loadedDomain;
+            Globals.Domain = loadedDomain;
         }
     }
 }

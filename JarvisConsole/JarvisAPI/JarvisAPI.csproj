@@ -315,8 +315,10 @@
     <Compile Include="Models\Domain\Domain.cs" />
     <Compile Include="Models\Domain\HarmonyActivity.cs" />
     <Compile Include="Models\Domain\HarmonyDevice.cs" />
+    <Compile Include="Models\Domain\HarmonyDeviceSetupItem.cs" />
     <Compile Include="Models\Domain\OutletDevice.cs" />
     <Compile Include="Models\Domain\Room.cs" />
+    <Compile Include="Models\Globals\Globals.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\Location.cs" />
     <Compile Include="Models\Settings\GlobalSettings.cs" />

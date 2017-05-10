@@ -19,6 +19,8 @@ namespace JarvisAPI.Models.Domain
         private string _modelName;
         private string _displayName;
         private string _deviceName;
+        private bool _isControlDevice;
+        private bool _isVolumeControlDevice;
 
         [XmlIgnore]
         private HarmonyDeviceState _onState;
@@ -73,6 +75,30 @@ namespace JarvisAPI.Models.Domain
                 if(value != _deviceName)
                 {
                     _deviceName = value;
+                }
+            }
+        }
+
+        public bool IsControlDevice
+        {
+            get { return _isControlDevice; }
+            set
+            {
+                if(value != _isControlDevice)
+                {
+                    _isControlDevice = value;
+                }
+            }
+        }
+
+        public bool IsVolumeControlDevice
+        {
+            get { return _isVolumeControlDevice; }
+            set
+            {
+                if(value != _isVolumeControlDevice)
+                {
+                    _isVolumeControlDevice = value;
                 }
             }
         }

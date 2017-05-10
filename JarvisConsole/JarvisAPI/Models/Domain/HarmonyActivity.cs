@@ -10,7 +10,7 @@ namespace JarvisAPI.Models.Domain
         #region Fields
         private string _activityName;
         //The string represents the input
-        private List<KeyValuePair<HarmonyDevice, string>> _deviceSetupList;
+        private List<HarmonyDeviceSetupItem> _deviceSetupList;
         private HarmonyDevice _volumeControlDevice;
         private HarmonyDevice _controlDevice;
         #endregion Fields
@@ -27,7 +27,7 @@ namespace JarvisAPI.Models.Domain
                 }
             }
         }
-        public List<KeyValuePair<HarmonyDevice, string>> DeviceSetupList
+        public List<HarmonyDeviceSetupItem> DeviceSetupList
         {
             get { return _deviceSetupList; }
             set
@@ -65,7 +65,7 @@ namespace JarvisAPI.Models.Domain
         #region Constructor
         public HarmonyActivity()
         {
-            DeviceSetupList = new List<KeyValuePair<HarmonyDevice, string>>();
+            DeviceSetupList = new List<HarmonyDeviceSetupItem>();
             _volumeControlDevice = new HarmonyDevice();
             _controlDevice = new HarmonyDevice();
         }

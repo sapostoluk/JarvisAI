@@ -331,8 +331,9 @@ namespace JarvisAPI.Actions.ApiAiActions
 
         private static List<AIContext> HarmonyRouteActivity(Dictionary<string, object> parameters)
         {
-            string StereoActivity = "";
-            string TelevisionActivity = "";
+            string stereoActivity = "";
+            string televisionActivity = "";
+            string room = "";
             List<AIContext> contexts = new List<AIContext>();
             AIContext context = new AIContext();
             context.Name = "HarmonyControlReturn";
@@ -342,11 +343,32 @@ namespace JarvisAPI.Actions.ApiAiActions
             //Check parameters for Stereo or Television entities
             if (parameters.Any(e => e.Key == _contextStereo))
             {
-                StereoActivity = parameters.Where(x => x.Key == _contextStereo).FirstOrDefault().Value.ToString();
+                stereoActivity = parameters.Where(x => x.Key == _contextStereo).FirstOrDefault().Value.ToString();
             }
             if (parameters.Any(e => e.Key == _contextTelevision))
             {
-                TelevisionActivity = parameters.Where(x => x.Key == _contextTelevision).FirstOrDefault().Value.ToString();
+                televisionActivity = parameters.Where(x => x.Key == _contextTelevision).FirstOrDefault().Value.ToString();
+            }
+            //Get location dictated by user
+            string homeLocation = string.Empty;
+            if (parameters.Any(e => e.Key == _contextHomeLocation))
+            {
+                homeLocation = parameters.FirstOrDefault(e => e.Key == _contextHomeLocation).Value.ToString();
+            }
+            //get location dictated by client
+            string inputLocation = string.Empty;
+            if(parameters.Any(e => e.Key == _contextInputLocation))
+            {
+                inputLocation = parameters.FirstOrDefault(e => e.Key == _contextInputLocation).Value.ToString();
+            }
+            //If voice client location exists use that else use other
+            if(homeLocation != string.Empty)
+            {
+                room = homeLocation;
+            }
+            else
+            {
+                room = inputLocation;
             }
 
             //Set return
@@ -355,19 +377,19 @@ namespace JarvisAPI.Actions.ApiAiActions
             bool success = false;
 
             //Stereo present / Television present
-            if (!string.IsNullOrWhiteSpace(StereoActivity) && !string.IsNullOrWhiteSpace(TelevisionActivity))
+            if (!string.IsNullOrWhiteSpace(stereoActivity) && !string.IsNullOrWhiteSpace(televisionActivity))
             {
-                returnContext = new { Stereo = StereoActivity, Television = TelevisionActivity };
+                returnContext = new { Stereo = stereoActivity, Television = televisionActivity };
                 string activity = "";
-                switch (TelevisionActivity)
+                switch (televisionActivity)
                 {
-                    case "Play Wii": success = ActuateHarmonyActivity(_playWii_Music); activity = _playWii_Music; break;
+                    case "Play Wii": success = RouteHarmonyActivity(_playWii_Music, room); activity = _playWii_Music; break;
 
-                    case "Play Xbox One": success = ActuateHarmonyActivity(_xboxOne_Music); activity = _xboxOne_Music; break;
+                    case "Play Xbox One": success = RouteHarmonyActivity(_xboxOne_Music, room); activity = _xboxOne_Music; break;
 
-                    case "Play PS4": success = ActuateHarmonyActivity(_ps4_Music); activity = _ps4_Music; break;
+                    case "Play PS4": success = RouteHarmonyActivity(_ps4_Music, room); activity = _ps4_Music; break;
 
-                    case "Watch TV": success = ActuateHarmonyActivity(_watchTv_Music); activity = _watchTv_Music; break;
+                    case "Watch TV": success = RouteHarmonyActivity(_watchTv_Music, room); activity = _watchTv_Music; break;
                 }
                 if (!success)
                 {
@@ -379,42 +401,30 @@ namespace JarvisAPI.Actions.ApiAiActions
             }
 
             //Stereo present / Television missing
-            else if (!string.IsNullOrWhiteSpace(StereoActivity) && string.IsNullOrWhiteSpace(TelevisionActivity))
+            else if (!string.IsNullOrWhiteSpace(stereoActivity) && string.IsNullOrWhiteSpace(televisionActivity))
             {
 
                 //Actuate stereo activity
-                success = ActuateHarmonyActivity(StereoActivity);
+                success = RouteHarmonyActivity(stereoActivity, room);
                 if (!success)
                 {
-                    contextParameters.Add("activity", StereoActivity);
+                    contextParameters.Add("activity", stereoActivity);
                     context.Parameters = contextParameters;
 
                     contexts.Add(context);
                 }
             }
             //Stereo missing / television present
-            else if (string.IsNullOrWhiteSpace(StereoActivity) && !string.IsNullOrWhiteSpace(TelevisionActivity))
+            else if (string.IsNullOrWhiteSpace(stereoActivity) && !string.IsNullOrWhiteSpace(televisionActivity))
             {
-                //Actuate television activity                
-                if (TelevisionActivity == _powerOff)
-                {
-                    ActuateHarmonyPowerOff(parameters);
-                }
-
-                success = ActuateHarmonyActivity(TelevisionActivity);
+                success = RouteHarmonyActivity(televisionActivity, room);
                 if (!success)
                 {
-                    contextParameters.Add("activity", TelevisionActivity);
+                    contextParameters.Add("activity", televisionActivity);
                     context.Parameters = contextParameters;
 
                     contexts.Add(context);
                 }
-            }
-            //None present
-            else if (string.IsNullOrWhiteSpace(StereoActivity) && string.IsNullOrWhiteSpace(TelevisionActivity))
-            {
-                //There is no activity to actuate
-                //returnContext = new { missingStereo = "", missingTelevision = "" };
             }
             return contexts;
         }

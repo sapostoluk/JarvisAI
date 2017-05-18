@@ -50,6 +50,8 @@ namespace JarvisAPI.Actions.ApiAiActions
         private static string _contextPause = "Pause";
         private static string _contextRewind = "Rewind";
         private static string _contextFastForward = "FastForward";
+        private static string _contextInputLocation = "inputLocation";
+        private static string _contextHomeLocation = "HomeLocation";
 
         //Nest context keys
         private static string _contextProduct = "Product";

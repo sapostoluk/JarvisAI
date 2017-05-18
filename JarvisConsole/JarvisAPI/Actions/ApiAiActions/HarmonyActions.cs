@@ -1,15 +1,9 @@
-﻿using com.valgut.libs.bots.Wit.Models;
+﻿
 using JarvisAPI.DataProviders;
 using HarmonyHub;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Configuration;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using JarvisAPI;
-using JarvisAPI.DataProviders.APIAI;
 using ApiAiSDK.Model;
 using JarvisAPI.Models.Domain;
 using JarvisAPI.Models.Globals;
@@ -502,6 +496,7 @@ namespace JarvisAPI.Actions.ApiAiActions
 
             //TODO should I load this domain each time??
             Room rm = new Room();
+            HarmonyActivity activity = new HarmonyActivity();
             if(Globals.Domain.Rooms.Any(e => e.RoomName == roomName))
             {
                 rm = Globals.Domain.Rooms.FirstOrDefault(e => e.RoomName == roomName);
@@ -509,13 +504,28 @@ namespace JarvisAPI.Actions.ApiAiActions
 
             if(rm != null)
             {
-                //Turn on the devices in the room
-                foreach (HarmonyDevice device in rm.HarmonyDevices)
+                if(rm.Activities.Any(e => e.ActivityName == activityName))
                 {
-                    HarmonyDataProvider.PowerOnDevice(device);
+                    rm.CurrentHarmonyActivity = rm.Activities.FirstOrDefault(e => e.ActivityName == activityName);
                 }
-                //Change the input for each device
-            }          
+                //Turn on the devices in the room
+                foreach (HarmonyDeviceSetupItem deviceItem in activity.DeviceSetupList)
+                {
+                    if(activityName != "PowerOff")
+                    {
+                        HarmonyDataProvider.PowerOnDevice(deviceItem.HarmonyDevice);
+                        //Change the input for each device
+                        HarmonyDataProvider.SendCommand("input" + deviceItem.Input,
+                            HarmonyDataProvider.DeviceLookup(deviceItem.HarmonyDevice.DeviceName).FirstOrDefault().Id);
+                    }
+                    else
+                    {
+                        HarmonyDataProvider.PowerOffDevice(deviceItem.HarmonyDevice);
+                    }                   
+                }
+            }
+            //TODO define success criteria
+            return true;          
         }
 
         #endregion

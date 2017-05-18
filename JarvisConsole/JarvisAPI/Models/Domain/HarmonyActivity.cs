@@ -13,6 +13,7 @@ namespace JarvisAPI.Models.Domain
         private List<HarmonyDeviceSetupItem> _deviceSetupList;
         private HarmonyDevice _volumeControlDevice;
         private HarmonyDevice _controlDevice;
+        private HarmonyDevice _outputDevice;
         #endregion Fields
 
         #region Properties
@@ -60,6 +61,18 @@ namespace JarvisAPI.Models.Domain
                 }
             }
         }
+        public HarmonyDevice OutputDevice
+        {
+            get { return _outputDevice; }
+            set
+            {
+                if(value != _outputDevice)
+                {
+                    _outputDevice = value;
+                }
+            }
+        }
+
         #endregion Properties
 
         #region Constructor

@@ -298,7 +298,7 @@
     <Compile Include="Controllers\UsersController.cs" />
     <Compile Include="DataProviders\APIAI\APIAIDataProvider.cs" />
     <Compile Include="DataProviders\APIAI\ThreadContent.cs" />
-    <Compile Include="DataProviders\DomainDataProvider.cs" />
+    <Compile Include="DataProviders\XmlDataProvider.cs" />
     <Compile Include="DataProviders\HarmonyDataProvider.cs" />
     <Compile Include="DataProviders\NestDataProvider.cs" />
     <Compile Include="DataProviders\Orvibo\OriviboDataProvider.cs" />
@@ -316,6 +316,9 @@
     <Compile Include="Models\Domain\HarmonyActivity.cs" />
     <Compile Include="Models\Domain\HarmonyDevice.cs" />
     <Compile Include="Models\Domain\HarmonyDeviceSetupItem.cs" />
+    <Compile Include="Models\Domain\Matrix\Input.cs" />
+    <Compile Include="Models\Domain\Matrix\Matrix.cs" />
+    <Compile Include="Models\Domain\Matrix\Output.cs" />
     <Compile Include="Models\Domain\OutletDevice.cs" />
     <Compile Include="Models\Domain\Room.cs" />
     <Compile Include="Models\Globals\Globals.cs" />

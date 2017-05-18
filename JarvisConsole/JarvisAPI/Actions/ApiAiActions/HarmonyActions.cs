@@ -7,6 +7,7 @@ using System.Linq;
 using ApiAiSDK.Model;
 using JarvisAPI.Models.Domain;
 using JarvisAPI.Models.Globals;
+using JarvisAPI.Models.Domain.Matrix;
 
 namespace JarvisAPI.Actions.ApiAiActions
 {
@@ -507,6 +508,7 @@ namespace JarvisAPI.Actions.ApiAiActions
             //TODO should I load this domain each time??
             Room rm = new Room();
             HarmonyActivity activity = new HarmonyActivity();
+            bool controlDeviceInUse = false;
             if(Globals.Domain.Rooms.Any(e => e.RoomName == roomName))
             {
                 rm = Globals.Domain.Rooms.FirstOrDefault(e => e.RoomName == roomName);
@@ -518,6 +520,17 @@ namespace JarvisAPI.Actions.ApiAiActions
                 {
                     rm.CurrentHarmonyActivity = rm.Activities.FirstOrDefault(e => e.ActivityName == activityName);
                 }
+                //Check to see if the control device is currently being used. If so, warn.
+                foreach(Room room in Globals.Domain.Rooms)
+                {
+                    if(room.CurrentHarmonyActivity == activity)
+                    {
+                        controlDeviceInUse = true;
+                    }
+                }
+
+                //TODO if true warn user
+
                 //Turn on the devices in the room
                 foreach (HarmonyDeviceSetupItem deviceItem in activity.DeviceSetupList)
                 {
@@ -525,14 +538,56 @@ namespace JarvisAPI.Actions.ApiAiActions
                     {
                         HarmonyDataProvider.PowerOnDevice(deviceItem.HarmonyDevice);
                         //Change the input for each device
-                        HarmonyDataProvider.SendCommand("input" + deviceItem.Input,
-                            HarmonyDataProvider.DeviceLookup(deviceItem.HarmonyDevice.DeviceName).FirstOrDefault().Id);
+                        if(deviceItem.HarmonyDevice is Matrix)
+                        {
+                            /**************************************************************************************************
+                             * 
+                             * 
+                            //This is the part where matrix routing will go. This will be done after a matrix switch can be tested
+                             *
+                             * 
+                             *****************************************************************************************************/
+                            Matrix matrix = new Matrix();
+                            matrix = deviceItem.HarmonyDevice as Matrix;
+
+                            //Check if control device is in inputs
+                            if(matrix.Inputs.Any(e => e.InputDevice == activity.ControlDevice))
+                            {
+                                Input input = matrix.Inputs.FirstOrDefault(e => e.InputDevice == activity.ControlDevice);
+                                if(matrix.Outputs.Any(x => x.OutputDevice == activity.OutputDevice))
+                                {
+                                    Output output = matrix.Outputs.FirstOrDefault(e => e.OutputDevice == activity.OutputDevice);
+                                    //Matrix def contains input and output devices.
+
+                                    //Set input
+                                    if(input != null && output != null)
+                                    {
+                                        HarmonyDataProvider.SendCommand("input" + input.InputNumber.ToString(),
+                                            HarmonyDataProvider.DeviceLookup(matrix.DeviceName).FirstOrDefault().Id);
+
+                                        //Set output
+                                        HarmonyDataProvider.SendCommand("output" + output.OutputNumber.ToString(),
+                                            HarmonyDataProvider.DeviceLookup(matrix.DeviceName).FirstOrDefault().Id);
+                                    }
+                                    
+                                }
+                            }
+                        }
+                        else
+                        {
+                            //Switch input for non Matrix
+                            HarmonyDataProvider.SendCommand("input" + deviceItem.Input,
+                                HarmonyDataProvider.DeviceLookup(deviceItem.HarmonyDevice.DeviceName).FirstOrDefault().Id);
+                        }
+                        
                     }
                     else
                     {
                         HarmonyDataProvider.PowerOffDevice(deviceItem.HarmonyDevice);
                     }                   
                 }
+
+                //Route device through the matrix
             }
             //TODO define success criteria
             return true;          

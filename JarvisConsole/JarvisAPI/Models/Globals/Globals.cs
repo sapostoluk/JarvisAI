@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using JarvisAPI.Models.Domain;
+using JarvisAPI.Models.Domain.Matrix;
 
 namespace JarvisAPI.Models.Globals
 {

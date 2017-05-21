@@ -21,6 +21,7 @@ namespace JarvisAPI.DataProviders.APIAI
         private static ThreadContent _currentThreadContent;
         private static string _apiaiLogLocation = "apiai";
         private static Configuration _configuration;
+        private static string _logLocation = "APIAIDataProvider";
 
         public static bool IsInitialized
         {
@@ -81,9 +82,11 @@ namespace JarvisAPI.DataProviders.APIAI
             //invoke actions
             if (response.Result.Action != null)
             {
+                Logging.Log(_logLocation, "Recieved Action from APIAI: " + response.Result.Action);
                 InitializeDataProviders(_currentThreadContent.AiMessage);
                 if (ApiAiActions.ActionDictionary.ContainsKey(response.Result.Action))
                 {
+                    Logging.Log(_logLocation, "Action is in action dictionary.");
                     //Invoke action
                     List<AIContext> contexts = ApiAiActions.ActionDictionary[response.Result.Action].Invoke(response.Result.Parameters);
                     if (contexts.Count > 0)

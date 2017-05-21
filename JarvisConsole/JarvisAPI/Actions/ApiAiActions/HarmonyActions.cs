@@ -332,6 +332,7 @@ namespace JarvisAPI.Actions.ApiAiActions
 
         private static List<AIContext> HarmonyRouteActivity(Dictionary<string, object> parameters)
         {
+            Logging.Log(_actionLogPath, "Beginning Action: 'HarmonyRouteActivity'");
             string stereoActivity = "";
             string televisionActivity = "";
             string room = "";
@@ -362,8 +363,9 @@ namespace JarvisAPI.Actions.ApiAiActions
             {
                 inputLocation = parameters.FirstOrDefault(e => e.Key == _contextInputLocation).Value.ToString();
             }
+            Logging.Log(_actionLogPath, "Parsed APIAI parameters");
             //If voice client location exists use that else use other
-            if(homeLocation != string.Empty)
+            if (homeLocation != string.Empty)
             {
                 room = homeLocation;
             }
@@ -377,6 +379,7 @@ namespace JarvisAPI.Actions.ApiAiActions
 
             bool success = false;
 
+            Logging.Log(_actionLogPath, "Calling start method");
             //Stereo present / Television present
             if (!string.IsNullOrWhiteSpace(stereoActivity) && !string.IsNullOrWhiteSpace(televisionActivity))
             {
@@ -500,6 +503,7 @@ namespace JarvisAPI.Actions.ApiAiActions
 
         private static bool RouteHarmonyActivity(string activityName, string roomName)
         {
+            Logging.Log(_actionLogPath, string.Format("Beginning : 'RouteHarmonyActivity' method for activity: {0} and room {1}", activityName, roomName));
             if (!HarmonyDataProvider.IsInitialized)
             {
                 HarmonyDataProvider.Initialize();
@@ -513,19 +517,21 @@ namespace JarvisAPI.Actions.ApiAiActions
             {
                 rm = Globals.Domain.Rooms.FirstOrDefault(e => e.RoomName == roomName);
             }
-
-            if(rm != null)
+            Logging.Log(_actionLogPath, string.Format("Looked up Room: '{0}'", rm.RoomName)); 
+            if (rm != null)
             {
                 if(rm.Activities.Any(e => e.ActivityName == activityName))
-                {
+                {                   
                     rm.CurrentHarmonyActivity = rm.Activities.FirstOrDefault(e => e.ActivityName == activityName);
+                    Logging.Log(_actionLogPath, string.Format("Found activity: {0} in room: {1}", rm.CurrentHarmonyActivity, rm.RoomName));
                 }
                 //Check to see if the control device is currently being used. If so, warn.
                 foreach(Room room in Globals.Domain.Rooms)
                 {
-                    if(room.CurrentHarmonyActivity == activity)
+                    if(room.CurrentHarmonyActivity.ControlDevice == activity.ControlDevice)
                     {
                         controlDeviceInUse = true;
+                        Logging.Log(_actionLogPath, "Control device '" + room.CurrentHarmonyActivity.ControlDevice + "' is in use");
                     }
                 }
 
@@ -540,6 +546,7 @@ namespace JarvisAPI.Actions.ApiAiActions
                         //Change the input for each device
                         if(deviceItem.HarmonyDevice is Matrix)
                         {
+                            Logging.Log(_actionLogPath, string.Format("Matrix found in room. Attempting to Route."));
                             /**************************************************************************************************
                              * 
                              * 
@@ -575,6 +582,7 @@ namespace JarvisAPI.Actions.ApiAiActions
                         }
                         else
                         {
+                            Logging.Log(_actionLogPath, string.Format("Attempting to change input for device: {0}", deviceItem.Input));
                             //Switch input for non Matrix
                             HarmonyDataProvider.SendCommand("input" + deviceItem.Input,
                                 HarmonyDataProvider.DeviceLookup(deviceItem.HarmonyDevice.DeviceName).FirstOrDefault().Id);

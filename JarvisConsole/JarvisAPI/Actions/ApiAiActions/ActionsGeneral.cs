@@ -20,6 +20,7 @@ namespace JarvisAPI.Actions.ApiAiActions
             {"HarmonyVolume", HarmonyVolume },
             {"HarmonyCheckStatus", HarmonyCheckStatus },
             {"HarmonySendCommand", HarmonySendCommand },
+            {"HarmonyRouteActivity", HarmonyRouteActivity },
                     
 
             //Nest activities

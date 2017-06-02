@@ -303,12 +303,6 @@ namespace JarvisAPI.DataProviders
                 _hub.OnConnectionClosed += _hub_OnConnectionClosed1;
                 _hub.OnActivityChanged += _hub_OnActivityChanged;
             }
-            //else
-            //{
-            //    _hub.CancelCurrentTask();
-            //    _hub.CloseAsync();
-                
-            //}
             Console.WriteLine("Harmony Initializing");
             
             _activityList = new List<Activity>();
@@ -374,21 +368,24 @@ namespace JarvisAPI.DataProviders
 
             //Get current activity
             GetActivities();
+            Logging.Log(_harmonyLogPath, "Harmony got activities");
             GetDevices();
-            string activityId = "";
-            try
-            {
-                activityId = await _hub.GetCurrentActivityAsync();
-            }
-            catch(Exception e)
-            {
-                Logging.Log(_harmonyLogPath, "Harmony failed to get current activity: " + e.Message);
-            }
+            Logging.Log(_harmonyLogPath, "Harmony got devices");
+            //string activityId = "";
+            //try
+            //{
+            //    activityId = await _hub.GetCurrentActivityAsync();
+            //    Logging.Log(_harmonyLogPath, "Harmony got current activity");
+            //}
+            //catch(Exception e)
+            //{
+            //    Logging.Log(_harmonyLogPath, "Harmony failed to get current activity: " + e.Message);
+            //}
             
-            string activityName = _harmonyConfig.ActivityNameFromId(activityId);
-            _currentActivity = ActivityLookup(activityName).FirstOrDefault();
+            //string activityName = _harmonyConfig.ActivityNameFromId(activityId);
+            //_currentActivity = ActivityLookup(activityName).FirstOrDefault();
            
-            Console.WriteLine("Harmony finished initialization attempt");            
+            Logging.Log(_harmonyLogPath, "Harmony finished initialization attempt");            
         }
 
 

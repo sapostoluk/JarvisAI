@@ -22,9 +22,11 @@ namespace JarvisAPI
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
+            Logging.Log("Global", "****************************Jarvis started**********************************");
+
             NestDataProvider.Initialize();
             HarmonyDataProvider.Initialize();
-            OrviboDataProvider.Initialize();           
+            OrviboDataProvider.Initialize();
         }
     }
 }

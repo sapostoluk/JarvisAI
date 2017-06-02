@@ -108,7 +108,7 @@ namespace JarvisAPI.DataProviders
         #region Initializer
         public static bool Initialize()
         {            
-            Console.WriteLine("Nest Initializing");
+            Logging.Log(_nestLogPath, "Nest Initializing");
 
             _authorizationUrl = string.Format("https://home.nest.com/login/oauth2?client_id={0}&state={1}",
                 configuration.AppSettings.Settings["nest_client-id"].Value, "dummy-random-value-for-anti-csfr");
@@ -122,7 +122,7 @@ namespace JarvisAPI.DataProviders
             }            
             firebaseClient = new Firebase("https://developer-api.nest.com", _accessToken);
 
-            Console.WriteLine("Nest done initializing");
+            Logging.Log(_nestLogPath, "Nest done initializing");
             return IsInitialized;
         }
 

@@ -10,7 +10,6 @@ namespace JarvisAPI.Models.Globals
     public static class Globals
     {
         private static Domain.Domain _domain;
-
         public static Domain.Domain Domain
         {
             get { return _domain; }
@@ -21,6 +20,11 @@ namespace JarvisAPI.Models.Globals
                     _domain = value;
                 }
             }
+        }
+
+        public static void Initialize()
+        {
+            _domain = new Domain.Domain();
         }
     }
 }

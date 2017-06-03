@@ -64,6 +64,7 @@ namespace JarvisAPI.DataProviders
         }
         public static void LoadDomain()
         {
+            Logging.Log(_domainProviderLogLocation, "Attempting to load Domain xml file");
             FileInfo file = new FileInfo(Path.Combine(_outputDomainDirectory, _outputDomainFileName));
             Domain loadedDomain = new Domain();
             if (_serializer == null)
@@ -73,12 +74,14 @@ namespace JarvisAPI.DataProviders
 
             if (file.Exists == true)
             {
+                Logging.Log(_domainProviderLogLocation, "Domain xml file exists");
                 FileStream stream = null;
 
                 try
                 {
                     stream = file.OpenRead();
                     loadedDomain = _serializer.Deserialize(stream) as Domain;
+                    Logging.Log(_domainProviderLogLocation, "Domain loaded");
                 }
                 catch(Exception e)
                 {
@@ -96,6 +99,7 @@ namespace JarvisAPI.DataProviders
         }
         public static void SaveMatrix()
         {
+            Logging.Log(_domainProviderLogLocation, "Attempting domain save");
             try
             {
                 if (_serializer == null)
@@ -122,6 +126,7 @@ namespace JarvisAPI.DataProviders
                 {
                     stream = _outputFile.Create();
                     _serializer.Serialize(stream, Globals.Domain);
+                    Logging.Log(_domainProviderLogLocation, "Saved Domain");
                 }
                 catch (Exception e)
                 {

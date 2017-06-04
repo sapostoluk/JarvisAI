@@ -239,10 +239,6 @@
     <Compile Include="Actions\ApiAiActions\HarmonyActions.cs" />
     <Compile Include="Actions\ApiAiActions\NestActions.cs" />
     <Compile Include="Actions\ApiAiActions\OrviboActions.cs" />
-    <Compile Include="Actions\WitActions\ActionsGeneral.cs" />
-    <Compile Include="Actions\WitActions\HarmonyActions.cs" />
-    <Compile Include="Actions\WitActions\NestActions.cs" />
-    <Compile Include="Actions\WitActions\OrviboActions.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\IdentityConfig.cs" />
@@ -304,8 +300,6 @@
     <Compile Include="DataProviders\Orvibo\OriviboDataProvider.cs" />
     <Compile Include="DataProviders\Orvibo\OrviboDevice.cs" />
     <Compile Include="DataProviders\SettingsDBProvider.cs" />
-    <Compile Include="DataProviders\Wit\ThreadContent.cs" />
-    <Compile Include="DataProviders\Wit\WitDataProvider.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>

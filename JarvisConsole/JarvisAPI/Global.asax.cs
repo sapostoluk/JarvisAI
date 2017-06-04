@@ -25,12 +25,12 @@ namespace JarvisAPI
 
             Logging.Log("Global", "****************************Jarvis started**********************************");
 
-            NestDataProvider.Initialize();
-            HarmonyDataProvider.Initialize();
-            OrviboDataProvider.Initialize();
-            Globals.Initialize();
+            //NestDataProvider.Initialize();
+            //HarmonyDataProvider.Initialize();
+            //OrviboDataProvider.Initialize();
+            //Globals.Initialize();
 
-            XmlDataProvider.LoadDomain();
+            //XmlDataProvider.LoadDomain();
         }
     }
 }

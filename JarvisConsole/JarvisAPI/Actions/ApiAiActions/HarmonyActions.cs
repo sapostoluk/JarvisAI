@@ -123,10 +123,92 @@ namespace JarvisAPI.Actions.ApiAiActions
             return contexts;
         }
 
+        //private static List<AIContext> HarmonyVolume(Dictionary<string, object> parameters)
+        //{
+        //    string directionValue = "";
+        //    object returnContext = null;
+        //    List<AIContext> contexts = new List<AIContext>();
+        //    AIContext context = new AIContext();
+        //    context.Name = "HarmonyVolumeReturn";
+        //    Dictionary<string, string> contextParameters = new Dictionary<string, string>();
+
+        //    if (parameters.Any(e => e.Key == _contextDirection))
+        //    {
+        //        directionValue = parameters.Where(x => x.Key == _contextDirection).FirstOrDefault().Value.ToString();
+        //    }
+
+        //    if (!HarmonyDataProvider.IsInitialized)
+        //    {
+        //        HarmonyDataProvider.Initialize();
+        //    }
+        //    Function function = null;
+
+        //    switch (directionValue)
+        //    {
+        //        case "up":
+        //            {
+        //                IEnumerable<ControlGroup> controlGroups = null;
+        //                if (HarmonyDataProvider.CurrentActivity != null)
+        //                {
+        //                    controlGroups = HarmonyDataProvider.CurrentActivity.ControlGroups.Where(e => e.Name == "Volume");
+        //                }                       
+        //                ControlGroup control = controlGroups.FirstOrDefault();
+        //                if (control.Functions.Any(e => e.Name == _contextVolumeUp))
+        //                {
+        //                    function = control.Functions.Where(x => x.Name == _contextVolumeUp).FirstOrDefault();
+        //                }
+        //            }
+        //            break;
+
+        //        case "down":
+        //            {
+        //                IEnumerable<ControlGroup> controlGroups = null;
+        //                if(HarmonyDataProvider.CurrentActivity != null)
+        //                {
+        //                    controlGroups = HarmonyDataProvider.CurrentActivity.ControlGroups.Where(e => e.Name == "Volume");
+        //                }
+        //                ControlGroup control = controlGroups.FirstOrDefault();
+        //                if (control.Functions.Any(e => e.Name == _contextVolumeDown))
+        //                {
+        //                    function = control.Functions.Where(x => x.Name == _contextVolumeDown).FirstOrDefault();
+        //                }
+        //            }
+        //            break;
+        //    }
+        //    bool success = false;
+
+        //    //Change volume correct number of times
+        //    int volInterval;
+        //    try
+        //    {
+        //        int.TryParse(configuration.AppSettings.Settings["volume_interval"].Value, out volInterval);
+        //        for (int i = 0; i < volInterval; i++)
+        //        {
+        //            ActuateHarmonyCommand(function);
+        //        }
+        //        success = true;
+        //    }
+        //    catch(Exception e)
+        //    {
+        //        Logging.Log(_actionLogPath, "Harmony volume action failed: " + e.Message);
+        //        success = false;
+        //    }
+        //    if (!success)
+        //    {
+        //        contextParameters.Add("command", "Volume");
+        //        context.Parameters = contextParameters;
+
+        //        contexts.Add(context);
+        //    }
+
+        //    return contexts;
+        //}
+
         private static List<AIContext> HarmonyVolume(Dictionary<string, object> parameters)
         {
+            Logging.Log(_actionLogPath, string.Format("Beginning HarmonyVolume()"));
             string directionValue = "";
-            object returnContext = null;
+            string room = "";
             List<AIContext> contexts = new List<AIContext>();
             AIContext context = new AIContext();
             context.Name = "HarmonyVolumeReturn";
@@ -136,45 +218,87 @@ namespace JarvisAPI.Actions.ApiAiActions
             {
                 directionValue = parameters.Where(x => x.Key == _contextDirection).FirstOrDefault().Value.ToString();
             }
+            //Get location dictated by user
+            string homeLocation = string.Empty;
+            if (parameters.Any(e => e.Key == _contextHomeLocation))
+            {
+                homeLocation = parameters.FirstOrDefault(e => e.Key == _contextHomeLocation).Value.ToString();
+            }
+            //get location dictated by client
+            string inputLocation = string.Empty;
+            if (parameters.Any(e => e.Key == _contextInputLocation))
+            {
+                inputLocation = parameters.FirstOrDefault(e => e.Key == _contextInputLocation).Value.ToString();
+            }
+            Logging.Log(_actionLogPath, "Parsed APIAI parameters");
+            //If voice client location exists use that else use other
+            if (homeLocation != string.Empty)
+            {
+                room = homeLocation;
+            }
+            else
+            {
+                room = inputLocation;
+            }
+            Logging.Log(_actionLogPath, "Rooms is: " + room);
 
             if (!HarmonyDataProvider.IsInitialized)
             {
                 HarmonyDataProvider.Initialize();
             }
             Function function = null;
-
+            HarmonyDevice volumeDevice = null;
+            Device harmonyVolDevice = null;
+            if (Globals.Domain.Rooms.Any(e => e.RoomName == room))
+            {
+                Logging.Log(_actionLogPath, string.Format("Found room '{0}' in domain", room));
+                Room rm = Globals.Domain.Rooms.Where(e => e.RoomName == room).FirstOrDefault();
+                if (rm.CurrentHarmonyActivity != null && rm.CurrentHarmonyActivity.VolumeControlDevice != null)
+                {
+                    volumeDevice = Globals.Domain.Rooms.Where(e => e.RoomName == room).FirstOrDefault().CurrentHarmonyActivity.VolumeControlDevice;
+                }
+                else
+                {
+                    Logging.Log(_actionLogPath, string.Format("Room '{0}' does not have a volume control device", room));
+                }
+                harmonyVolDevice = HarmonyDataProvider.DeviceLookup(volumeDevice.DeviceName).FirstOrDefault();
+                Logging.Log(_actionLogPath, string.Format("harmonyVolDevice: " + harmonyVolDevice.Label));
+            }
+            ControlGroup ctrGrp = null;
+            Logging.Log(_actionLogPath, string.Format("Finding control group for direction '{0}'", directionValue));
             switch (directionValue)
             {
-                case "up":
+                case "Up":
                     {
-                        IEnumerable<ControlGroup> controlGroups = null;
-                        if (HarmonyDataProvider.CurrentActivity != null)
+                        ctrGrp = harmonyVolDevice.ControlGroups.Where(e => e.Name == "Volume").FirstOrDefault();                      
+                        if(ctrGrp != null)
                         {
-                            controlGroups = HarmonyDataProvider.CurrentActivity.ControlGroups.Where(e => e.Name == "Volume");
-                        }                       
-                        ControlGroup control = controlGroups.FirstOrDefault();
-                        if (control.Functions.Any(e => e.Name == _contextVolumeUp))
-                        {
-                            function = control.Functions.Where(x => x.Name == _contextVolumeUp).FirstOrDefault();
+                            Logging.Log(_actionLogPath, "Control group is: " + ctrGrp.Name);
+                            if (ctrGrp.Functions.Any(e => e.Name == _contextVolumeUp))
+                            {
+                                function = ctrGrp.Functions.Where(x => x.Name == _contextVolumeUp).FirstOrDefault();
+                                Logging.Log(_actionLogPath, "Function is: " + function.Name);
+                            }
                         }
+                        
+                        
                     }
                     break;
 
-                case "down":
+                case "Down":
                     {
-                        IEnumerable<ControlGroup> controlGroups = null;
-                        if(HarmonyDataProvider.CurrentActivity != null)
+                        ctrGrp = harmonyVolDevice.ControlGroups.Where(e => e.Name == "Volume").FirstOrDefault();
+                        if (ctrGrp != null)
                         {
-                            controlGroups = HarmonyDataProvider.CurrentActivity.ControlGroups.Where(e => e.Name == "Volume");
-                        }
-                        ControlGroup control = controlGroups.FirstOrDefault();
-                        if (control.Functions.Any(e => e.Name == _contextVolumeDown))
-                        {
-                            function = control.Functions.Where(x => x.Name == _contextVolumeDown).FirstOrDefault();
+                            if (ctrGrp.Functions.Any(e => e.Name == _contextVolumeDown))
+                            {
+                                function = ctrGrp.Functions.Where(x => x.Name == _contextVolumeDown).FirstOrDefault();
+                            }
                         }
                     }
                     break;
             }
+
             bool success = false;
 
             //Change volume correct number of times
@@ -188,7 +312,7 @@ namespace JarvisAPI.Actions.ApiAiActions
                 }
                 success = true;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Logging.Log(_actionLogPath, "Harmony volume action failed: " + e.Message);
                 success = false;
@@ -472,11 +596,12 @@ namespace JarvisAPI.Actions.ApiAiActions
             //Console.WriteLine("-- System is attempting to actuate the '{0}' command --", func.Name);
             if(func != null)
             {
+                Logging.Log(_actionLogPath, string.Format("Attempting to actuate command '{0}' for device with id '{1}'", func.Name, func.Action.DeviceId));
                 HarmonyDataProvider.SendCommand(func.Name, func.Action.DeviceId);
             }
             else
             {
-                Logging.Log("general", "Harmony failed cannot send command");
+                Logging.Log(_actionLogPath, "Harmony failed cannot send command");
             }
             
 
@@ -531,13 +656,13 @@ namespace JarvisAPI.Actions.ApiAiActions
                         if(deviceItem.HarmonyDevice != null)
                         {
                             Logging.Log(_actionLogPath, string.Format("Device '{0}' is not null", deviceItem.HarmonyDevice.DeviceName));
+                            HarmonyDataProvider.PowerOffDevice(deviceItem.HarmonyDevice);
+                            Logging.Log(_actionLogPath, string.Format("Finished powering off device '{0}'", deviceItem.HarmonyDevice.DeviceName));
                         }
                         else
                         {
                             Logging.Log(_actionLogPath, string.Format("Device '{0}' IS null", deviceItem.HarmonyDevice.DeviceName));
-                        }
-                        HarmonyDataProvider.PowerOffDevice(deviceItem.HarmonyDevice);
-                        Logging.Log(_actionLogPath, string.Format("Finished powering off device '{0}'", deviceItem.HarmonyDevice.DeviceName));
+                        }                      
                     }
                 }
                 //Not a power off

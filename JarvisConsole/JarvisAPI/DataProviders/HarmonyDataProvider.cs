@@ -205,27 +205,29 @@ namespace JarvisAPI.DataProviders
             ControlGroup ctrGrp;
             Function func = new Function();
             string controlGroupName = "Power";
-            string FunctionName = "PowerOff";
+            string functionName = "PowerOff";
             string altFunctionName = "PowerToggle";
             try
             {
                 if (dev.ControlGroups.Any(e => e.Name == controlGroupName))
                 {
+                    Logging.Log(_harmonyLogPath, "Power control group: " + controlGroupName);
                     //Get misc control group
                     ctrGrp = dev.ControlGroups.Where(e => e.Name == controlGroupName).FirstOrDefault();
-                    if (ctrGrp.Functions.Any(e => e.Name == FunctionName))
+                    if (ctrGrp.Functions.Any(e => e.Name == functionName))
                     {
-                        func = ctrGrp.Functions.Where(e => e.Name == FunctionName).FirstOrDefault();
+                        Logging.Log(_harmonyLogPath, "Function exists");
+                        func = ctrGrp.Functions.Where(e => e.Name == functionName).FirstOrDefault();
                     }
                     else
                     {
+                        Logging.Log(_harmonyLogPath, "Power function does not exist");
                         func = ctrGrp.Functions.Where(e => e.Name == altFunctionName).FirstOrDefault();
                     }
 
-                    //Check status of device
                     SendCommand(func.Name, func.Action.DeviceId);
-                    device.OnState = HarmonyDevice.HarmonyDeviceState.off;
-
+                    Logging.Log(_harmonyLogPath, "Sent device on command");
+                    device.OnState = HarmonyDevice.HarmonyDeviceState.on;
                 }
             }
             catch (Exception ex)

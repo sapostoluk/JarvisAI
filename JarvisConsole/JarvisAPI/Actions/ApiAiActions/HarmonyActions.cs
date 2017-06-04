@@ -513,86 +513,125 @@ namespace JarvisAPI.Actions.ApiAiActions
             Room rm = new Room();
             HarmonyActivity activity = new HarmonyActivity();
             bool controlDeviceInUse = false;
-            if(Globals.Domain.Rooms.Any(e => e.RoomName == roomName))
-            {
+            Logging.Log(_actionLogPath, string.Format("Looking up Room: '{0}'", roomName));
+            if (Globals.Domain.Rooms.Any(e => e.RoomName == roomName))
+            {               
                 rm = Globals.Domain.Rooms.FirstOrDefault(e => e.RoomName == roomName);
+                Logging.Log(_actionLogPath, string.Format("Found room: '{0}' in domain", roomName));
             }
-            Logging.Log(_actionLogPath, string.Format("Looked up Room: '{0}'", rm.RoomName)); 
+            
             if (rm != null)
             {
-                if(rm.Activities.Any(e => e.ActivityName == activityName))
-                {                   
-                    rm.CurrentHarmonyActivity = rm.Activities.FirstOrDefault(e => e.ActivityName == activityName);
-                    Logging.Log(_actionLogPath, string.Format("Found activity: {0} in room: {1}", rm.CurrentHarmonyActivity, rm.RoomName));
-                }
-                //Check to see if the control device is currently being used. If so, warn.
-                foreach(Room room in Globals.Domain.Rooms)
+                //PowerOff
+                if (activityName == _powerOff && rm.CurrentHarmonyActivity != null)
                 {
-                    if(room.CurrentHarmonyActivity.ControlDevice == activity.ControlDevice)
+                    Logging.Log(_actionLogPath, string.Format("Activity is 'PowerOff' activity"));
+                    foreach(HarmonyDeviceSetupItem deviceItem in rm.CurrentHarmonyActivity.DeviceSetupList)
                     {
-                        controlDeviceInUse = true;
-                        Logging.Log(_actionLogPath, "Control device '" + room.CurrentHarmonyActivity.ControlDevice + "' is in use");
-                    }
-                }
-
-                //TODO if true warn user
-
-                //Turn on the devices in the room
-                foreach (HarmonyDeviceSetupItem deviceItem in activity.DeviceSetupList)
-                {
-                    if(activityName != "PowerOff")
-                    {
-                        HarmonyDataProvider.PowerOnDevice(deviceItem.HarmonyDevice);
-                        //Change the input for each device
-                        if(deviceItem.HarmonyDevice is Matrix)
+                        if(deviceItem.HarmonyDevice != null)
                         {
-                            Logging.Log(_actionLogPath, string.Format("Matrix found in room. Attempting to Route."));
-                            /**************************************************************************************************
-                             * 
-                             * 
-                            //This is the part where matrix routing will go. This will be done after a matrix switch can be tested
-                             *
-                             * 
-                             *****************************************************************************************************/
-                            Matrix matrix = new Matrix();
-                            matrix = deviceItem.HarmonyDevice as Matrix;
-
-                            //Check if control device is in inputs
-                            if(matrix.Inputs.Any(e => e.InputDevice == activity.ControlDevice))
-                            {
-                                Input input = matrix.Inputs.FirstOrDefault(e => e.InputDevice == activity.ControlDevice);
-                                if(matrix.Outputs.Any(x => x.OutputDevice == activity.OutputDevice))
-                                {
-                                    Output output = matrix.Outputs.FirstOrDefault(e => e.OutputDevice == activity.OutputDevice);
-                                    //Matrix def contains input and output devices.
-
-                                    //Set input
-                                    if(input != null && output != null)
-                                    {
-                                        HarmonyDataProvider.SendCommand("input" + input.InputNumber.ToString(),
-                                            HarmonyDataProvider.DeviceLookup(matrix.DeviceName).FirstOrDefault().Id);
-
-                                        //Set output
-                                        HarmonyDataProvider.SendCommand("output" + output.OutputNumber.ToString(),
-                                            HarmonyDataProvider.DeviceLookup(matrix.DeviceName).FirstOrDefault().Id);
-                                    }
-                                    
-                                }
-                            }
+                            Logging.Log(_actionLogPath, string.Format("Device '{0}' is not null", deviceItem.HarmonyDevice.DeviceName));
                         }
                         else
                         {
-                            Logging.Log(_actionLogPath, string.Format("Attempting to change input for device: {0}", deviceItem.Input));
-                            //Switch input for non Matrix
-                            HarmonyDataProvider.SendCommand("input" + deviceItem.Input,
-                                HarmonyDataProvider.DeviceLookup(deviceItem.HarmonyDevice.DeviceName).FirstOrDefault().Id);
+                            Logging.Log(_actionLogPath, string.Format("Device '{0}' IS null", deviceItem.HarmonyDevice.DeviceName));
                         }
-                        
-                    }
-                    else
-                    {
                         HarmonyDataProvider.PowerOffDevice(deviceItem.HarmonyDevice);
-                    }                   
+                        Logging.Log(_actionLogPath, string.Format("Finished powering off device '{0}'", deviceItem.HarmonyDevice.DeviceName));
+                    }
+                }
+                //Not a power off
+                else
+                {
+                    if (rm.HarmonyActivities.Any(e => e.ActivityName == activityName))
+                    {
+                        rm.CurrentHarmonyActivity = rm.HarmonyActivities.FirstOrDefault(e => e.ActivityName == activityName);
+                        Logging.Log(_actionLogPath, string.Format("Found activity: {0} in room: {1}", rm.CurrentHarmonyActivity.ActivityName, rm.RoomName));
+                    }
+                    //Check to see if the control device is currently being used. If so, warn.
+                    Logging.Log(_actionLogPath, string.Format("Found '{0}' rooms in the domain", Globals.Domain.Rooms.Count));
+                    foreach (Room room in Globals.Domain.Rooms)
+                    {
+                        if (room.CurrentHarmonyActivity.ControlDevice == activity.ControlDevice)
+                        {
+                            controlDeviceInUse = true;
+                            Logging.Log(_actionLogPath, "Control device '" + room.CurrentHarmonyActivity.ControlDevice + "' is in use");
+                        }
+                    }
+
+                    //TODO if true warn user
+
+                    //Turn on the devices in the room
+                    Logging.Log(_actionLogPath, string.Format("Found '{0}' devices for activity", rm.CurrentHarmonyActivity.DeviceSetupList.Count()));
+
+                    ////Find all unused devices
+                    //foreach (HarmonyDevice turnOffDevice in rm.HarmonyDevices)
+                    //{
+                    //    if (rm.CurrentHarmonyActivity.DeviceSetupList.Any(e => e.HarmonyDevice.DeviceName == turnOffDevice.DeviceName))
+                    //    {
+                    //        //Turn off unused devices
+                    //        HarmonyDataProvider.PowerOffDevice(turnOffDevice);
+                    //    }
+                    //}
+
+                    foreach (HarmonyDeviceSetupItem deviceItem in rm.CurrentHarmonyActivity.DeviceSetupList)
+                    {
+                        Logging.Log(_actionLogPath, "Actuating device: " + deviceItem.HarmonyDevice.DeviceName);
+                        if (activityName != "PowerOff")
+                        {                                                      
+                            HarmonyDataProvider.PowerOnDevice(deviceItem.HarmonyDevice);
+                            //Change the input for each device
+                            if (deviceItem.HarmonyDevice is Matrix)
+                            {
+                                Logging.Log(_actionLogPath, string.Format("Matrix found in room. Attempting to Route."));
+                                /**************************************************************************************************
+                                 * 
+                                 * 
+                                //This is the part where matrix routing will go. This will be done after a matrix switch can be tested
+                                 *
+                                 * 
+                                 *****************************************************************************************************/
+                                Matrix matrix = new Matrix();
+                                matrix = deviceItem.HarmonyDevice as Matrix;
+
+                                //Check if control device is in inputs
+                                if (matrix.Inputs.Any(e => e.InputDevice == activity.ControlDevice))
+                                {
+                                    Input input = matrix.Inputs.FirstOrDefault(e => e.InputDevice == activity.ControlDevice);
+                                    if (matrix.Outputs.Any(x => x.OutputDevice == activity.OutputDevice))
+                                    {
+                                        Output output = matrix.Outputs.FirstOrDefault(e => e.OutputDevice == activity.OutputDevice);
+                                        //Matrix def contains input and output devices.
+
+                                        //Set input
+                                        if (input != null && output != null)
+                                        {
+                                            HarmonyDataProvider.SendCommand("input" + input.InputNumber.ToString(),
+                                                HarmonyDataProvider.DeviceLookup(matrix.DeviceName).FirstOrDefault().Id);
+
+                                            //Set output
+                                            HarmonyDataProvider.SendCommand("output" + output.OutputNumber.ToString(),
+                                                HarmonyDataProvider.DeviceLookup(matrix.DeviceName).FirstOrDefault().Id);
+                                        }
+
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                Logging.Log(_actionLogPath, string.Format("Attempting to change input for device: '{0}' to '{1}'", deviceItem.HarmonyDevice.DeviceName, deviceItem.Input));
+                                //Switch input for non Matrix
+                                HarmonyDataProvider.SendCommand("Input" + deviceItem.Input,
+                                    HarmonyDataProvider.DeviceLookup(deviceItem.HarmonyDevice.DeviceName).FirstOrDefault().Id);
+                            }
+
+                        }
+                        else
+                        {
+                            HarmonyDataProvider.PowerOffDevice(deviceItem.HarmonyDevice);
+                        }
+                    }
+                                   
                 }
 
                 //Route device through the matrix

@@ -31,8 +31,6 @@ namespace JarvisAPI
             Globals.Initialize();
 
             XmlDataProvider.LoadDomain();
-
-            XmlDataProvider.SaveDomain();
         }
     }
 }

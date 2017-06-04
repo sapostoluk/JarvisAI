@@ -91,16 +91,16 @@ namespace JarvisAPI.DataProviders
             {
                 //wait
             }
-            //try
-            //{
+            try
+            {
                 _hub.SendKeyPressAsync(deviceId, command);
-            //}
-            //catch(Exception e)
-            //{
-            //    Logging.Log(_harmonyLogPath, string.Format("Harmony failed to send command {0}: " + e.Message, command));
-            //}
-            
-        }
+            }
+            catch(Exception e)
+            {
+                Logging.Log(_harmonyLogPath, string.Format("Harmony failed to send command {0}: " + e.Message, command));
+            }
+
+}
 
         private static async void ActivityStart(string activityId)
         {
@@ -159,27 +159,41 @@ namespace JarvisAPI.DataProviders
 
         public static bool PowerOnDevice(HarmonyDevice device)
         {
+            Logging.Log(_harmonyLogPath, "Attempting to power on device: " + device.DeviceName);
             Device dev = DeviceLookup(device.DeviceName).FirstOrDefault();
             ControlGroup ctrGrp;
             Function func = new Function();
             string controlGroupName = "Power";
-            string FunctionName = "PowerOn";
-            if (dev.ControlGroups.Any(e => e.Name == controlGroupName))
+            string functionName = "PowerOn";
+            string altFunctionName = "PowerToggle";
+            try
             {
-                //Get misc control group
-                ctrGrp = dev.ControlGroups.Where(e => e.Name == controlGroupName).FirstOrDefault();
-                if(ctrGrp.Functions.Any(e => e.Name == FunctionName))
+                if (dev.ControlGroups.Any(e => e.Name == controlGroupName))
                 {
-                    func = ctrGrp.Functions.Where(e => e.Name == FunctionName).FirstOrDefault();
-                }
-                
-                //Check status of device
-                if(device.OnState == HarmonyDevice.HarmonyDeviceState.off)
-                {
-                    SendCommand(func.Name, func.Action.DeviceId);
-                    device.OnState = HarmonyDevice.HarmonyDeviceState.on;                  
+                    Logging.Log(_harmonyLogPath, "Power control group: " + controlGroupName);
+                    //Get misc control group
+                    ctrGrp = dev.ControlGroups.Where(e => e.Name == controlGroupName).FirstOrDefault();
+                    if (ctrGrp.Functions.Any(e => e.Name == functionName))
+                    {
+                        Logging.Log(_harmonyLogPath, "Function exists");
+                        func = ctrGrp.Functions.Where(e => e.Name == functionName).FirstOrDefault();
+                    }
+                    else
+                    {
+                        Logging.Log(_harmonyLogPath, "Power function does not exist");
+                        func = ctrGrp.Functions.Where(e => e.Name == altFunctionName).FirstOrDefault();
+                    }
+
+                        SendCommand(func.Name, func.Action.DeviceId);
+                        Logging.Log(_harmonyLogPath, "Sent device on command");
+                        device.OnState = HarmonyDevice.HarmonyDeviceState.on;
                 }
             }
+            catch(Exception ex)
+            {
+                Logging.Log(_harmonyLogPath, "Exception while executing PowerOn: " + ex.Message);
+            }
+            Logging.Log(_harmonyLogPath, "Finished power on");
             //TODO CHECK THIS
             return true;
                        
@@ -192,22 +206,33 @@ namespace JarvisAPI.DataProviders
             Function func = new Function();
             string controlGroupName = "Power";
             string FunctionName = "PowerOff";
-            if (dev.ControlGroups.Any(e => e.Name == controlGroupName))
+            string altFunctionName = "PowerToggle";
+            try
             {
-                //Get misc control group
-                ctrGrp = dev.ControlGroups.Where(e => e.Name == controlGroupName).FirstOrDefault();
-                if (ctrGrp.Functions.Any(e => e.Name == FunctionName))
+                if (dev.ControlGroups.Any(e => e.Name == controlGroupName))
                 {
-                    func = ctrGrp.Functions.Where(e => e.Name == FunctionName).FirstOrDefault();
-                }
+                    //Get misc control group
+                    ctrGrp = dev.ControlGroups.Where(e => e.Name == controlGroupName).FirstOrDefault();
+                    if (ctrGrp.Functions.Any(e => e.Name == FunctionName))
+                    {
+                        func = ctrGrp.Functions.Where(e => e.Name == FunctionName).FirstOrDefault();
+                    }
+                    else
+                    {
+                        func = ctrGrp.Functions.Where(e => e.Name == altFunctionName).FirstOrDefault();
+                    }
 
-                //Check status of device
-                if (device.OnState == HarmonyDevice.HarmonyDeviceState.on)
-                {
+                    //Check status of device
                     SendCommand(func.Name, func.Action.DeviceId);
                     device.OnState = HarmonyDevice.HarmonyDeviceState.off;
+
                 }
             }
+            catch (Exception ex)
+            {
+                Logging.Log(_harmonyLogPath, "Exception while executing PowerOff: " + ex.Message);
+            }
+            
             //TODO check this
             return true;
         }

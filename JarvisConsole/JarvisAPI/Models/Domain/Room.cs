@@ -15,7 +15,7 @@ namespace JarvisAPI.Models.Domain
         private string _roomOwner;
         private List<HarmonyDevice> _harmonyDevices;
         private List<OutletDevice> _outletDevices;
-        private List<HarmonyActivity> _activities;
+        private List<HarmonyActivity> _harmonyActivities;
 
         [XmlIgnore]
         private HarmonyActivity _currentHarmonyActivity;
@@ -66,14 +66,14 @@ namespace JarvisAPI.Models.Domain
                 }
             }
         }
-        public List<HarmonyActivity> Activities
+        public List<HarmonyActivity> HarmonyActivities
         {
-            get { return _activities; }
+            get { return _harmonyActivities; }
             set
             {
-                if(value != _activities)
+                if(value != _harmonyActivities)
                 {
-                    _activities = value;
+                    _harmonyActivities = value;
                 }
             }
         }

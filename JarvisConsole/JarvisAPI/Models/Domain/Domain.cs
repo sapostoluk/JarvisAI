@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Web;
+using System.Xml.Serialization;
 
 namespace JarvisAPI.Models.Domain
 {
@@ -70,5 +71,32 @@ namespace JarvisAPI.Models.Domain
             _outletDevices = new List<OutletDevice>();
         }
         #endregion Constructor      
+
+        #region Methods
+        public IEnumerable<Room> RoomInDomain(string room)
+        {
+            if(this.Rooms.Any(e => e.RoomName == room))
+            {
+                return Rooms.Where(e => e.RoomName == room);
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public IEnumerable<HarmonyActivity> ActivityInRoom(Room room, string activityName)
+        {
+            if(room.HarmonyActivities.Any(e => e.ActivityName == activityName))
+            {
+                return room.HarmonyActivities.Where(e => e.ActivityName == activityName);
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        #endregion Methods
     }
 }

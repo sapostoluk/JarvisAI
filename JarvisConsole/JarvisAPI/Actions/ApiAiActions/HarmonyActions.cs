@@ -218,28 +218,8 @@ namespace JarvisAPI.Actions.ApiAiActions
             {
                 directionValue = parameters.Where(x => x.Key == _contextDirection).FirstOrDefault().Value.ToString();
             }
-            //Get location dictated by user
-            string homeLocation = string.Empty;
-            if (parameters.Any(e => e.Key == _contextHomeLocation))
-            {
-                homeLocation = parameters.FirstOrDefault(e => e.Key == _contextHomeLocation).Value.ToString();
-            }
-            //get location dictated by client
-            string inputLocation = string.Empty;
-            if (parameters.Any(e => e.Key == _contextInputLocation))
-            {
-                inputLocation = parameters.FirstOrDefault(e => e.Key == _contextInputLocation).Value.ToString();
-            }
-            Logging.Log(_actionLogPath, "Parsed APIAI parameters");
-            //If voice client location exists use that else use other
-            if (homeLocation != string.Empty)
-            {
-                room = homeLocation;
-            }
-            else
-            {
-                room = inputLocation;
-            }
+            room = ParseLocation(parameters);
+
             Logging.Log(_actionLogPath, "Rooms is: " + room);
 
             if (!HarmonyDataProvider.IsInitialized)
@@ -249,21 +229,26 @@ namespace JarvisAPI.Actions.ApiAiActions
             Function function = null;
             HarmonyDevice volumeDevice = null;
             Device harmonyVolDevice = null;
-            if (Globals.Domain.Rooms.Any(e => e.RoomName == room))
+
+            
+            Room rm = Globals.Domain.RoomInDomain(room).FirstOrDefault();
+            Logging.Log(_actionLogPath, string.Format("Found room '{0}' in domain", rm.RoomName));
+            if (rm != null)
             {
-                Logging.Log(_actionLogPath, string.Format("Found room '{0}' in domain", room));
-                Room rm = Globals.Domain.Rooms.Where(e => e.RoomName == room).FirstOrDefault();
                 if (rm.CurrentHarmonyActivity != null && rm.CurrentHarmonyActivity.VolumeControlDevice != null)
                 {
-                    volumeDevice = Globals.Domain.Rooms.Where(e => e.RoomName == room).FirstOrDefault().CurrentHarmonyActivity.VolumeControlDevice;
+                    volumeDevice = rm.CurrentHarmonyActivity.VolumeControlDevice;
+                    Logging.Log(_actionLogPath, "Volume device: " + volumeDevice.DeviceName + " CurrentActivity: " + rm.CurrentHarmonyActivity.ActivityName);
                 }
                 else
                 {
                     Logging.Log(_actionLogPath, string.Format("Room '{0}' does not have a volume control device", room));
                 }
-                harmonyVolDevice = HarmonyDataProvider.DeviceLookup(volumeDevice.DeviceName).FirstOrDefault();
-                Logging.Log(_actionLogPath, string.Format("harmonyVolDevice: " + harmonyVolDevice.Label));
             }
+            
+            harmonyVolDevice = HarmonyDataProvider.DeviceLookup(volumeDevice.DeviceName).FirstOrDefault();
+            Logging.Log(_actionLogPath, string.Format("harmonyVolDevice: " + harmonyVolDevice.Label));
+            
             ControlGroup ctrGrp = null;
             Logging.Log(_actionLogPath, string.Format("Finding control group for direction '{0}'", directionValue));
             switch (directionValue)
@@ -327,19 +312,25 @@ namespace JarvisAPI.Actions.ApiAiActions
 
             return contexts;
         }
-
+        
         private static List<AIContext> HarmonyCheckStatus(Dictionary<string, object> parameters)
         {
-            string activity = HarmonyDataProvider.CurrentActivity.Label;
-            string location = parameters.FirstOrDefault(e => e.Key == "room").Value.ToString();
+            Logging.Log(_actionLogPath, "HarmonyCheckStatus()");
+            string room = "";
+
+            room = ParseLocation(parameters);
+
+            string activity = Globals.Domain.RoomInDomain(room).FirstOrDefault().CurrentHarmonyActivity.ActivityName;
+
+            Logging.Log(_actionLogPath, string.Format("Location '{0}'", room));
             List<AIContext> contexts = new List<AIContext>();
             AIContext context = new AIContext();
             context.Name = "HarmonyCheckStatusReturn";
             Dictionary<string, string> contextParameters = new Dictionary<string, string>();
-            if (activity != null && location != null)
+            if (activity != null && room != null)
             {
                 contextParameters.Add("activity", activity);
-                contextParameters.Add("location", location);
+                contextParameters.Add("location", room);
                 context.Parameters = contextParameters;
 
                 contexts.Add(context);
@@ -466,6 +457,9 @@ namespace JarvisAPI.Actions.ApiAiActions
             Dictionary<string, string> contextParameters = new Dictionary<string, string>();
 
             object returnContext = null;
+            
+
+            
             //Check parameters for Stereo or Television entities
             if (parameters.Any(e => e.Key == _contextStereo))
             {
@@ -475,28 +469,8 @@ namespace JarvisAPI.Actions.ApiAiActions
             {
                 televisionActivity = parameters.Where(x => x.Key == _contextTelevision).FirstOrDefault().Value.ToString();
             }
-            //Get location dictated by user
-            string homeLocation = string.Empty;
-            if (parameters.Any(e => e.Key == _contextHomeLocation))
-            {
-                homeLocation = parameters.FirstOrDefault(e => e.Key == _contextHomeLocation).Value.ToString();
-            }
-            //get location dictated by client
-            string inputLocation = string.Empty;
-            if(parameters.Any(e => e.Key == _contextInputLocation))
-            {
-                inputLocation = parameters.FirstOrDefault(e => e.Key == _contextInputLocation).Value.ToString();
-            }
+            room = ParseLocation(parameters);
             Logging.Log(_actionLogPath, "Parsed APIAI parameters");
-            //If voice client location exists use that else use other
-            if (homeLocation != string.Empty)
-            {
-                room = homeLocation;
-            }
-            else
-            {
-                room = inputLocation;
-            }
 
             //Set return
             //ActuateActivity
@@ -763,6 +737,35 @@ namespace JarvisAPI.Actions.ApiAiActions
             }
             //TODO define success criteria
             return true;          
+        }
+
+        private static string ParseLocation(Dictionary<string, object> parameters)
+        {
+            string room = "";
+            //Get location dictated by user
+            string homeLocation = string.Empty;
+            if (parameters.Any(e => e.Key == _contextHomeLocation))
+            {
+                homeLocation = parameters.FirstOrDefault(e => e.Key == _contextHomeLocation).Value.ToString();
+            }
+            //get location dictated by client
+            string inputLocation = string.Empty;
+            if (parameters.Any(e => e.Key == _contextInputLocation))
+            {
+                inputLocation = parameters.FirstOrDefault(e => e.Key == _contextInputLocation).Value.ToString();
+            }
+            Logging.Log(_actionLogPath, "Parsed APIAI parameters");
+            //If voice client location exists use that else use other
+            if (homeLocation != string.Empty)
+            {
+                room = homeLocation;
+            }
+            else
+            {
+                room = inputLocation;
+            }
+
+            return room;
         }
 
         #endregion

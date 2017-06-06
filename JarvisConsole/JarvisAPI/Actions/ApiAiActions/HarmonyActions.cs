@@ -264,9 +264,7 @@ namespace JarvisAPI.Actions.ApiAiActions
                                 function = ctrGrp.Functions.Where(x => x.Name == _contextVolumeUp).FirstOrDefault();
                                 Logging.Log(_actionLogPath, "Function is: " + function.Name);
                             }
-                        }
-                        
-                        
+                        }                          
                     }
                     break;
 
@@ -341,80 +339,82 @@ namespace JarvisAPI.Actions.ApiAiActions
 
         private static List<AIContext> HarmonySendCommand(Dictionary<string, object> parameters)
         {
+            Logging.Log(_actionLogPath, "HarmonySendCommand()");
             string command = "";
             List<AIContext> contexts = new List<AIContext>();
             AIContext context = new AIContext();
             context.Name = "HarmonySendCommandReturn";
             Dictionary<string, string> contextParameters = new Dictionary<string, string>();
+            string room = ParseLocation(parameters);
 
             if (parameters.Any(e => e.Key == _contextHarmonyCommand))
             {
                 command = parameters.FirstOrDefault(e => e.Key == _contextHarmonyCommand).Value.ToString();
+                Logging.Log(_actionLogPath, "HarmonySendCommand() - recieved command: " + command);
             }
             Function function = null;
-            switch(command)
+
+            HarmonyDevice controlDevice = null;
+            Device harmonyControlDevice = null;
+            Room rm = null;
+            if(!string.IsNullOrWhiteSpace(room))
             {
-                case "Play":
-                    {
-                        IEnumerable<ControlGroup> controlGroups = null;
-                        if (HarmonyDataProvider.CurrentActivity != null)
-                        {
-                            controlGroups = HarmonyDataProvider.CurrentActivity.ControlGroups.Where(e => e.Name == _transportBasic);
-                        }
-                        ControlGroup control = controlGroups.FirstOrDefault();
-                        if (control.Functions.Any(e => e.Name == _contextPlay))
-                        {
-                            function = control.Functions.Where(x => x.Name == _contextPlay).FirstOrDefault();
-                        }
-                    }
-                    break;
-
-                case "Pause":
-                    {
-                        IEnumerable<ControlGroup> controlGroups = null;
-                        if (HarmonyDataProvider.CurrentActivity != null)
-                        {
-                            controlGroups = HarmonyDataProvider.CurrentActivity.ControlGroups.Where(e => e.Name == _transportBasic);
-                        }
-                        ControlGroup control = controlGroups.FirstOrDefault();
-                        if (control.Functions.Any(e => e.Name == _contextPause))
-                        {
-                            function = control.Functions.Where(x => x.Name == _contextPause).FirstOrDefault();
-                        }
-                    }
-                    break;
-
-                case "Rewind":
-                    {
-                        IEnumerable<ControlGroup> controlGroups = null;
-                        if(HarmonyDataProvider.CurrentActivity != null)
-                        {
-                            controlGroups = HarmonyDataProvider.CurrentActivity.ControlGroups.Where(e => e.Name == _transportBasic);
-                        }
-                        ControlGroup control = controlGroups.FirstOrDefault();
-                        if(control.Functions.Any(e => e.Name == _contextRewind))
-                        {
-                            function = control.Functions.Where(x => x.Name == _contextRewind).FirstOrDefault();
-                        }
-                    }
-                    break;
-
-                case "FastForward":
-                    {
-                        IEnumerable<ControlGroup> controlGroups = null;
-                        if(HarmonyDataProvider.CurrentActivity != null)
-                        {
-                            controlGroups = HarmonyDataProvider.CurrentActivity.ControlGroups.Where(e => e.Name == _transportBasic);
-                        }
-                        ControlGroup control = controlGroups.FirstOrDefault();
-                        if(control.Functions.Any(e => e.Name == _contextFastForward))
-                        {
-                            function = control.Functions.Where(x => x.Name == _contextFastForward).FirstOrDefault();
-                        }
-                    }
-                    break;                  
+                rm = Globals.Domain.RoomInDomain(room).FirstOrDefault();
+                if(rm != null)
+                {
+                    Logging.Log(_actionLogPath, string.Format("HarmonySendCommand() - Found room '{0}' in domain", room));
+                    controlDevice = rm.CurrentHarmonyActivity.ControlDevice;
+                    harmonyControlDevice = HarmonyDataProvider.DeviceLookup(controlDevice.DeviceName).FirstOrDefault();
+                    Logging.Log(_actionLogPath, "HarmonySendCommand() - harmonyControlDevice: " + harmonyControlDevice);
+                }
             }
-            object returnContext = null;
+
+            if (harmonyControlDevice != null)
+            {
+                if(rm.CurrentHarmonyActivity != null && harmonyControlDevice != null)
+                {
+                    ControlGroup control = harmonyControlDevice.ControlGroups.Where(e => e.Name == _transportBasic).FirstOrDefault();
+                    switch (command)
+                    {
+                        case "Play":
+                            {
+                                if (control.Functions.Any(e => e.Name == _contextPlay))
+                                {
+                                    function = control.Functions.Where(x => x.Name == _contextPlay).FirstOrDefault();
+                                }
+                            }
+                            break;
+
+                        case "Pause":
+                            {
+                                if (control.Functions.Any(e => e.Name == _contextPause))
+                                {
+                                    function = control.Functions.Where(x => x.Name == _contextPause).FirstOrDefault();
+                                }
+                            }
+                            break;
+
+                        case "Rewind":
+                            {
+                                if (control.Functions.Any(e => e.Name == _contextRewind))
+                                {
+                                    function = control.Functions.Where(x => x.Name == _contextRewind).FirstOrDefault();
+                                }
+                            }
+                            break;
+
+                        case "FastForward":
+                            {
+                                if (control.Functions.Any(e => e.Name == _contextFastForward))
+                                {
+                                    function = control.Functions.Where(x => x.Name == _contextFastForward).FirstOrDefault();
+                                }
+                            }
+                            break;
+                    }
+                    Logging.Log(_actionLogPath, "HarmonySendCommand() - function found: " + function.Name);
+                }
+            }                
             //HACK - need to have consistency in exception handling
             //Is the system on?
             bool success = false;
